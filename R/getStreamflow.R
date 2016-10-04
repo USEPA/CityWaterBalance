@@ -26,7 +26,7 @@ getStreamflow <- function(start,end,gages,plot=NULL){
       sn[i] = attr(flow,"siteInfo")$site_no
       colnames(flow) <- c("agency", "site", "date", "flow_cfs", "flow_code")
       flow <- as.xts(flow$flow_cfs, order.by=as.Date(flow$date))
-      flow <- apply.monthly(flow, sum)
+      flow <- apply.monthly(flow, FUN=sum)
       flows[[i]] <- flow*(60*60*24)/3.531e10                            # convert from cfs to km3
     } 
   }

@@ -11,7 +11,7 @@
 
 plotGlobalBalance <- function(data,annual=NULL){
   
-  if (!is.null(annual)){data = apply.yearly(data, FUN=mean)}
+  if (!is.null(annual)){data = apply.yearly(data, FUN=sum)}
   d = as.zoo(data)
   
   cols <- c("blue", "red", "cyan3", "chartreuse3", "darkorchid1", "darkorange1")
