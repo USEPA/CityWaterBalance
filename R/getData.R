@@ -21,7 +21,7 @@ getData <- function(start, end, area, geometry, attribute, flowin, flowout,
   print("Getting precipitation...")
   flush.console()
   
-  prcp = getPrecipitation(start,end,area,geometry,attribute)
+  prcp = getPrecipitation(start,end,geometry,attribute)
   colnames(prcp) = c("Date", "Precip", "variable", "statistic", "units")
   prcp = as.xts(prcp$Precip, order.by=as.Date(prcp$Date))                                           
   prcp = prcp*area*1e-6         # conversion factor for ppt (mm/month) --> km3
@@ -31,7 +31,7 @@ getData <- function(start, end, area, geometry, attribute, flowin, flowout,
   print("Getting evapotranspiration...")
   flush.console()
   
-  et = getEvapotranspiration(start,end,area,geometry,attribute)  
+  et = getEvapotranspiration(start,end,geometry,attribute)  
   colnames(et) = c("Date", "ET", "variable", "statistic", "units")
   et = as.xts(et$ET, order.by=as.Date(et$Date))                                           
   et = et*area*1e-6             # conversion factor for et (mm/month) --> km3  

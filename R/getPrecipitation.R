@@ -5,7 +5,6 @@
 #'
 #' @param start start date in format "YYYY-MM-DD"
 #' @param end end date in format "YYYY-MM-DD"
-#' @param area value for size of area 
 #' @param geometry "name" of area of interest (AOI) in the GDP
 #' @param attribute "attribute" of AOI to aggegate over
 #' @param values optional values of the attribute
@@ -15,7 +14,7 @@
 #' @export 
               
 
-getPrecipitation <-function(start, end, area, geometry, attribute){
+getPrecipitation <-function(start, end, geometry, attribute){
   
   date = seq(from=as.Date(start), to=as.Date(end), by='month')
   trange = as.POSIXct(c(start, end))

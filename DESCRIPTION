@@ -3,13 +3,15 @@ Title: Track Flows of Water Through an Urban System
 Version: 0.0.0.9000
 Authors@R: person("Laura", "Erban", email = "erban.laura@epa.gov", 
   role = c("aut", "cre"))
-Description: Estimates the water balance for a given urban area using open data. 
-Depends: R (>= 3.0.0)
-Imports: 
-  geoknife,
-  dataRetrieval,
-  xts,
-  zoo
+Description: Estimates the water balance for a given urban area using open data.
+Depends:
+    R (>= 3.0.0)
+Imports:
+    geoknife,
+    dataRetrieval,
+    xts,
+    zoo
 License: CC0
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 5.0.1
