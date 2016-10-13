@@ -12,7 +12,9 @@ getData(start, end, area, geometry, attribute, flowin, flowout,
 
 \item{end}{end date in format "YYYY-MM-DD"}
 
-\item{geometry}{name of geometry as displayed in Geo Data Portal (GDP)}
+\item{area}{area of geometry (in sq km) in Geo Data Portal (GDP)}
+
+\item{geometry}{name of geometry as displayed in Geo Data Portal}
 
 \item{attribute}{name of geometry attribute as displayed in GDP}
 

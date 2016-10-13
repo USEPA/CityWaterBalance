@@ -5,7 +5,8 @@
 #'
 #' @param start start date in format "YYYY-MM-DD"
 #' @param end end date in format "YYYY-MM-DD"
-#' @param geometry name of geometry as displayed in Geo Data Portal (GDP)
+#' @param area area of geometry (in sq km) in Geo Data Portal (GDP)
+#' @param geometry name of geometry as displayed in Geo Data Portal 
 #' @param attribute name of geometry attribute as displayed in GDP
 #' @param flowin streamflow into the area (in cubic km)
 #' @param flowout streamflow out of the area (in cubic km)

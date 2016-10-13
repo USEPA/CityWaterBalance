@@ -7,7 +7,6 @@
 #' @param end end date in format "YYYY-MM-DD"
 #' @param geometry "name" of area of interest (AOI) in the GDP
 #' @param attribute "attribute" of AOI to aggegate over
-#' @param values optional values of the attribute
 #' @return prcp 
 #' @examples
 #' prcp = getPrecipitation("2010-09-01","2010-12-31",3139,"sample:CONUS_states","STATES")

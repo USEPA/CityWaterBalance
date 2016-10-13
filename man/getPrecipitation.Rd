@@ -14,8 +14,6 @@ getPrecipitation(start, end, geometry, attribute)
 \item{geometry}{"name" of area of interest (AOI) in the GDP}
 
 \item{attribute}{"attribute" of AOI to aggegate over}
-
-\item{values}{optional values of the attribute}
 }
 \value{
 prcp

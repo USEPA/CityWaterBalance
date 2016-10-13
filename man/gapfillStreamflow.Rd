@@ -7,9 +7,9 @@
 gapfillStreamflow(paired_gages, flowlist)
 }
 \arguments{
-\item{flowlist}{list of gage data and information from getStreamflow}
+\item{paired_gages}{list of gage pairs, where pair=c(gappy,master)}
 
-\item{list}{of gage pairs, where pair=c(gappy,master)}
+\item{flowlist}{list of gage data and information from getStreamflow}
 }
 \value{
 list list of 2: sites, gap-filled flow data as xts object

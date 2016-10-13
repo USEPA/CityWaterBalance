@@ -7,10 +7,9 @@
 #' @param end end date in format "YYYY-MM-DD"
 #' @param geometry "name" of area of interest (AOI) in the GDP
 #' @param attribute "attribute" of AOI to aggegate over
-#' @param values optional values of the attribute
 #' @return ET
 #' @examples
-#' et = getEvapotranspiration("2010-09-01","2010-12-31",3139,"sample:CONUS_states","STATES") 
+#' et = getEvapotranspiration("2010-09-01","2010-12-31","sample:CONUS_states","STATES") 
 #' @export
 
 getEvapotranspiration <-function(start, end, geometry, attribute){

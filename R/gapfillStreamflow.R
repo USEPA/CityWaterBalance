@@ -3,7 +3,7 @@
 #' This function fills in gappy streamflow records using median of discharge 
 #' ratio with master gages.   
 #' 
-#' @param list of gage pairs, where pair=c(gappy,master)
+#' @param paired_gages list of gage pairs, where pair=c(gappy,master)
 #' @param flowlist list of gage data and information from getStreamflow
 #' @return list list of 2: sites, gap-filled flow data as xts object
 #' @export

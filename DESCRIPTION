@@ -7,6 +7,7 @@ Description: Estimates the water balance for a given urban area using open data.
 Depends:
     R (>= 3.0.0)
 Imports:
+    stats,
     geoknife,
     dataRetrieval,
     xts,
