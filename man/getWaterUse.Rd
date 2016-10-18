@@ -16,7 +16,7 @@ getWaterUse(states, counties, years = "ALL", convert = NULL)
 \item{convert}{conversion factor from MGD to user choice}
 }
 \value{
-list of dataframes for water source and quality
+list of dataframes, one for each water source and quality
 }
 \description{
 This function gathers and summarizes water use data from USGS NWIS by county,  
