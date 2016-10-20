@@ -23,6 +23,7 @@ This function aggregates monthly SSEBop output for a given area using the
 USGS Geo Data Portal (GDP)
 }
 \examples{
-et = getEvapotranspiration("2010-09-01","2010-12-31","sample:CONUS_states","STATES") 
+et = getEvapotranspiration("2010-09-01","2010-12-31","sample:CONUS_states",
+"STATES") 
 }
 

@@ -8,8 +8,10 @@
 #' @param geometry "name" of area of interest (AOI) in the GDP
 #' @param attribute "attribute" of AOI to aggegate over
 #' @return ET
+#' @import geoknife
 #' @examples
-#' et = getEvapotranspiration("2010-09-01","2010-12-31","sample:CONUS_states","STATES") 
+#' et = getEvapotranspiration("2010-09-01","2010-12-31","sample:CONUS_states",
+#' "STATES") 
 #' @export
 
 getEvapotranspiration <-function(start, end, geometry, attribute){
@@ -25,7 +27,7 @@ getEvapotranspiration <-function(start, end, geometry, attribute){
   
   fabric = webdata(webdatasets['Monthly Conterminous U.S. actual evapotranspiration data'], times=trange, variables = "et")
   job = geoknife(stencil, fabric, wait=TRUE)
-  ET = result(job, with.units=TRUE)                     # monthly prcp values from PRISM   
+  ET = result(job, with.units=TRUE)           # monthly prcp values from PRISM   
   
   return(ET)
   

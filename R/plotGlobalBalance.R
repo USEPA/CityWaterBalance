@@ -6,6 +6,9 @@
 #' @param data xts object created by getData
 #' @param annual flag indicating whether to plot annual averages
 #' @return plot
+#' @importFrom zoo as.zoo
+#' @importFrom xts apply.yearly
+#' @importFrom graphics legend abline plot
 #' @export
 
 

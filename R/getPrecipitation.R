@@ -8,8 +8,10 @@
 #' @param geometry "name" of area of interest (AOI) in the GDP
 #' @param attribute "attribute" of AOI to aggegate over
 #' @return prcp 
+#' @import geoknife
 #' @examples
-#' prcp = getPrecipitation("2010-09-01","2010-12-31",3139,"sample:CONUS_states","STATES")
+#' prcp = getPrecipitation("2010-09-01","2010-12-31",3139,"sample:CONUS_states",
+#' "STATES")
 #' @export 
               
 

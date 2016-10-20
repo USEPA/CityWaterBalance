@@ -4,6 +4,9 @@
 #'
 #' @param flowlist list object created by getStreamflow
 #' @return plot
+#' @importFrom zoo as.zoo
+#' @importFrom graphics legend 
+#' @importFrom grDevices rainbow
 #' @export
 
 

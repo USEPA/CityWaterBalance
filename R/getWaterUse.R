@@ -7,6 +7,7 @@
 #' @param counties list of county name lists for each state
 #' @param years list of years of available data
 #' @param convert conversion factor from MGD to user choice
+#' @importFrom dataRetrieval readNWISuse
 #' @return list of dataframes, one for each water source and quality
 #' @examples
 #' wu = getWaterUse(c("IL"),c("Cook","DeKalb"))
@@ -24,7 +25,7 @@ getWaterUse <-function(states, counties, years="ALL", convert=NULL){
   for (i in 1:length(states)){
     
     # get NWIS water use data
-    w = readNWISuse(stateC=states[i], countyCd=counties[[i]],years=years)  
+    w = dataRetrieval::readNWISuse(stateC=states[i], countyCd=counties[[i]],years=years)  
     
     # exclude double-counting and totals 
     w = w[,-grep(".population.|.deliveries.|Fossil.|Geothermal", colnames(w))]  

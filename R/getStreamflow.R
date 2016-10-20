@@ -8,6 +8,9 @@
 #' @param gages list of USGS gage numbers 
 #' @param plot option to plot the data
 #' @return list list of 3: sites, site numbers, flow data as xts object
+#' @importFrom dataRetrieval readNWISdv
+#' @importFrom xts as.xts apply.monthly
+#' @importFrom zoo as.zoo
 #' @examples 
 #' flow = getStreamflow("2000-01-01","2010-12-31",c("05552500","05543500"),1)
 #' @export
@@ -29,6 +32,10 @@ getStreamflow <- function(start,end,gages,plot=NULL){
       flow <- apply.monthly(flow, FUN=sum)
       flows[[i]] <- flow*(60*60*24)/3.531e10                            # convert from cfs to km3
     } 
+  }
+  
+  if (length(gages)==1){
+    f = flows[[1]]
   }
   
   if (length(gages)>1){
