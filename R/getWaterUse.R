@@ -8,12 +8,12 @@
 #' @param years list of years of available data
 #' @param convert conversion factor from MGD to user choice
 #' @importFrom dataRetrieval readNWISuse
-#' @return list of dataframes, one for each water source and quality
+#' @return list of dataframes, one for each water source and quality (MGD)
 #' @examples
 #' wu = getWaterUse(c("IL"),c("Cook","DeKalb"))
 #' @export 
 
-getWaterUse <-function(states, counties, years="ALL", convert=NULL){
+getWaterUse <-function(states, counties, years="ALL"){
   
   # --- load data ----
   a = list()
@@ -38,10 +38,7 @@ getWaterUse <-function(states, counties, years="ALL", convert=NULL){
     colnames(info)=c("statecode","state","countycode","county","year")
     
     # replace missing data with NA but keep numeric 
-    w = data.frame(lapply(w,as.numeric))                      
-    
-    # convert MGD (USGS units) using a conversion factor (convert)
-    if (!is.null(convert)){w = w*convert}               
+    w = data.frame(suppressWarnings(lapply(w,as.numeric)))                      
     
     # --- summarize water use data ----
 

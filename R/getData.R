@@ -39,7 +39,7 @@ getData <- function(start, end, area, geometry, attribute, flowin, flowout,
   colnames(et) = c("ET")
 
   # ----------------------------- output ------------------------------
-  cf = area*1e-6         # convert km3 --> mm over catchment
+  cf = area*1e-6                         # convert km3 --> mm over catchment
   flowin = flowin/cf
   flowout = flowout/cf
   
