@@ -7,7 +7,8 @@
 combineStreamflow(flowlist, mult)
 }
 \arguments{
-\item{flowlist}{list of flow data, output of getStreamflow}
+\item{flowlist}{list of flow data, output of getStreamflow or 
+gapfillStreamflow}
 
 \item{mult}{list of multipliers, one for each gage}
 }

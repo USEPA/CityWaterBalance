@@ -7,7 +7,6 @@
 #' @param start start date in format "YYYY-MM-DD"
 #' @param end end date in format "YYYY-MM-DD"
 #' @param wu list of dataframes output by getWaterUse
-#' @param cf conversion factor 
 #' @return wu_flows list of xts objects including:
 #'        surface water withdrawals for theromelectric power (sw_therm),
 #'        surface water withdrawals for potable use (sw_pot),
@@ -21,11 +20,13 @@
 #' @import zoo
 #' @examples
 #' wu = getWaterUse(c("IL"),c("Cook","Lake"))
-#' wu_flows = combineWaterUse(wu)
+#' wu_flows = combineWaterUse("2000-01-01","2015-01-01",wu)
 #' @export 
 
-combineWaterUse <- function(start,end,wu,cf=NULL){
+combineWaterUse <- function(start,end,wu){
   
+  cf = 3.7854e-6*(365/12)
+    
   # USGS estimate surface water withdrawals for thermoelectric power 
   a = wu$swf
   a = a[,5:length(a)]

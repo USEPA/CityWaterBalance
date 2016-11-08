@@ -9,13 +9,13 @@
 #' @param plot option to plot the data
 #' @return list list of 3: sites, site numbers, flow data as xts object
 #' @importFrom dataRetrieval readNWISdv
-#' @importFrom xts as.xts apply.monthly
+#' @importFrom xts as.xts 
 #' @importFrom zoo as.zoo
 #' @examples 
-#' flow = getStreamflow("2000-01-01","2010-12-31",c("05552500","05543500"),1)
+#' flow = getStreamflow("2000-01-01","2010-12-31",c("05551540","05552500"))
 #' @export
 
-getStreamflow <- function(start,end,gages,plot=NULL){
+getStreamflow <- function(start,end,gages){
   
   tot = list()
   flows = list()                  
@@ -29,8 +29,7 @@ getStreamflow <- function(start,end,gages,plot=NULL){
       sn[i] = attr(flow,"siteInfo")$site_no
       colnames(flow) <- c("agency", "site", "date", "flow_cfs", "flow_code")
       flow <- as.xts(flow$flow_cfs, order.by=as.Date(flow$date))
-      flow <- apply.monthly(flow, FUN=sum)
-      flows[[i]] <- flow*(60*60*24)/3.531e10                            # convert from cfs to km3
+      flows[[i]] <- flow
     } 
   }
   
@@ -47,16 +46,7 @@ getStreamflow <- function(start,end,gages,plot=NULL){
     } 
    }
   
-  if (!is.null(plot)){
-    z = as.zoo(f)
-    tsRainbow <- rainbow(ncol(z))
-    plot(x = z, xlab ="Year",ylab = "Flow", col = tsRainbow, screens = 1)
-    legend(x = "topleft", legend = sites, lty = 1,col = tsRainbow)
-  }
-  
-  f = apply.monthly(f,FUN=colSums, na.rm=TRUE)
-  f[f==0]=NA
-  
+  f[f==0] = NA
   names(f) = sn
   
   return(list("sites"=sites,"site_num"=sn,"flows"=f))

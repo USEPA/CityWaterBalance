@@ -1,11 +1,18 @@
 #' Combines streamflow records to estimate total flows
 #' 
 #' This function combines streamflow data from multiple gages, averaging records
-#' according to a multuplier list   
+#' according to a multiplier list   
 #' 
-#' @param flowlist list of flow data, output of getStreamflow
+#' @param flowlist list of flow data, output of getStreamflow or 
+#'        gapfillStreamflow
 #' @param mult list of multipliers, one for each gage
 #' @return vector of total flow for each timestep
+#' @importFrom xts as.xts
+#' @examples 
+#' gages = c("05551540","05552500")
+#' flow = getStreamflow("2000-01-01","2010-12-31",gages)
+#' flow = gapfillStreamflow(flow,list(c(gages[1],gages[2])))
+#' flow = combineStreamflow(flow,c(0.5,0.5))
 #' @export
 
 combineStreamflow <- function(flowlist, mult){
@@ -16,7 +23,7 @@ combineStreamflow <- function(flowlist, mult){
   
   for (i in 1:length(mult)){flows[,i]=flows[,i]*mult[i]}  
   
-  flows = rowSums(flows)
+  flows = as.xts(rowSums(flows),order.by=index(flows))
   
   return(flows)
   

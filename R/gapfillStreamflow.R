@@ -3,14 +3,18 @@
 #' This function fills in gappy streamflow records using median of discharge 
 #' ratio with master gages.   
 #' 
-#' @param paired_gages list of gage pairs, where pair=c(gappy,master)
 #' @param flowlist list of gage data and information from getStreamflow
+#' @param paired_gages list of gage pairs';;, where pair=c(gappy,master)
 #' @return list list of 2: sites, gap-filled flow data as xts object
 #' @importFrom stats median
+#' @examples 
+#' gages = c("05551540","05552500")
+#' flow = getStreamflow("2000-01-01","2010-12-31",gages)
+#' flow = gapfillStreamflow(flow,list(c(gages[1],gages[2])))
 #' @export
 
 
-gapfillStreamflow <- function(paired_gages, flowlist){ 
+gapfillStreamflow <- function(flowlist,paired_gages){ 
   
   sites = flowlist$sites
   sn = flowlist$site_num

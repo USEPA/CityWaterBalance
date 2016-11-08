@@ -4,7 +4,7 @@
 \alias{getWaterUse}
 \title{Gather time series of water use data}
 \usage{
-getWaterUse(states, counties, years = "ALL", convert = NULL)
+getWaterUse(states, counties, years = "ALL")
 }
 \arguments{
 \item{states}{list of state abbreviations}
@@ -16,7 +16,7 @@ getWaterUse(states, counties, years = "ALL", convert = NULL)
 \item{convert}{conversion factor from MGD to user choice}
 }
 \value{
-list of dataframes, one for each water source and quality
+list of dataframes, one for each water source and quality (MGD)
 }
 \description{
 This function gathers and summarizes water use data from USGS NWIS by county,  
