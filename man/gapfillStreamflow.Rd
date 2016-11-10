@@ -4,12 +4,12 @@
 \alias{gapfillStreamflow}
 \title{Fill gaps in streamflow records}
 \usage{
-gapfillStreamflow(paired_gages, flowlist)
+gapfillStreamflow(flowlist, paired_gages)
 }
 \arguments{
-\item{paired_gages}{list of gage pairs, where pair=c(gappy,master)}
-
 \item{flowlist}{list of gage data and information from getStreamflow}
+
+\item{paired_gages}{list of gage pairs';;, where pair=c(gappy,master)}
 }
 \value{
 list list of 2: sites, gap-filled flow data as xts object
@@ -17,5 +17,10 @@ list list of 2: sites, gap-filled flow data as xts object
 \description{
 This function fills in gappy streamflow records using median of discharge 
 ratio with master gages.
+}
+\examples{
+gages = c("05551540","05552500")
+flow = getStreamflow("2000-01-01","2010-12-31",gages)
+flow = gapfillStreamflow(flow,list(c(gages[1],gages[2])))
 }
 

@@ -5,21 +5,14 @@
 #'
 #' @param start start date in format "YYYY-MM-DD"
 #' @param end end date in format "YYYY-MM-DD"
-#' @param area area of geometry (in sq km) in Geo Data Portal (GDP)
 #' @param geometry name of geometry as displayed in Geo Data Portal 
 #' @param attribute name of geometry attribute as displayed in GDP
-#' @param flowin streamflow into the area (in cubic km)
-#' @param flowout streamflow out of the area (in cubic km)
-#' @param imports imports of water into area (in cubic km)
-#' @return data with water balance as xts object
+#' @return data as xts object
 #' @importFrom xts as.xts
 #' @importFrom utils flush.console
 #' @export
 
-getEnviroData <- function(start, end, area, geometry, attribute, flowin, flowout,
-                    imports=NULL){
-  
-  cf = area*1e-6                         # convert mm --> km3
+getAtmoFlows <- function(start, end, geometry, attribute){
   
   # ------------------------- precipitation ------------------------------------
   print("Getting precipitation...")
@@ -27,7 +20,7 @@ getEnviroData <- function(start, end, area, geometry, attribute, flowin, flowout
   
   prcp = getPrecipitation(start,end,geometry,attribute)
   colnames(prcp) = c("Date", "Precip", "variable", "statistic", "units")
-  prcp = as.xts(prcp$Precip*cf, order.by=as.Date(prcp$Date))                                           
+  prcp = as.xts(prcp$Precip, order.by=as.Date(prcp$Date))                                           
 
   # ------------------------ evapotranspiration --------------------------------
   print("Getting evapotranspiration...")
@@ -35,24 +28,14 @@ getEnviroData <- function(start, end, area, geometry, attribute, flowin, flowout
   
   et = getEvapotranspiration(start,end,geometry,attribute)  
   colnames(et) = c("Date", "ET", "variable", "statistic", "units")
-  et = as.xts(et$ET*cf, order.by=as.Date(et$Date))                                           
+  et = as.xts(et$ET, order.by=as.Date(et$Date))                                           
 
   # ----------------------------- output ------------------------------
   
-  flowin = flowin
-  flowout = flowout
-  
-  balance = prcp+flowin-et-flowout
-  data = cbind(prcp,et,flowin,flowout,balance)
-  colnames(data) = c("prcp", "et", "flowin", "flowout", "balance") 
+  data = cbind(prcp,et)
+  colnames(data) = c("prcp", "et") 
 
-  if (!is.null(imports)){
-    balance = prcp+flowin-et-flowout+imports
-    data = cbind(prcp,et,flowin,flowout,imports,balance)
-    colnames(data) = c("prcp", "et", "flowin", "flowout", "imports", "balance")  
-  }
-  
-  data = as.zoo(data,order_by=index(prcp))
+  data = as.xts(data,order_by=index(prcp))
   
   return(data)
 

@@ -6,7 +6,6 @@
 #' @param states list of state abbreviations
 #' @param counties list of county name lists for each state
 #' @param years list of years of available data
-#' @param convert conversion factor from MGD to user choice
 #' @importFrom dataRetrieval readNWISuse
 #' @return list of dataframes, one for each water source and quality (MGD)
 #' @examples

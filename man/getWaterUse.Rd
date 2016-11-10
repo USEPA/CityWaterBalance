@@ -12,8 +12,6 @@ getWaterUse(states, counties, years = "ALL")
 \item{counties}{list of county name lists for each state}
 
 \item{years}{list of years of available data}
-
-\item{convert}{conversion factor from MGD to user choice}
 }
 \value{
 list of dataframes, one for each water source and quality (MGD)

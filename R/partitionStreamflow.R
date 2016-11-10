@@ -1,6 +1,6 @@
 #' Partitions streamflow into essential components
 #' 
-#' This functions paritions a streamflow timeseries into baseflow and stormflow,
+#' This functions partitions a streamflow timeseries into baseflow and stormflow,
 #' with an option to separate wastewater effluent if data are available.
 #' Stream- and waterwater flows should have same units and temporal resolution.
 #' 
