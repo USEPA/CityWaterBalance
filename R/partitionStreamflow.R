@@ -9,7 +9,6 @@
 #' @return vector of total flow for each timestep
 #' @importFrom xts as.xts
 #' @importFrom EcoHydRology BaseflowSeparation
-#' @import zoo
 #' @examples 
 #' gages = c("05551540","05552500")
 #' flow = getStreamflow("2000-01-01","2010-12-31",gages)
@@ -23,7 +22,7 @@ partitionStreamflow <- function(streamflow,wastewater=NULL){
   s = streamflow
   if (!is.null(wastewater)) {s = streamflow-wastewater}
   sep = BaseflowSeparation(as.numeric(s),0.925,3)
-  sflow = zoo(sep,order.by=index(s))
+  sflow = as.xts(sep,order.by=index(s))
   names(sflow) = c("baseflow","stormflow")
   
   return(sflow)

@@ -7,9 +7,10 @@
 #' @param data xts or zoo object with date index and columns of data for:
 #'        precipitation (prcp),
 #'        evapotranspiration (et),
-#'        streamflow in (flowin),
-#'        streamflow out (flowout),
+#'        streamflow in (inflow),
+#'        streamflow out (outflow),
 #'        baseflow (bflow),
+#'        stormflow (sflow),
 #'        water supply imports (ws_imports),
 #'        other imports (etc_imports),
 #'        surface water withdrawals for theromelectric power (sw_therm),
@@ -34,15 +35,11 @@
 CityWaterBalance <- function(data){
   
   # ------------ Coefficients -------------
-  interc = 0.05                                                                       #  fraction of prcp that evaporates immediately to atm (interception)
+  interc = data$et/50                                                                 #  fraction of prcp that evaporates immediately to atm (interception)
   imperv = 0.4                                                                        #  fraction of land surface that is impervious
-  
-  rc1 = 0.5                                                                           #  fraction of impervious surface creating runoff to waterways
-  runoff = imperv*rc1                                                                 #  fraction of prcp that directly recharges surface water bodies
-  
-  rc2 = 0.1                                                                           #  fraction of impervious surface creating runoff to sewer system
-  runoff_ss = imperv*rc2                                                              #  fraction of prcp that becomes runoff to sewer system
-  infilt = 1-sum(runoff_ss,interc,runoff)                                             #  fraction of prcp that infiltrates to shallow groundwater
+  runoff = 0.3                                                                        #  fraction of prcp that becomes runsoff
+  run_css = 0.5                                                                       #  fraction of runoff that drains to combined sewer system
+  infilt = 1-(interc+runoff)                                                          #  fraction of prcp that infiltrates to shallow groundwater
   nonrev = 0.15                                                                       #  fraction of purified water lost to leaks (non-revenue water)
   powevap = 0.012                                                                     #  fraction of thermoe water that evaporates
   wastgen = 0.9                                                                       #  fraction of potable use that goes to combined sewer system
@@ -55,23 +52,22 @@ CityWaterBalance <- function(data){
   
   # ----------- Flow terms ---------------
   k1  = data$prcp*interc                                                              #  prcp --> atm  ~  interception 
-  k2  = data$prcp*runoff                                                              #  prcp --> isw   ~  runoff to waterways
-  k3  = data$prcp*runoff_ss                                                           #  prcp --> css   ~  runoff to sewer system
+  k2 = data$prcp*runoff*(1-run_css)                                                   #  prcp --> isw  ~  stormflow
+  k3  = data$prcp*runoff*run_css                                                      #  prcp --> css   ~  runoff to sewer system
   k4  = data$prcp*infilt                                                              #  prcp --> sgw  ~  infiltration
-  k5  = data$flowin                                                                   #  flowin --> isw ~  streamflow in
+  k5  = data$inflow                                                                   #  inflow --> isw ~  streamflow in
   k6 = data$etc_imports                                                               #  etc_imports --> isw 
   k7  = data$ws_imports                                                               #  LMich --> pur ~  purification 
   k9 = data$sw_therm                                                                  #  isw --> pow   ~  through-flow, cooling + power gen
   k10 = data$sw_pot                                                                   #  isw --> pur   ~  purification
   k11 = data$sw_npot                                                                  #  isw --> npot  ~  extraction  
   k12 = data$et*(1-imperv)                                                            #  sgw --> atm    ~  evapotranspiration from vegetated lands
-  k13 = data$bflow                                                                    #  sgw --> isw   ~ baseflow
+  k13 = noflow #data$baseflow                                                         #  sgw --> isw   ~ baseflow
   k15 = noflow                                                                        #  sgw --> pur  ~ purification  
   k16 = data$gw_therm                                                                 #  sgw --> pow    ~ through-flow, cooling + power gen
   k17 = data$dgr                                                                      #  sgw --> dgw    ~ deep groundwater recharge
   k18 = data$gw_npot                                                                  #  sgw --> npot  ~ extraction
   k19 = data$gw_pot                                                                   #  dgw --> pur  ~ purification
-  gw_imports = k16+k18+k19
   k20 = noflow                                                                        #  dgw --> npot  ~ extraction
   cooling = k9+k16                                                                    #  total cooling water for thermoelectric power generation
   k21 = cooling*powevap                                                               #  pow --> atm   ~  evaporation (consumptive thermoe use) 
@@ -93,7 +89,7 @@ CityWaterBalance <- function(data){
   infiltration = k4+k27+k32                                                           #  total infiltration
   k8 = data$et-k1-k21-k25-k12-k28-k30                                                 #  direct evaporation from surface water
   k33 = data$cso                                                                      #  css --> isw  ~ CSO events
-  k34 = data$flowout                                                                  #  isw --> flowOUT  ~ streamflow out
+  k34 = data$inflow                                                                   #  isw --> outflow  ~ streamflow out
   
 
   # ------------ State variables -------------------------
@@ -119,18 +115,18 @@ CityWaterBalance <- function(data){
 
   # ------------- outputs ----------------------
   # Global balance
-  GB = zoo((data$prcp+data$flowin+data$ws_imports+data$etc_imports-data$et-data$flowout),order.by=data$date)
+  GB = zoo((data$prcp+data$inflow+data$ws_imports+data$etc_imports-data$et-data$outflow),order.by=index(data))
   # Internal balance
-  IB = zoo((isw+sgw+css+dgw+pot+npot+pow+pur+wtp),order.by=data$date)
+  IB = zoo((isw+sgw+css+dgw+pot+npot+pow+pur+wtp),order.by=index(data))
   
   # flows
-  global_flows = zoo(cbind(data$prcp,data$et,data$flowin,data$flowout,data$ws_imports,data$etc_imports),order.by=data$date)
-  names(global_flows) = c("precip","et","flowin","flowout","water supply imports","other imports")
+  global_flows = zoo(cbind(data$prcp,data$et,data$inflow,data$outflow,data$ws_imports,data$etc_imports),order.by=index(data))
+  names(global_flows) = c("precip","et","inflow","outflow","water supply imports","other imports")
   
-  internal_flows = zoo(cbind(k1,infiltration,k3,k13,ws_potable,ws_nonpotable,cooling,leakage),order.by=data$date)
+  internal_flows = zoo(cbind(k1,infiltration,k3,k13,ws_potable,ws_nonpotable,cooling,leakage),order.by=index(data))
   names(internal_flows) = c("interception","infiltration","runoff","baseflow","potable use","nonpotable use","cooling water","leakage")
   
-  storages = zoo(cbind(isw,sgw,dgw,pot,npot,css,pur,pow,wtp),order.by=data$date)
+  storages = zoo(cbind(isw,sgw,dgw,pot,npot,css,pur,pow,wtp),order.by=index(data))
   names(storages) = c("inland surface water","shallow groundwater", "deep groundwater", "potable", "nonpotable", "css", "purification", "power", "wtp")
   
   return(list("global_flows"=global_flows,"internal_flows"=internal_flows,"storages"=storages,"global_balance"=GB,"internal_balance"=IB)) 
