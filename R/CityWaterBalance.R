@@ -26,6 +26,7 @@
 #' @return list of dataframes for 1) flows and 2) storages
 #' @importFrom grDevices rainbow
 #' @import zoo
+#' @importFrom utils flush.console
 #' @examples
 #' @export
 
@@ -37,15 +38,17 @@ CityWaterBalance <- function(data){
   # ------------ Coefficients -------------
   interc = data$et/50                                                                 #  fraction of prcp that evaporates immediately to atm (interception)
   imperv = 0.4                                                                        #  fraction of land surface that is impervious
-  runoff = 0.3                                                                        #  fraction of prcp that becomes runsoff
+  runoff = 0.3                                                                        #  fraction of prcp that becomes runoff
   run_css = 0.5                                                                       #  fraction of runoff that drains to combined sewer system
   infilt = 1-(interc+runoff)                                                          #  fraction of prcp that infiltrates to shallow groundwater
+  if (min(infilt<0)) {print("Error: negative infiltration")
+    flush.console()}
   nonrev = 0.15                                                                       #  fraction of purified water lost to leaks (non-revenue water)
   powevap = 0.012                                                                     #  fraction of thermoe water that evaporates
-  wastgen = 0.9                                                                       #  fraction of potable use that goes to combined sewer system
-  potinfilt = 0.05                                                                    #  fraction of potable use that infiltrates (e.g., lawn watering)
-  potatm = 1-wastgen-potinfilt                                                        #  fraction of potable use that evaporates
-  npotinfilt = 0.5                                                                    #  fraction of non-potable use that infiltrates (e.g., golf-course watering)
+  wastgen = 1                                                                         #  fraction of potable use that goes to combined sewer system
+  potatm = 0                                                                          #  fraction of potable use that evaporates
+  potinfilt = 0                                                                       #  fraction of potable use that infiltrates (e.g., lawn watering)
+  npotinfilt = 1                                                                      #  fraction of non-potable use that infiltrates (e.g., golf-course watering)
   evslud = 0                                                                          #  fraction of wastewater that evaporates from sludge                        
   css_leak = 0.01                                                                     #  fraction of wastewater effluent derived from inflow and infiltration (I&I) 
   noflow = rep(0,nrow(data))
@@ -62,7 +65,7 @@ CityWaterBalance <- function(data){
   k10 = data$sw_pot                                                                   #  isw --> pur   ~  purification
   k11 = data$sw_npot                                                                  #  isw --> npot  ~  extraction  
   k12 = data$et*(1-imperv)                                                            #  sgw --> atm    ~  evapotranspiration from vegetated lands
-  k13 = noflow #data$baseflow                                                         #  sgw --> isw   ~ baseflow
+  k13 = data$baseflow                                                                 #  sgw --> isw   ~ baseflow
   k15 = noflow                                                                        #  sgw --> pur  ~ purification  
   k16 = data$gw_therm                                                                 #  sgw --> pow    ~ through-flow, cooling + power gen
   k17 = data$dgr                                                                      #  sgw --> dgw    ~ deep groundwater recharge
@@ -87,10 +90,10 @@ CityWaterBalance <- function(data){
   k14 = css_leak*k29                                                                  #  sgw --> css   ~  inflow & infiltration
   leakage = k14+k24                                                                   #  leakage of pipes
   infiltration = k4+k27+k32                                                           #  total infiltration
-  k8 = data$et-k1-k21-k25-k12-k28-k30                                                 #  direct evaporation from surface water
+  k8 = data$et-k1-k25-k12-k28-k30                                                     #  direct evaporation from surface water
   k33 = data$cso                                                                      #  css --> isw  ~ CSO events
-  k34 = data$inflow                                                                   #  isw --> outflow  ~ streamflow out
-  
+  k34 = data$outflow                                                                  #  isw --> outflow  ~ streamflow out
+  et_tot = data$et+k21
 
   # ------------ State variables -------------------------
   
@@ -115,9 +118,11 @@ CityWaterBalance <- function(data){
 
   # ------------- outputs ----------------------
   # Global balance
-  GB = zoo((data$prcp+data$inflow+data$ws_imports+data$etc_imports-data$et-data$outflow),order.by=index(data))
+  GB = zoo((data$prcp+data$inflow+data$ws_imports+data$etc_imports-et_tot-data$outflow),order.by=index(data))
+  names(GB)=c("Global balance")
   # Internal balance
   IB = zoo((isw+sgw+css+dgw+pot+npot+pow+pur+wtp),order.by=index(data))
+  names(IB)=c("Internal balance")
   
   # flows
   global_flows = zoo(cbind(data$prcp,data$et,data$inflow,data$outflow,data$ws_imports,data$etc_imports),order.by=index(data))
