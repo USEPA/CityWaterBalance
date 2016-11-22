@@ -5,18 +5,37 @@
 \title{Merge data sources into input for CityWaterBalance}
 \usage{
 mergeData(area, pet, inflow, outflow, sfpart, wu, ws_imports = NULL,
-  etc_imports = NULL, wweff = NULL)
+  etc_imports = NULL, wweff = NULL, dgr = NULL, cso = NULL)
 }
 \arguments{
-\item{streamflow}{xts object, e.g. output of combineStreamflow}
+\item{area}{numeric study area (sq km)}
 
-\item{wastewater}{xts object of wastewater flows}
+\item{pet}{xts of atmospheric data, from getAtmoFlows (mm/month)}
+
+\item{inflow}{xts  of daily steamflow into area (cfs)}
+
+\item{outflow}{xts of daily streamflow out of area (cfs)}
+
+\item{sfpart}{xts of partitioned streamflow out of area (cfs)}
+
+\item{wu}{xts of water use, from combineWaterUse (MGal/month)}
+
+\item{ws_imports}{xts of imports for water supply (MGal/month)}
+
+\item{etc_imports}{xts of other imports to surface water (MGal/month)}
+
+\item{wweff}{xts of wastwater effluent (cfs)}
+
+\item{dgr}{xts of deep groundwater recharge}
+
+\item{cso}{xts of cso events}
 }
 \value{
-xts of total flow for each timestep
+xts of all flows for each timestep
 }
 \description{
-This functions converts units and merges data needed by CityWaterBalance
+This functions converts units and merges data needed by CityWaterBalance.  All
+inputs must span same time period.
 }
 \examples{
 gages = c("05551540","05552500")

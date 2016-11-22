@@ -39,9 +39,10 @@ mergeData <- function(area,pet,inflow,outflow,sfpart,wu,ws_imports=NULL,etc_impo
   outflow = apply.monthly(outflow,FUN=sum)*cf
   names(outflow) = c("outflow")
   sfpart = apply.monthly(sfpart,FUN=colSums)*cf
-  if (is.null(wweff)){wtpe = noflow} else {wtpe = apply.monthly(wweff,FUN=sum)*cf}
+  if (is.null(wweff)){wtpe = noflow} 
+  else {wtpe = apply.monthly(wweff,FUN=sum)*cf
+        index(wtpe)<-update(index(wtpe),day=1)}
   names(wtpe) = c("wtpe")
-  
   
   #  MGal/month --> km3/month
   cf = 3.7854e-6
@@ -59,12 +60,15 @@ mergeData <- function(area,pet,inflow,outflow,sfpart,wu,ws_imports=NULL,etc_impo
   prcp = pet$prcp
   et = pet$et
   flowin = inflow
+  index(flowin)<-update(index(flowin),day=1)
   flowout = outflow
+  index(flowout)<-update(index(flowout),day=1)
   bflow = sfpart$baseflow
+  index(bflow)<-update(index(bflow),day=1)
   sflow = sfpart$stormflow
+  index(sflow)<-update(index(sflow),day=1)
   
   data = cbind(prcp,et,flowin,flowout,bflow,sflow,wu,ws_imports,etc_imports,wtpe,dgr,cso)
-  data = apply.monthly(data, FUN=colSums, na.rm=TRUE)
   return(data)
   
 }

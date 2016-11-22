@@ -1,8 +1,8 @@
 #' Tracks flows and storages of water internal to an urban system 
 #' 
-#' This function models the environmental and manmade flows gathered using other
+#' This function tracks the environmental and manmade flows gathered using other
 #' CityWaterBalance functions as they move through pathways and storages
-#' within the urban system 
+#' within the urban system.
 #' 
 #' @param data xts or zoo object with date index and columns of data for:
 #'        precipitation (prcp),
@@ -23,7 +23,9 @@
 #'        combined sewer overflow events (cso),
 #'        wastewater treatment plant effluent (wtpe)
 #'        
-#' @return list of dataframes for 1) flows and 2) storages
+#' @return list of dataframes for 1) global flows, 2) internal flows, 
+#'          3) storages, 4) global balance, 5) internal balance
+#' balance, flows and 2) storages
 #' @importFrom grDevices rainbow
 #' @import zoo
 #' @importFrom utils flush.console

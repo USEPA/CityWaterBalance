@@ -10,9 +10,10 @@ CityWaterBalance(data)
 \item{data}{xts or zoo object with date index and columns of data for:
 precipitation (prcp),
 evapotranspiration (et),
-streamflow in (flowin),
-streamflow out (flowout),
+streamflow in (inflow),
+streamflow out (outflow),
 baseflow (bflow),
+stormflow (sflow),
 water supply imports (ws_imports),
 other imports (etc_imports),
 surface water withdrawals for theromelectric power (sw_therm),

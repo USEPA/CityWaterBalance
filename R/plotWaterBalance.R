@@ -19,12 +19,17 @@ plotWaterBalance <- function(data,annual=NULL){
   d = as.zoo(data)
   
   cols <- c("blue", "red", "cyan3", "chartreuse3", "darkorchid1", "darkorange1")
-  if (ncol(data)==5){cols <- c("blue", "red", "cyan3", "chartreuse3", "darkorange1")}
-  if (ncol(data)==8){cols <- c("blue", "red", "green4", "cornflowerblue", "chartreuse3", "cyan3", "darkorchid2", "darkorange1")}
-  if (ncol(data)==9){cols <- c("cornflowerblue", "blue", "darkblue", "green2", "green4", "red", "grey80", "grey60", "grey40")}
-  
+  if(!is.null(ncol(d))){
+    if (ncol(data)==5){cols <- c("blue", "red", "cyan3", "chartreuse3", "darkorange1")}
+    if (ncol(data)==8){cols <- c("blue", "red", "green4", "cornflowerblue", "chartreuse3", "cyan3", "darkorchid2", "darkorange1")}
+    if (ncol(data)==9){cols <- c("cornflowerblue", "blue", "darkblue", "green2", "green4", "red", "grey80", "grey60", "grey40")}
+  }else cols = c("blue")
+
   plot(d, xlab = "Date", ylab = expression(paste("Volume (km"^"3",")")), col=cols, lwd = 1.5, screens=1)
-  legend(x = "bottomright", legend = names(d), lty = 1,lwd = 1.5, col = cols)
+  if(!is.null(ncol(d))){
+    legend(x = "bottomright", legend = names(d), lty = 1,lwd = 1.5, col = cols)
+  }
+  title(main="Water balance")
   abline(0,0)
   
 }
