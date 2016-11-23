@@ -1,3 +1,5 @@
+
+
 #' Tracks flows and storages of water internal to an urban system 
 #' 
 #' This function tracks the environmental and manmade flows gathered using other
@@ -43,7 +45,7 @@ CityWaterBalance <- function(data){
   runoff = 0.3                                                                        #  fraction of prcp that becomes runoff
   run_css = 0.5                                                                       #  fraction of runoff that drains to combined sewer system
   infilt = 1-(interc+runoff)                                                          #  fraction of prcp that infiltrates to shallow groundwater
-  if (min(infilt<0)) {print("Error: negative infiltration")
+  if (min(infilt,na.rm=TRUE)<0) {print("Error: negative infiltration")
     flush.console()}
   nonrev = 0.15                                                                       #  fraction of purified water lost to leaks (non-revenue water)
   powevap = 0.012                                                                     #  fraction of thermoe water that evaporates

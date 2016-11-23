@@ -25,11 +25,13 @@ plotWaterBalance <- function(data,annual=NULL){
     if (ncol(data)==9){cols <- c("cornflowerblue", "blue", "darkblue", "green2", "green4", "red", "grey80", "grey60", "grey40")}
   }else cols = c("blue")
 
+  par(mai = c(1.5,  .5, .5, 2))         # Right margin space for legend
+  
   plot(d, xlab = "Date", ylab = expression(paste("Volume (km"^"3",")")), col=cols, lwd = 1.5, screens=1)
-  if(!is.null(ncol(d))){
-    legend(x = "bottomright", legend = names(d), lty = 1,lwd = 1.5, col = cols)
-  }
   title(main="Water balance")
   abline(0,0)
+  if(!is.null(ncol(d))){
+    legend(x = "right", xpd=TRUE, inset=c(-0.2,0), legend = names(d), lty = 1,lwd = 1.5, col = cols)
+  }
   
 }
