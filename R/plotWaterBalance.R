@@ -18,11 +18,11 @@ plotWaterBalance <- function(data,annual=NULL){
   if (!is.null(annual)){data = apply.yearly(data, FUN=colSums)}
   d = as.zoo(data)
   
-  cols <- c("blue", "red", "cyan3", "chartreuse3", "darkorchid1", "darkorange1")
+  cols <- c("blue", "springgreen3", "darkorange1", "red")
+  
   if(!is.null(ncol(d))){
-    if (ncol(data)==5){cols <- c("blue", "red", "cyan3", "chartreuse3", "darkorange1")}
+    if (ncol(data)==6){cols <- c("blue", "red", "cyan3", "chartreuse3", "darkorchid1", "darkorange1")}
     if (ncol(data)==8){cols <- c("blue", "red", "green4", "cornflowerblue", "chartreuse3", "cyan3", "darkorchid2", "darkorange1")}
-    if (ncol(data)==9){cols <- c("cornflowerblue", "blue", "darkblue", "green2", "green4", "red", "grey80", "grey60", "grey40")}
   }else cols = c("blue")
 
   par(mai = c(1.5,  .5, .5, 2))         # Right margin space for legend
@@ -31,7 +31,8 @@ plotWaterBalance <- function(data,annual=NULL){
   title(main="Water balance")
   abline(0,0)
   if(!is.null(ncol(d))){
-    legend(x = "right", xpd=TRUE, inset=c(-0.2,0), legend = names(d), lty = 1,lwd = 1.5, col = cols)
+    #legend(x = "right", xpd=TRUE, inset=c(-0.2,0), legend = names(d), lty = 1,lwd = 1.5, col = cols)
+    legend(x = "bottomleft", legend = names(d), lty = 1,lwd = 1.5, col = cols)
   }
   
 }

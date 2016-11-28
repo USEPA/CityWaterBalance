@@ -42,10 +42,10 @@ CityWaterBalance <- function(data){
   # ------------ Coefficients -------------
   interc = data$et/50                                                                 #  fraction of prcp that evaporates immediately to atm (interception)
   imperv = 0.4                                                                        #  fraction of land surface that is impervious
-  runoff = 0.3                                                                        #  fraction of prcp that becomes runoff
+  runoff = 0.4                                                                        #  fraction of prcp that becomes runoff
   run_css = 0.5                                                                       #  fraction of runoff that drains to combined sewer system
   infilt = 1-(interc+runoff)                                                          #  fraction of prcp that infiltrates to shallow groundwater
-  if (min(infilt,na.rm=TRUE)<0) {print("Error: negative infiltration")
+  if (min(infilt,na.rm=TRUE)<0) {print("WARNING: negative infiltration")
     flush.console()}
   nonrev = 0.15                                                                       #  fraction of purified water lost to leaks (non-revenue water)
   powevap = 0.012                                                                     #  fraction of thermoe water that evaporates
@@ -61,6 +61,7 @@ CityWaterBalance <- function(data){
   k1  = data$prcp*interc                                                              #  prcp --> atm  ~  interception 
   k2 = data$prcp*runoff*(1-run_css)                                                   #  prcp --> isw  ~  stormflow
   k3  = data$prcp*runoff*run_css                                                      #  prcp --> css   ~  runoff to sewer system
+  tot_runoff = k2+k3
   k4  = data$prcp*infilt                                                              #  prcp --> sgw  ~  infiltration
   k5  = data$inflow                                                                   #  inflow --> isw ~  streamflow in
   k6 = data$etc_imports                                                               #  etc_imports --> isw 
@@ -132,12 +133,25 @@ CityWaterBalance <- function(data){
   global_flows = zoo(cbind(data$prcp,data$et,data$inflow,data$outflow,data$ws_imports,data$etc_imports),order.by=index(data))
   names(global_flows) = c("precip","et","inflow","outflow","water supply imports","other imports")
   
-  internal_flows = zoo(cbind(k1,infiltration,k3,k13,ws_potable,ws_nonpotable,cooling,leakage),order.by=index(data))
+  internal_flows = zoo(cbind(k1,infiltration,tot_runoff,k13,ws_potable,ws_nonpotable,cooling,leakage),order.by=index(data))
   names(internal_flows) = c("interception","infiltration","runoff","baseflow","potable use","nonpotable use","cooling water","leakage")
   
-  storages = zoo(cbind(isw,sgw,dgw,pot,npot,css,pur,pow,wtp),order.by=index(data))
-  names(storages) = c("inland surface water","shallow groundwater", "deep groundwater", "potable", "nonpotable", "css", "purification", "power", "wtp")
+  storages = zoo(cbind(isw,sgw,dgw,css),order.by=index(data))
+  names(storages) = c("inland surface water","shallow groundwater", "deep groundwater", "css")
   
-  return(list("global_flows"=global_flows,"internal_flows"=internal_flows,"storages"=storages,"global_balance"=GB,"internal_balance"=IB)) 
+  consumers = zoo(cbind(pot,npot),order.by=index(data))
+  names(consumers) = c("potable", "nonpotable")
+  
+  producers = zoo(cbind(pur,pow,wtp),order.by=index(data))
+  names(producers) = c("purification", "power", "wtp")
+  
+  print(paste("Potable storage sums to:",sum(m$storages$potable,na.rm=TRUE)))
+  print(paste("Non-potable storage sums to:",sum(m$storages$nonpotable,na.rm=TRUE)))
+  print(paste("Purification storage sums to:",sum(m$storages$purification,na.rm=TRUE)))
+  print(paste("Power storage sums to:",sum(m$storages$power,na.rm=TRUE)))
+  print(paste("Wastewater treatment storage sums to:",sum(m$storages$wtp,na.rm=TRUE)))
+  if (min((k3+k26-k33),na.rm=TRUE)<0){print("WARNING:  CSO volumes greater than runoff + sewage")}
+  
+  return(list("global_flows"=global_flows,"internal_flows"=internal_flows,"storages"=storages,"consumers"=consumers,"producers"=producers,"global_balance"=GB,"internal_balance"=IB)) 
 }
 

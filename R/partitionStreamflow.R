@@ -1,26 +1,26 @@
 #' Partitions streamflow into essential components
 #' 
-#' This functions partitions a streamflow timeseries into baseflow and stormflow,
-#' with an option to separate wastewater effluent if data are available.
-#' Stream- and waterwater flows should have same units and temporal resolution.
+#' This functions partitions a streamflow timeseries into baseflow and 
+#' stormflow, with options to separate inflows and wastewater effluent, if data 
+#' are available. All flows should have same units and temporal resolution.
 #' 
 #' @param streamflow xts object, e.g. output of combineStreamflow
+#' @param inflow xts object, 
 #' @param wastewater xts object of wastewater flows
 #' @return vector of total flow for each timestep
 #' @importFrom xts as.xts
 #' @importFrom EcoHydRology BaseflowSeparation
 #' @examples 
-#' gages = c("05551540","05552500")
-#' flow = getStreamflow("2000-01-01","2010-12-31",gages)
-#' flow = gapfillStreamflow(flow,list(c(gages[1],gages[2])))
-#' flow = combineStreamflow(flow,c(0.5,0.5))
 #' 
 #' @export
 
-partitionStreamflow <- function(streamflow,wastewater=NULL){
+partitionStreamflow <- function(streamflow,inflow=NULL,wastewater=NULL){
   
   s = streamflow
-  if (!is.null(wastewater)) {s = streamflow-wastewater}
+  if (!is.null(inflow)) {s = s-inflow}
+  if (!is.null(wastewater)) {s = s-wastewater}
+  if (min(s,na.rm=TRUE)<0){print("WARNING: sum of inflow and wastewater greater than outflow")}
+  s = na.approx(s)
   sep = BaseflowSeparation(as.numeric(s),0.925,3)
   sflow = as.xts(sep,order.by=index(s))
   names(sflow) = c("baseflow","stormflow")
