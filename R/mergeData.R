@@ -24,31 +24,30 @@
 #' 
 #' @export
 
-mergeData <- function(area,pet,inflow,outflow,sfpart,wu,ws_imports=NULL,etc_imports=NULL,wweff=NULL,dgr=NULL,cso=NULL){
+mergeData <- function(area,pet,inflow,outflow,sfpart=NULL,wu,ws_imports=NULL,etc_imports=NULL,wweff=NULL,dgr=NULL,cso=NULL){
   
   noflow = as.xts(rep(0,nrow(pet)),order.by=index(pet))
   
-  # mm/month --> km3/month
-  cf = 1e-6*area
-  pet = pet*cf
+  # divide by "a" for km3/month --> mm/month
+  a = 1e-6*area
   
-  #  daily cfs data --> km3/month
+  #  daily cfs data --> mm/month
   cf = (60*60*24)/3.531e10  
-  inflow = apply.monthly(inflow,FUN=sum)*cf
+  inflow = apply.monthly(inflow,FUN=sum)*cf/a
   names(inflow) = c("inflow")
-  outflow = apply.monthly(outflow,FUN=sum)*cf
+  outflow = apply.monthly(outflow,FUN=sum)*cf/a
   names(outflow) = c("outflow")
-  sfpart = apply.monthly(sfpart,FUN=colSums)*cf
+  sfpart = apply.monthly(sfpart,FUN=colSums)*cf/a
   if (is.null(wweff)){wtpe = noflow} 
-  else {wtpe = apply.monthly(wweff,FUN=sum)*cf
+  else {wtpe = apply.monthly(wweff,FUN=sum)*cf/a
         index(wtpe)<-update(index(wtpe),day=1)}
   names(wtpe) = c("wtpe")
   
-  #  MGal/month --> km3/month
+  #  MGal/month --> mm/month
   cf = 3.7854e-6
   wu = wu*cf
-  if (is.null(ws_imports)){ws_imports = noflow} else {ws_imports = ws_imports*cf}
-  if (is.null(etc_imports)){etc_imports = noflow} else {etc_imports = etc_imports*cf}
+  if (is.null(ws_imports)){ws_imports = noflow} else {ws_imports = ws_imports*cf/a}
+  if (is.null(etc_imports)){etc_imports = noflow} else {etc_imports = etc_imports*cf/a}
   
   # placeholder 
   if (is.null(dgr)){dgr = noflow}

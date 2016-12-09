@@ -27,11 +27,13 @@ combined sewer overflow events (cso),
 wastewater treatment plant effluent (wtpe)}
 }
 \value{
-list of dataframes for 1) flows and 2) storages
+list of dataframes for 1) global flows, 2) internal flows, 
+         3) storages, 4) global balance, 5) internal balance
+balance, flows and 2) storages
 }
 \description{
-This function models the environmental and manmade flows gathered using other
+This function tracks the environmental and manmade flows gathered using other
 CityWaterBalance functions as they move through pathways and storages
-within the urban system
+within the urban system.
 }
 

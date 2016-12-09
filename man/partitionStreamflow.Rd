@@ -4,10 +4,12 @@
 \alias{partitionStreamflow}
 \title{Partitions streamflow into essential components}
 \usage{
-partitionStreamflow(streamflow, wastewater = NULL)
+partitionStreamflow(streamflow, inflow = NULL, wastewater = NULL)
 }
 \arguments{
 \item{streamflow}{xts object, e.g. output of combineStreamflow}
+
+\item{inflow}{xts object,}
 
 \item{wastewater}{xts object of wastewater flows}
 }
@@ -15,15 +17,11 @@ partitionStreamflow(streamflow, wastewater = NULL)
 vector of total flow for each timestep
 }
 \description{
-This functions partitions a streamflow timeseries into baseflow and stormflow,
-with an option to separate wastewater effluent if data are available.
-Stream- and waterwater flows should have same units and temporal resolution.
+This functions partitions a streamflow timeseries into baseflow and 
+stormflow, with options to separate inflows and wastewater effluent, if data 
+are available. All flows should have same units and temporal resolution.
 }
 \examples{
-gages = c("05551540","05552500")
-flow = getStreamflow("2000-01-01","2010-12-31",gages)
-flow = gapfillStreamflow(flow,list(c(gages[1],gages[2])))
-flow = combineStreamflow(flow,c(0.5,0.5))
 
 }
 
