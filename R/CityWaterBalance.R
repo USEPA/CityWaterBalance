@@ -59,7 +59,7 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   k1 = (data$et)*(fix$interc)                                                         #  prcp --> atm  ~  interception
   k2 = (data$prcp)*(var$frac_runoff)                                                  #  prcp --> isw  ~  runoff
   k3 = k2*(fix$run_css)                                                               #  prcp --> css   ~  runoff to sewer system
-  k4 =  data$prcp-k1-k2-k3                                                            #  prcp --> gw ~ infiltration
+  k4 =  data$prcp-k1-k2                                                               #  prcp --> gw ~ infiltration
   if (min(k4,na.rm=TRUE)<0) {print("WARNING: negative infiltration")
     flush.console()}
   tot_runoff = k2 #+k3
@@ -96,6 +96,8 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   leakage = k14+k24                                                                   #  leakage of pipes
   infiltration = k4+k27+k32                                                           #  total infiltration
   k8 = data$et-k1-k25-k12-k28-k30                                                     #  direct evaporation from surface water
+  if (min(k8,na.rm=TRUE)<0) {print("WARNING: negative surface water evaporation")
+    flush.console()}
   k33 = data$cso                                                                      #  css --> isw  ~ CSO events
   k34 = data$outflow                                                                  #  isw --> outflow  ~ streamflow out
   et_tot = data$et+k21
@@ -153,6 +155,9 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   print(paste("Purification storage sums to:",sum(storages$purification,na.rm=TRUE)))
   print(paste("Power storage sums to:",sum(storages$power,na.rm=TRUE)))
   print(paste("Wastewater treatment storage sums to:",sum(storages$wtp,na.rm=TRUE)))
+  print(paste("Mean infiltration of precip:",round(mean(k4,na.rm=TRUE),2)))
+  print(paste("Mean evapotranspiration:",round(mean(k12,na.rm=TRUE),2)))
+  print(paste("Mean baseflow:",round(mean(k13,na.rm=TRUE),2)))
   if (min((k3+k26-k33),na.rm=TRUE)<0){print("WARNING:  CSO volumes greater than runoff + sewage")}
   
   return(list("global_flows"=global_flows,"int_nat_flows"=int_nat_flows,"int_man_flows"=int_man_flows,"storages"=storages,"consumers"=consumers,"producers"=producers,"global_balance"=GB,"internal_balance"=IB)) 
