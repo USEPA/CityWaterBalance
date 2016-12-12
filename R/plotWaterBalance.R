@@ -21,6 +21,7 @@ plotWaterBalance <- function(data,annual=NULL){
   cols <- c("blue", "springgreen3", "darkorange1", "red")
   
   if(!is.null(ncol(d))){
+    if (ncol(data)==5){cols <- c("blue", "springgreen3", "darkorange1", "red", "darkorchid1")}
     if (ncol(data)==6){cols <- c("blue", "red", "cyan3", "chartreuse3", "darkorchid1", "darkorange1")}
     if (ncol(data)==8){cols <- c("blue", "red", "green4", "cornflowerblue", "chartreuse3", "cyan3", "darkorchid2", "darkorange1")}
   }else cols = c("blue")

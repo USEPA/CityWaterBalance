@@ -37,7 +37,8 @@ mergeData <- function(area,pet,inflow,outflow,sfpart=NULL,wu,ws_imports=NULL,etc
   names(inflow) = c("inflow")
   outflow = apply.monthly(outflow,FUN=sum)*cf/a
   names(outflow) = c("outflow")
-  sfpart = apply.monthly(sfpart,FUN=colSums)*cf/a
+  if (is.null(sfpart)){sfpart = noflow} 
+  else {sfpart = apply.monthly(sfpart,FUN=colSums)*cf/a}
   if (is.null(wweff)){wtpe = noflow} 
   else {wtpe = apply.monthly(wweff,FUN=sum)*cf/a
         index(wtpe)<-update(index(wtpe),day=1)}

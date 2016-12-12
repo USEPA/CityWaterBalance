@@ -135,8 +135,8 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   global_flows = zoo(cbind(data$prcp,data$et,data$inflow,data$outflow,data$ws_imports,data$etc_imports),order.by=index(data))
   names(global_flows) = c("precip","et","inflow","outflow","water supply imports","other imports")
   
-  int_nat_flows = zoo(cbind(k1,infiltration,tot_runoff,k13),order.by=index(data))
-  names(int_nat_flows) = c("interception","infiltration","runoff","baseflow")
+  int_nat_flows = zoo(cbind(k1,k8,infiltration,tot_runoff,k13),order.by=index(data))
+  names(int_nat_flows) = c("interception","surface water evap", "infiltration","runoff","baseflow")
   
   int_man_flows = zoo(cbind(ws_potable,ws_nonpotable,cooling,leakage),order.by=index(data))
   names(int_man_flows) = c("potable use","nonpotable use","cooling","leakage")
@@ -158,6 +158,10 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   print(paste("Mean infiltration of precip:",round(mean(k4,na.rm=TRUE),2)))
   print(paste("Mean evapotranspiration:",round(mean(k12,na.rm=TRUE),2)))
   print(paste("Mean baseflow:",round(mean(k13,na.rm=TRUE),2)))
+  print(paste("Mean shallow groundwater balance:",round(mean(sgw,na.rm=TRUE),2)))
+  print(paste("Mean inland surface water balance:",round(mean(isw,na.rm=TRUE),2)))
+  print(paste("Mean css balance:",round(mean(css,na.rm=TRUE),2)))
+  print(paste("Mean global balance:",round(mean(GB,na.rm=TRUE),2)))
   if (min((k3+k26-k33),na.rm=TRUE)<0){print("WARNING:  CSO volumes greater than runoff + sewage")}
   
   return(list("global_flows"=global_flows,"int_nat_flows"=int_nat_flows,"int_man_flows"=int_man_flows,"storages"=storages,"consumers"=consumers,"producers"=producers,"global_balance"=GB,"internal_balance"=IB)) 

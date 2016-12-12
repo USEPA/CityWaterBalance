@@ -8,6 +8,7 @@
 #' @param mult list of multipliers, one for each gage
 #' @return vector of total flow for each timestep
 #' @importFrom xts as.xts
+#' @importFrom zoo na.approx
 #' @examples 
 #' gages = c("05551540","05552500")
 #' flow = getStreamflow("2000-01-01","2010-12-31",gages)
@@ -15,7 +16,7 @@
 #' flow = combineStreamflow(flow,c(0.5,0.5))
 #' @export
 
-combineStreamflow <- function(flowlist, mult){
+combineStreamflow <- function(flowlist, mult, approx=FALSE){
   
   # sums flow over a set of inflow or outflow gages using list of multipliers
   
@@ -27,6 +28,7 @@ combineStreamflow <- function(flowlist, mult){
   }  
   
   flows = as.xts(rowSums(flows),order.by=index(flows))
+  if (approx){flows=na.approx(flows)}
   
   return(flows)
   
