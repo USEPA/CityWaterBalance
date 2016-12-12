@@ -57,9 +57,9 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   
   # ----------- Flow terms ---------------
   k1 = (data$et)*(fix$interc)                                                         #  prcp --> atm  ~  interception
-  k2 = (data$prcp)*(var$frac_runoff)                                                  #  prcp --> isw  ~  runoff
-  k3 = k2*(fix$run_css)                                                               #  prcp --> css   ~  runoff to sewer system
-  k4 =  data$prcp-k1-k2                                                               #  prcp --> gw ~ infiltration
+  k2 = (data$prcp)*(var$frac_runoff)*(1-fix$run_css)                                  #  prcp --> isw  ~  runoff
+  k3 = (data$prcp)*(var$frac_runoff)*(fix$run_css)                                    #  prcp --> css   ~  runoff to sewer system
+  k4 =  data$prcp-k1-k2-k3                                                            #  prcp --> gw ~ infiltration
   if (min(k4,na.rm=TRUE)<0) {print("WARNING: negative infiltration")
     flush.console()}
   tot_runoff = k2 #+k3

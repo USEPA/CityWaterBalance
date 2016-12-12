@@ -26,7 +26,7 @@ plotWaterBalance <- function(data,annual=NULL){
   }else cols = c("blue")
 
   plot(d, xlab = "Date", ylab = expression(paste("Change in storage (mm)")), col=cols, lwd = 1.5, screens=1)
-  title(main="Water balance")
+  #title(main="Water balance")
   abline(0,0)
   if(!is.null(ncol(d))){
     legend(x = "topright", legend = names(d), lty = 1,lwd = 1.5, col = cols)
