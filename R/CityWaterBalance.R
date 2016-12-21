@@ -66,13 +66,14 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   k5  = data$inflow                                                                   #  inflow --> isw ~  streamflow in
   k6 = data$etc_imports                                                               #  etc_imports --> isw 
   k7  = data$ws_imports                                                               #  LMich --> pur ~  purification
+  k8 = data$et*(fix$openwat)                                                          #  direct evaporation from surface water
   k10 = data$sw_pot                                                                   #  isw --> pur   ~  purification
   k15 = noflow                                                                        #  sgw --> pur  ~ purification
   k19 = data$gw_pot                                                                   #  dgw --> pur  ~ purification
   ws_potable = k7+k10+k15+k19                                                         #  total water supply for potable uses 
   k9 = data$sw_therm                                                                  #  isw --> pow   ~  through-flow, cooling + power gen
   k11 = data$sw_npot                                                                  #  isw --> npot  ~  extraction  
-  k12 = data$et*(1-fix$imperv)                                                        #  sgw --> atm    ~  evapotranspiration from vegetated lands
+  k12 = data$et*(1-fix$openwat)                                                       #  sgw --> atm    ~  evapotranspiration from vegetated lands
   k13 = (data$prcp)*(var$frac_baseflow)                                               #  sgw --> isw   ~ baseflow
   k16 = data$gw_therm                                                                 #  sgw --> pow    ~ through-flow, cooling + power gen
   k17 = data$dgr                                                                      #  sgw --> dgw    ~ deep groundwater recharge
@@ -94,13 +95,13 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   k30 = k29-k31                                                                       #  wtp --> atm   ~  evaporation of sludge 
   k14 = fix$css_leak*k29                                                              #  sgw --> css   ~  inflow & infiltration
   leakage = k14+k24                                                                   #  leakage of pipes
-  infiltration = k4+k27+k32                                                           #  total infiltration
-  k8 = data$et-k1-k25-k12-k28-k30                                                     #  direct evaporation from surface water
-  if (min(k8,na.rm=TRUE)<0) {print("WARNING: negative surface water evaporation")
+  infiltration = k4+k27+k32
+  recharge = k4+k27+k32-k12                                                           #  total infiltration
+  if (min(recharge,na.rm=TRUE)<0) {print("WARNING: negative recharge")
     flush.console()}
   k33 = data$cso                                                                      #  css --> isw  ~ CSO events
   k34 = data$outflow                                                                  #  isw --> outflow  ~ streamflow out
-  et_tot = data$et+k21
+  et_tot = data$et+k1+k21+k25+k28+k30
 
   # ------------ State variables -------------------------
   
@@ -135,8 +136,8 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   global_flows = zoo(cbind(data$prcp,data$et,data$inflow,data$outflow,data$ws_imports,data$etc_imports),order.by=index(data))
   names(global_flows) = c("precip","et","inflow","outflow","water supply imports","other imports")
   
-  int_nat_flows = zoo(cbind(k1,k8,infiltration,tot_runoff,k13),order.by=index(data))
-  names(int_nat_flows) = c("interception","surface water evap", "infiltration","runoff","baseflow")
+  int_nat_flows = zoo(cbind(k1,k8,infiltration,recharge, tot_runoff,k13),order.by=index(data))
+  names(int_nat_flows) = c("interception","surface water evap", "infiltration", "recharge","runoff","baseflow")
   
   int_man_flows = zoo(cbind(ws_potable,ws_nonpotable,cooling,leakage),order.by=index(data))
   names(int_man_flows) = c("potable use","nonpotable use","cooling","leakage")
@@ -158,6 +159,7 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   print(paste("Mean infiltration of precip:",round(mean(k4,na.rm=TRUE),2)))
   print(paste("Mean evapotranspiration:",round(mean(k12,na.rm=TRUE),2)))
   print(paste("Mean baseflow:",round(mean(k13,na.rm=TRUE),2)))
+  print(paste("Mean recharge:",round(mean(recharge,na.rm=TRUE),2)))
   print(paste("Mean shallow groundwater balance:",round(mean(sgw,na.rm=TRUE),2)))
   print(paste("Mean inland surface water balance:",round(mean(isw,na.rm=TRUE),2)))
   print(paste("Mean css balance:",round(mean(css,na.rm=TRUE),2)))

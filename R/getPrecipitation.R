@@ -24,7 +24,7 @@ getPrecipitation <-function(start, end, geometry, attribute){
   stencil@geom = geometry
   stencil@attribute = attribute
   
-  fabric = webdata('prism', times = trange, variables = c("ppt"))
+  fabric = webdata('prism', times = trange, variables = c("ppt","tmx","tmn"))
   job = geoknife(stencil, fabric, wait=TRUE)
   prcp = result(job, with.units=TRUE)                      # monthly prcp values from PRISM   
   
