@@ -1,10 +1,11 @@
 #' Merge data sources into input for CityWaterBalance
 #' 
-#' This functions converts units and merges data needed by CityWaterBalance.  All
-#' inputs must span same time period.
+#' This functions converts units and merges data needed by CityWaterBalance.  
+#' All inputs must span same time period. Outputs are in mm/month over study 
+#' area.
 #' 
 #' @param area numeric study area (sq km)
-#' @param pet xts of atmospheric data, from getAtmoFlows (mm/month)
+#' @param atm xts of atmospheric data, from getAtmoFlows (mm/month)
 #' @param inflow xts  of daily steamflow into area (cfs)
 #' @param outflow xts of daily streamflow out of area (cfs)
 #' @param sfpart xts of partitioned streamflow out of area (cfs)
@@ -14,19 +15,16 @@
 #' @param etc_imports xts of other imports to surface water (MGal/month)
 #' @param dgr xts of deep groundwater recharge
 #' @param cso xts of cso events
-#' @return xts of all flows for each timestep 
+#' @return xts of all fluxes for each timestep (mm/month)
 #' @importFrom xts as.xts apply.monthly
 #' @examples 
-#' gages = c("05551540","05552500")
-#' flow = getStreamflow("2000-01-01","2010-12-31",gages)
-#' flow = gapfillStreamflow(flow,list(c(gages[1],gages[2])))
-#' flow = combineStreamflow(flow,c(0.5,0.5))
 #' 
 #' @export
 
-mergeData <- function(area,pet,inflow,outflow,sfpart=NULL,wu,ws_imports=NULL,etc_imports=NULL,wweff=NULL,dgr=NULL,cso=NULL){
+mergeData <- function(area,atm,inflow,outflow,sfpart=NULL,wu,ws_imports=NULL,
+                      etc_imports=NULL,wweff=NULL,dgr=NULL,cso=NULL){
   
-  noflow = as.xts(rep(0,nrow(pet)),order.by=index(pet))
+  noflow = as.xts(rep(0,nrow(atm)),order.by=index(atm))
   
   # divide by "a" for km3/month --> mm/month
   a = 1e-6*area
@@ -37,19 +35,34 @@ mergeData <- function(area,pet,inflow,outflow,sfpart=NULL,wu,ws_imports=NULL,etc
   names(inflow) = c("inflow")
   outflow = apply.monthly(outflow,FUN=sum)*cf/a
   names(outflow) = c("outflow")
-  if (is.null(sfpart)){sfpart = cbind(noflow,noflow)
-                      names(sfpart)=c("baseflow","stormflow")} 
-  else {sfpart = apply.monthly(sfpart,FUN=colSums)*cf/a}
-  if (is.null(wweff)){wtpe = noflow} 
-  else {wtpe = apply.monthly(wweff,FUN=sum)*cf/a
-        index(wtpe)<-update(index(wtpe),day=1)}
+  
+  if (is.null(sfpart)){
+    sfpart = cbind(noflow,noflow)
+    names(sfpart)=c("baseflow","stormflow")
+  } else {
+      sfpart = apply.monthly(sfpart,FUN=colSums)*cf/a
+  }
+  if (is.null(wweff)){
+    wtpe = noflow
+  } else {
+      wtpe = apply.monthly(wweff,FUN=sum)*cf/a
+      index(wtpe)<-update(index(wtpe),day=1)
+  }
   names(wtpe) = c("wtpe")
   
   #  MGal/month --> mm/month
   cf = 3.7854e-6
   wu = wu*cf
-  if (is.null(ws_imports)){ws_imports = noflow} else {ws_imports = ws_imports*cf/a}
-  if (is.null(etc_imports)){etc_imports = noflow} else {etc_imports = etc_imports*cf/a}
+  if (is.null(ws_imports)){
+    ws_imports = noflow
+  } else {
+      ws_imports = ws_imports*cf/a
+  }
+  if (is.null(etc_imports)){
+    etc_imports = noflow
+  } else {
+      etc_imports = etc_imports*cf/a
+  }
   
   # placeholder 
   if (is.null(dgr)){dgr = noflow}
@@ -58,8 +71,9 @@ mergeData <- function(area,pet,inflow,outflow,sfpart=NULL,wu,ws_imports=NULL,etc
   names(cso) = c("cso")
   
   # split & rename variables
-  prcp = pet$prcp
-  et = pet$et
+  prcp = atm$prcp
+  et = atm$et
+  pet = atm$pet
   flowin = inflow
   index(flowin)<-update(index(flowin),day=1)
   flowout = outflow
@@ -69,7 +83,8 @@ mergeData <- function(area,pet,inflow,outflow,sfpart=NULL,wu,ws_imports=NULL,etc
   sflow = sfpart$stormflow
   index(sflow)<-update(index(sflow),day=1)
   
-  data = cbind(prcp,et,flowin,flowout,bflow,sflow,wu,ws_imports,etc_imports,wtpe,dgr,cso)
+  data = cbind(prcp,et,pet,flowin,flowout,bflow,sflow,wu,ws_imports,etc_imports,
+               wtpe,dgr,cso)
   return(data)
   
 }

@@ -23,8 +23,8 @@
 #'        combined sewer overflow events (cso),
 #'        wastewater treatment plant effluent (wtpe)
 #' @param fixed_pms list of parameter values for:
+#'        fraction of area that is open water (openwat),
 #'        fraction of et from interception (interc)
-#'        fraction of land that is impervious (imperv),
 #'        fraction of runoff diverted to css (run_css),
 #'        fraction of potable water supply lost to leaks (nonrev),
 #'        fraction of cooling water that evaporates (powevap),
@@ -56,7 +56,7 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   var = var_pms
   
   # ----------- Flow terms ---------------
-  k1 = (data$et)*(fix$interc)                                                         #  prcp --> atm  ~  interception
+  k1 = (data$pet)*(fix$interc)                                                        #  prcp --> atm  ~  interception
   k2 = (data$prcp)*(var$frac_runoff)*(1-fix$run_css)                                  #  prcp --> isw  ~  runoff
   k3 = (data$prcp)*(var$frac_runoff)*(fix$run_css)                                    #  prcp --> css   ~  runoff to sewer system
   k4 =  data$prcp-k1-k2-k3                                                            #  prcp --> gw ~ infiltration
@@ -66,14 +66,14 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   k5  = data$inflow                                                                   #  inflow --> isw ~  streamflow in
   k6 = data$etc_imports                                                               #  etc_imports --> isw 
   k7  = data$ws_imports                                                               #  LMich --> pur ~  purification
-  k8 = data$et*(fix$openwat)                                                          #  direct evaporation from surface water
+  k8 = data$pet*(fix$openwat)                                                         #  direct evaporation from surface water
   k10 = data$sw_pot                                                                   #  isw --> pur   ~  purification
   k15 = noflow                                                                        #  sgw --> pur  ~ purification
   k19 = data$gw_pot                                                                   #  dgw --> pur  ~ purification
   ws_potable = k7+k10+k15+k19                                                         #  total water supply for potable uses 
   k9 = data$sw_therm                                                                  #  isw --> pow   ~  through-flow, cooling + power gen
   k11 = data$sw_npot                                                                  #  isw --> npot  ~  extraction  
-  k12 = data$et*(1-fix$openwat)                                                       #  sgw --> atm    ~  evapotranspiration from vegetated lands
+  k12 = data$et                                                                       #  sgw --> atm    ~  evapotranspiration from vegetated lands
   k13 = (data$prcp)*(var$frac_baseflow)                                               #  sgw --> isw   ~ baseflow
   k16 = data$gw_therm                                                                 #  sgw --> pow    ~ through-flow, cooling + power gen
   k17 = data$dgr                                                                      #  sgw --> dgw    ~ deep groundwater recharge
@@ -97,11 +97,9 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   leakage = k14+k24                                                                   #  leakage of pipes
   infiltration = k4+k27+k32
   recharge = k4+k27+k32-k12                                                           #  total infiltration
-  if (min(recharge,na.rm=TRUE)<0) {print("WARNING: negative recharge")
-    flush.console()}
   k33 = data$cso                                                                      #  css --> isw  ~ CSO events
   k34 = data$outflow                                                                  #  isw --> outflow  ~ streamflow out
-  et_tot = data$et+k1+k21+k25+k28+k30
+  et_tot = k1+k8+k12+k21+k25+k28+k30
 
   # ------------ State variables -------------------------
   
@@ -151,20 +149,23 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   producers = zoo(cbind(pur,pow,wtp),order.by=index(data))
   names(producers) = c("purification", "power", "wtp")
   
+  nyears = nrow(data)/12
+  
+  if (min((k3+k26-k33),na.rm=TRUE)<0){print("WARNING:  CSO volumes greater than runoff + sewage")}
   print(paste("Potable storage sums to:",sum(storages$potable,na.rm=TRUE)))
   print(paste("Non-potable storage sums to:",sum(storages$nonpotable,na.rm=TRUE)))
   print(paste("Purification storage sums to:",sum(storages$purification,na.rm=TRUE)))
   print(paste("Power storage sums to:",sum(storages$power,na.rm=TRUE)))
   print(paste("Wastewater treatment storage sums to:",sum(storages$wtp,na.rm=TRUE)))
-  print(paste("Mean infiltration of precip:",round(mean(k4,na.rm=TRUE),2)))
-  print(paste("Mean evapotranspiration:",round(mean(k12,na.rm=TRUE),2)))
-  print(paste("Mean baseflow:",round(mean(k13,na.rm=TRUE),2)))
-  print(paste("Mean recharge:",round(mean(recharge,na.rm=TRUE),2)))
-  print(paste("Mean shallow groundwater balance:",round(mean(sgw,na.rm=TRUE),2)))
-  print(paste("Mean inland surface water balance:",round(mean(isw,na.rm=TRUE),2)))
-  print(paste("Mean css balance:",round(mean(css,na.rm=TRUE),2)))
-  print(paste("Mean global balance:",round(mean(GB,na.rm=TRUE),2)))
-  if (min((k3+k26-k33),na.rm=TRUE)<0){print("WARNING:  CSO volumes greater than runoff + sewage")}
+  print(paste("Mean annual infiltration of precip:",round(sum(k4,na.rm=TRUE)/nyears,2)))
+  print(paste("Mean annual evapotranspiration:",round(sum(k12,na.rm=TRUE)/nyears,2)))
+  print(paste("Mean annual baseflow:",round(sum(k13,na.rm=TRUE)/nyears,2)))
+  print(paste("Mean annual recharge:",round(sum(recharge,na.rm=TRUE)/nyears,2)))
+  print(paste("Mean annual shallow groundwater balance:",round(sum(sgw,na.rm=TRUE)/nyears,2)))
+  print(paste("Mean annual inland surface water balance:",round(sum(isw,na.rm=TRUE)/nyears,2)))
+  print(paste("Mean annual css balance:",round(sum(css,na.rm=TRUE)/nyears,2)))
+  print(paste("Mean annual internal balance:",round(sum(IB,na.rm=TRUE)/nyears,2)))
+  print(paste("Mean annual global balance:",round(sum(GB,na.rm=TRUE)/nyears,2)))
   
   return(list("global_flows"=global_flows,"int_nat_flows"=int_nat_flows,"int_man_flows"=int_man_flows,"storages"=storages,"consumers"=consumers,"producers"=producers,"global_balance"=GB,"internal_balance"=IB)) 
 }
