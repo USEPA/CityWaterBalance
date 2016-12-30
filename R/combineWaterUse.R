@@ -7,7 +7,7 @@
 #' @param start start date in format "YYYY-MM-DD"
 #' @param end end date in format "YYYY-MM-DD"
 #' @param wu list of dataframes output by getWaterUse
-#' @return wu_flows list of xts objects including:
+#' @return wu_flows list of xts objects including (units: MGal/month):
 #'        surface water withdrawals for theromelectric power (sw_therm),
 #'        surface water withdrawals for potable use (sw_pot),
 #'        surface water withdrawals for nonpotable use (sw_npot),

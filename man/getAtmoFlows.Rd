@@ -4,7 +4,7 @@
 \alias{getAtmoFlows}
 \title{Gather and consolidate all data time series for water balance}
 \usage{
-getAtmoFlows(start, end, geometry, attribute)
+getAtmoFlows(start, end, geometry, attribute, latitude)
 }
 \arguments{
 \item{start}{start date in format "YYYY-MM-DD"}
@@ -14,6 +14,8 @@ getAtmoFlows(start, end, geometry, attribute)
 \item{geometry}{name of geometry as displayed in Geo Data Portal}
 
 \item{attribute}{name of geometry attribute as displayed in GDP}
+
+\item{latitude}{(degrees)}
 }
 \value{
 data as xts object

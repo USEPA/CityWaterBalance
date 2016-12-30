@@ -9,7 +9,7 @@
 #' @param inflow xts  of daily steamflow into area (cfs)
 #' @param outflow xts of daily streamflow out of area (cfs)
 #' @param sfpart xts of partitioned streamflow out of area (cfs)
-#' @param wweff xts of wastwater effluent (cfs)
+#' @param wweff xts of wastewater effluent (MGD)
 #' @param wu xts of water use, from combineWaterUse (MGal/month)
 #' @param ws_imports xts of imports for water supply (MGal/month)
 #' @param etc_imports xts of other imports to surface water (MGal/month)
@@ -30,7 +30,7 @@ mergeData <- function(area,atm,inflow,outflow,sfpart=NULL,wu,ws_imports=NULL,
   a = 1e-6*area
   
   #  daily cfs data --> mm/month
-  cf = (60*60*24)/3.531e10  
+  cf = (60*60*24)/3.531e10       # (cfs --> cu km / day)
   inflow = apply.monthly(inflow,FUN=sum)*cf/a
   names(inflow) = c("inflow")
   outflow = apply.monthly(outflow,FUN=sum)*cf/a
@@ -40,28 +40,31 @@ mergeData <- function(area,atm,inflow,outflow,sfpart=NULL,wu,ws_imports=NULL,
     sfpart = cbind(noflow,noflow)
     names(sfpart)=c("baseflow","stormflow")
   } else {
-      sfpart = apply.monthly(sfpart,FUN=colSums)*cf/a
+    sfpart = apply.monthly(sfpart,FUN=colSums)*cf/a
   }
+  
+  #  MGal/month --> mm/month
+  cf = 3.7854e-6  # (MGal --> km3)
+  
+  wu = wu*cf/a
+  
   if (is.null(wweff)){
     wtpe = noflow
   } else {
-      wtpe = apply.monthly(wweff,FUN=sum)*cf/a
-      index(wtpe)<-update(index(wtpe),day=1)
+    wtpe = apply.monthly(wweff,FUN=sum)*cf/a
+    index(wtpe)<-update(index(wtpe),day=1)
   }
   names(wtpe) = c("wtpe")
   
-  #  MGal/month --> mm/month
-  cf = 3.7854e-6
-  wu = wu*cf
   if (is.null(ws_imports)){
     ws_imports = noflow
   } else {
-      ws_imports = ws_imports*cf/a
+    ws_imports = ws_imports*cf/a
   }
   if (is.null(etc_imports)){
     etc_imports = noflow
   } else {
-      etc_imports = etc_imports*cf/a
+    etc_imports = etc_imports*cf/a
   }
   
   # placeholder 

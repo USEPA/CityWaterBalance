@@ -13,7 +13,7 @@
 #'        streamflow out (outflow),
 #'        water supply imports (ws_imports),
 #'        other imports (etc_imports),
-#'        surface water withdrawals for theromelectric power (sw_therm),
+#'        surface water withdrawals for thermoelectric power (sw_therm),
 #'        surface water withdrawals for potable use (sw_pot),
 #'        surface water withdrawals for nonpotable use (sw_npot),
 #'        groundwater withdrawls for thermoelectric power (gw_therm),
@@ -67,60 +67,61 @@ CityWaterBalance <- function(data,fixed_pms,var_pms){
   k6 = data$etc_imports                                                               #  etc_imports --> isw 
   k7  = data$ws_imports                                                               #  LMich --> pur ~  purification
   k8 = data$pet*(fix$openwat)                                                         #  direct evaporation from surface water
-  k10 = data$sw_pot                                                                   #  isw --> pur   ~  purification
-  k15 = noflow                                                                        #  sgw --> pur  ~ purification
-  k19 = data$gw_pot                                                                   #  dgw --> pur  ~ purification
-  ws_potable = k7+k10+k15+k19                                                         #  total water supply for potable uses 
   k9 = data$sw_therm                                                                  #  isw --> pow   ~  through-flow, cooling + power gen
+  k10 = data$sw_pot                                                                   #  isw --> pur   ~  purification
   k11 = data$sw_npot                                                                  #  isw --> npot  ~  extraction  
-  k12 = data$et                                                                       #  sgw --> atm    ~  evapotranspiration from vegetated lands
   k13 = (data$prcp)*(var$frac_baseflow)                                               #  sgw --> isw   ~ baseflow
-  k16 = data$gw_therm                                                                 #  sgw --> pow    ~ through-flow, cooling + power gen
-  k17 = data$dgr                                                                      #  sgw --> dgw    ~ deep groundwater recharge
-  k18 = data$gw_npot                                                                  #  sgw --> npot  ~ extraction
-  k20 = noflow                                                                        #  dgw --> npot  ~ extraction
-  cooling = k9+k16                                                                    #  total cooling water for thermoelectric power generation
-  k21 = cooling*(fix$powevap)                                                         #  pow --> atm   ~  evaporation (consumptive thermoe use) 
-  k22 = cooling*(1-fix$powevap)                                                       #  pow --> isw   ~  power plant discharge
-  k23 = ws_potable*(1-fix$nonrev)                                                     #  pur --> pot   ~  human use
-  k24 = ws_potable*(fix$nonrev)                                                       #  pur --> sgw   ~  leakage (non-revenue water) 
-  k25 = k23*(fix$potatm)                                                              #  pot --> atm   ~  evaporation   
-  k26 = k23*(fix$wastgen)                                                             #  pot --> css   ~  wastewater generation
-  k27 = k23*(fix$potinfilt)                                                           #  pot --> sgw    ~  infiltration
-  ws_nonpotable = k11+k18+k20                                                         #  total water supply for nonpotable uses
-  k28 = ws_nonpotable*(1-fix$npotinfilt)                                              #  npot --> atm  ~  evaporation
-  k32 = ws_nonpotable*(fix$npotinfilt)                                                #  npot --> sgw   ~  infiltration
-  k31 = data$wtpe                                                                     #  wtp --> isw   ~  treated wastewater discharge
-  k29 = k31/(1-fix$evslud)                                                            #  css --> wtp   ~  wastewater conveyance  
-  k30 = k29-k31                                                                       #  wtp --> atm   ~  evaporation of sludge 
-  k14 = fix$css_leak*k29                                                              #  sgw --> css   ~  inflow & infiltration
-  leakage = k14+k24                                                                   #  leakage of pipes
-  infiltration = k4+k27+k32
-  recharge = k4+k27+k32-k12                                                           #  total infiltration
-  k33 = data$cso                                                                      #  css --> isw  ~ CSO events
-  k34 = data$outflow                                                                  #  isw --> outflow  ~ streamflow out
-  et_tot = k1+k8+k12+k21+k25+k28+k30
+  k14 = data$gw_therm                                                                 #  sgw --> pow    ~ through-flow, cooling + power gen
+  k15 = noflow                                                                        #  sgw --> pur  ~ purification
+  k16 = data$et                                                                       #  sgw --> atm    ~  evapotranspiration from vegetated lands
+  k17 = data$gw_npot                                                                  #  sgw --> npot  ~ extraction
+  k18 = data$dgr                                                                      #  sgw --> dgw    ~ deep groundwater recharge
+  k19 = noflow                                                                        #  dgw --> pow    ~ through-flow, cooling + power gen
+  k20 = data$gw_pot                                                                   #  dgw --> pur  ~ purification
+  ws_potable = k7+k10+k15+k20                                                         #  total water supply for potable uses
+  k21 = noflow                                                                        #  dgw --> npot  ~ extraction
+  cooling = k9+k14+k19                                                                #  total cooling water for thermoelectric power generation
+  k22 = cooling*(fix$powevap)                                                         #  pow --> atm   ~  evaporation (consumptive thermoe use) 
+  k23 = cooling*(1-fix$powevap)                                                       #  pow --> isw   ~  power plant discharge
+  k24 = ws_potable*(1-fix$nonrev)                                                     #  pur --> pot   ~  human use
+  k25 = ws_potable*(fix$nonrev)                                                       #  pur --> sgw   ~  leakage (non-revenue water) 
+  k26 = k24*(fix$potatm)                                                              #  pot --> atm   ~  evaporation   
+  k27 = k24*(fix$wastgen)                                                             #  pot --> css   ~  wastewater generation
+  k28 = k24*(fix$potinfilt)                                                           #  pot --> sgw    ~  infiltration
+  ws_nonpotable = k11+k17+k21                                                         #  total water supply for nonpotable uses
+  k29 = ws_nonpotable*(1-fix$npotinfilt)                                              #  npot --> atm  ~  evaporation
+  k33 = ws_nonpotable*(fix$npotinfilt)                                                #  npot --> sgw   ~  infiltration
+  k32 = data$wtpe                                                                     #  wtp --> isw   ~  treated wastewater discharge
+  k30 = k32/(1-fix$evslud)                                                            #  css --> wtp   ~  wastewater conveyance  
+  k31 = k30-k32                                                                       #  wtp --> atm   ~  evaporation of sludge 
+  k12 = fix$css_leak*k30                                                              #  sgw --> css   ~  gw infiltration to sewer system
+  leakage = k12+k25                                                                   #  leakage of pipes
+  infiltration = k4+k28+k33
+  recharge = infiltration-k16                                                         #  total infiltration
+  k34 = data$cso                                                                      #  css --> isw  ~ CSO events
+  k35 = data$outflow                                                                  #  isw --> outflow  ~ streamflow out
+  et_tot = k1+k8+k16+k22+k26+k29+k31
 
   # ------------ State variables -------------------------
   
   # 1) inland surface water
-  isw = k2+k5+k6+k13+k22+k31+k33-k8-k9-k10-k11-k34    
+  isw = k2+k5+k6+k13+k23+k33+k34-k8-k9-k10-k11-k35    
   # 2) shallow groundwater
-  sgw = k4+k24+k27+k32-k12-k13-k14-k15-k16-k17-k18             
+  sgw = k4+k25+k28+k33-k12-k13-k14-k15-k16-k17-k18             
   # 3) deep groundwater
-  dgw = k17-k19-k20
+  dgw = k18-k19-k20-k21
   # 4) potable use
-  pot = k23-k25-k26-k27
+  pot = k24-k26-k27-k28
   # 5) non-potable use
-  npot = ws_nonpotable-k28-k32
+  npot = ws_nonpotable-k29-k33
   # 6) combined sewer system / TARP
-  css = k3+k14+k26-k29-k33
+  css = k3+k12+k27-k30-k34
   # 7) purification plant
-  pur = ws_potable-k23-k24
+  pur = ws_potable-k24-k25
   # 8) power plant
-  pow = cooling-k21-k22
+  pow = cooling-k22-k23
   # 9) wastewater treatment plant
-  wtp = k29-k30-k31
+  wtp = k30-k31-k32
 
   # ------------- outputs ----------------------
   # Global balance

@@ -4,13 +4,13 @@
 \alias{mergeData}
 \title{Merge data sources into input for CityWaterBalance}
 \usage{
-mergeData(area, pet, inflow, outflow, sfpart, wu, ws_imports = NULL,
+mergeData(area, atm, inflow, outflow, sfpart = NULL, wu, ws_imports = NULL,
   etc_imports = NULL, wweff = NULL, dgr = NULL, cso = NULL)
 }
 \arguments{
 \item{area}{numeric study area (sq km)}
 
-\item{pet}{xts of atmospheric data, from getAtmoFlows (mm/month)}
+\item{atm}{xts of atmospheric data, from getAtmoFlows (mm/month)}
 
 \item{inflow}{xts  of daily steamflow into area (cfs)}
 
@@ -24,24 +24,21 @@ mergeData(area, pet, inflow, outflow, sfpart, wu, ws_imports = NULL,
 
 \item{etc_imports}{xts of other imports to surface water (MGal/month)}
 
-\item{wweff}{xts of wastwater effluent (cfs)}
+\item{wweff}{xts of wastewater effluent (MGD)}
 
 \item{dgr}{xts of deep groundwater recharge}
 
 \item{cso}{xts of cso events}
 }
 \value{
-xts of all flows for each timestep
+xts of all fluxes for each timestep (mm/month)
 }
 \description{
-This functions converts units and merges data needed by CityWaterBalance.  All
-inputs must span same time period.
+This functions converts units and merges data needed by CityWaterBalance.  
+All inputs must span same time period. Outputs are in mm/month over study 
+area.
 }
 \examples{
-gages = c("05551540","05552500")
-flow = getStreamflow("2000-01-01","2010-12-31",gages)
-flow = gapfillStreamflow(flow,list(c(gages[1],gages[2])))
-flow = combineStreamflow(flow,c(0.5,0.5))
 
 }
 

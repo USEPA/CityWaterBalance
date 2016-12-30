@@ -4,7 +4,7 @@
 \alias{combineStreamflow}
 \title{Combines streamflow records to estimate total flows}
 \usage{
-combineStreamflow(flowlist, mult)
+combineStreamflow(flowlist, mult, approx = FALSE)
 }
 \arguments{
 \item{flowlist}{list of flow data, output of getStreamflow or 

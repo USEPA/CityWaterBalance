@@ -4,7 +4,7 @@
 \alias{CityWaterBalance}
 \title{Tracks flows and storages of water internal to an urban system}
 \usage{
-CityWaterBalance(data)
+CityWaterBalance(data, fixed_pms, var_pms)
 }
 \arguments{
 \item{data}{xts or zoo object with date index and columns of data for:
@@ -12,11 +12,9 @@ precipitation (prcp),
 evapotranspiration (et),
 streamflow in (inflow),
 streamflow out (outflow),
-baseflow (bflow),
-stormflow (sflow),
 water supply imports (ws_imports),
 other imports (etc_imports),
-surface water withdrawals for theromelectric power (sw_therm),
+surface water withdrawals for thermoelectric power (sw_therm),
 surface water withdrawals for potable use (sw_pot),
 surface water withdrawals for nonpotable use (sw_npot),
 groundwater withdrawls for thermoelectric power (gw_therm),
@@ -25,6 +23,22 @@ groundwater withdrawals for nonpotable use (gw_npot),
 deep groundwater recharge (dgr),
 combined sewer overflow events (cso),
 wastewater treatment plant effluent (wtpe)}
+
+\item{fixed_pms}{list of parameter values for:
+fraction of area that is open water (openwat),
+fraction of et from interception (interc)
+fraction of runoff diverted to css (run_css),
+fraction of potable water supply lost to leaks (nonrev),
+fraction of cooling water that evaporates (powevap),
+fraction of potable use that returns to css (wastgen),
+fraction of potable use that evaporates (potatm),
+fraction of potable use that infiltrates (potinfilt),
+fraction of nonpotable use that infiltrates (npotinfilt),
+fraction of wastewater that evaporated from sludge (evslud),
+fraction of wastewater effluent from I&I (css_leak)}
+
+\item{var_pms}{list of time-variant parameter values for:
+runoff, as a fraction of precip (roff)}
 }
 \value{
 list of dataframes for 1) global flows, 2) internal flows, 
