@@ -34,6 +34,7 @@
 #'        fraction of wastewater effluent from I&I (css_leak)
 #' @param var list of time-variant parameter values for:  
 #'        runoff, as a fraction of precip (roff)
+#' @param print option to print messages
 #' @return list of dataframes for 1) global flows, 2) internal flows, 
 #'          3) storages, 4) global balance, 5) internal balance
 #' balance, flows and 2) storages
@@ -46,7 +47,7 @@
 
 # -------------- Model -----------------
 
-CityWaterBalance <- function(data,fix,var){
+CityWaterBalance <- function(data,fix,var,print=TRUE){
   
   noflow = rep(0,nrow(data))
   var$frac_runoff = var$frac_runoff*fix$run_amp
@@ -68,14 +69,14 @@ CityWaterBalance <- function(data,fix,var){
   k11 = data$sw_npot                                                                  #  isw --> npot  ~  extraction  
   k13 = (data$prcp)*(var$frac_baseflow)                                               #  sgw --> isw   ~ baseflow
   k14 = data$gw_therm*(1-fix$deepgw)                                                  #  sgw --> pow    ~ through-flow, cooling + power gen
-  k15 = data$gw_pot*(1-fix$deepgw)                                                     #  sgw --> pur  ~ purification
+  k15 = data$gw_pot*(1-fix$deepgw)                                                    #  sgw --> pur  ~ purification
   k16 = data$et                                                                       #  sgw --> atm    ~  evapotranspiration from vegetated lands
-  k17 = data$gw_npot*(1-fix$deepgw)                                                    #  sgw --> npot  ~ extraction
+  k17 = data$gw_npot*(1-fix$deepgw)                                                   #  sgw --> npot  ~ extraction
   k18 = data$dgr                                                                      #  sgw --> dgw    ~ deep groundwater recharge
-  k19 = data$gw_therm*(fix$deepgw)                                                    #  dgw --> pow    ~ through-flow, cooling + power gen
-  k20 = data$gw_pot*(fix$deepgw)                                                       #  dgw --> pur  ~ purification
+  k19 = data$gw_therm*(fix$deepgw)*fix$dgwloss                                        #  dgw --> pow    ~ through-flow, cooling + power gen
+  k20 = data$gw_pot*(fix$deepgw)*fix$dgwloss                                          #  dgw --> pur  ~ purification
   ws_potable = k7+k10+k15+k20                                                         #  total water supply for potable uses
-  k21 = data$gw_npot*(fix$deepgw)                                                      #  dgw --> npot  ~ extraction
+  k21 = data$gw_npot*(fix$deepgw)*fix$dgwloss                                         #  dgw --> npot  ~ extraction
   ws_nonpotable = k11+k17+k21                                                         #  total water supply for nonpotable uses
   cooling = k9+k14+k19                                                                #  total cooling water for thermoelectric power generation
   k22 = cooling*(fix$powevap)                                                         #  pow --> atm   ~  evaporation (consumptive thermoe use) 
@@ -129,17 +130,17 @@ CityWaterBalance <- function(data,fix,var){
   names(IB)=c("Internal balance")
   
   # flows
-  global_flows = zoo(cbind(data$prcp,data$et,data$inflow,data$outflow,data$ws_imports,data$etc_imports),order.by=index(data))
-  names(global_flows) = c("precip","et","inflow","outflow","water supply imports","other imports")
+  global_flows = zoo(cbind(data$prcp,et_tot,data$inflow,data$outflow,data$ws_imports,data$etc_imports),order.by=index(data))
+  names(global_flows) = c("PRCP","ET","INFLOW","OUTFLOW","IMPORTS1","IMPORTS2")
   
-  int_nat_flows = zoo(cbind(k1,k8,infiltration,recharge,tot_runoff,k13),order.by=index(data))
-  names(int_nat_flows) = c("interception","surface water evap", "infiltration", "recharge","runoff","baseflow")
+  int_nat_flows = zoo(cbind(k1,k8,infiltration,recharge,k2,k13),order.by=index(data))
+  names(int_nat_flows) = c("Interception","Open water evap", "Infiltration", "Recharge","Runoff","Baseflow")
   
-  int_man_flows = zoo(cbind(ws_potable,ws_nonpotable,cooling,leakage),order.by=index(data))
-  names(int_man_flows) = c("potable use","nonpotable use","cooling","leakage")
+  int_man_flows = zoo(cbind(ws_potable,ws_nonpotable,cooling,leakage,k3,k32),order.by=index(data))
+  names(int_man_flows) = c("Potable use","Non-potable use","Cooling","Leakage","Stormwater", "Wastewater")
   
   storages = zoo(cbind(sw,sgw,dgw,css),order.by=index(data))
-  names(storages) = c("inland surface water","shallow groundwater", "deep groundwater", "css")
+  names(storages) = c("SW","SGW", "DGW", "CSS")
   
   consumers = zoo(cbind(pot,npot),order.by=index(data))
   names(consumers) = c("potable", "nonpotable")
@@ -150,22 +151,25 @@ CityWaterBalance <- function(data,fix,var){
   nyears = nrow(data)/12
   
   if (min((k3+k27-k34),na.rm=TRUE)<0){print("WARNING:  CSO volumes greater than runoff + sewage")}
-  print(paste("Potable storage sums to:",sum(storages$potable,na.rm=TRUE)))
-  print(paste("Non-potable storage sums to:",sum(storages$nonpotable,na.rm=TRUE)))
-  print(paste("Purification storage sums to:",sum(storages$purification,na.rm=TRUE)))
-  print(paste("Power storage sums to:",sum(storages$power,na.rm=TRUE)))
-  print(paste("Wastewater treatment storage sums to:",sum(storages$wtp,na.rm=TRUE)))
-  print(paste("Inflow and infiltration proportion of wastewater:",round(mean(inf2/k30,na.rm=TRUE),2)))
-  print(paste("Mean annual infiltration of precip:",round(sum(k4,na.rm=TRUE)/nyears,2)))
-  print(paste("Mean annual evapotranspiration:",round(sum(k16,na.rm=TRUE)/nyears,2)))
-  print(paste("Mean annual baseflow:",round(sum(k13,na.rm=TRUE)/nyears,2)))
-  print(paste("Mean annual recharge:",round(sum(recharge,na.rm=TRUE)/nyears,2)))
-  print(paste("Mean annual surface water balance:",round(sum(sw,na.rm=TRUE)/nyears,2)))
-  print(paste("Mean annual shallow groundwater balance:",round(sum(sgw,na.rm=TRUE)/nyears,2)))
-  print(paste("Mean annual css balance:",round(sum(css,na.rm=TRUE)/nyears,2)))
-  print(paste("Mean annual deep groundwater balance:",round(sum(dgw,na.rm=TRUE)/nyears,2)))
-  print(paste("Mean annual internal balance:",round(sum(IB,na.rm=TRUE)/nyears,2)))
-  print(paste("Mean annual global balance:",round(sum(GB,na.rm=TRUE)/nyears,2)))
+  if (print==TRUE){
+    print(paste("Potable storage sums to:",sum(storages$potable,na.rm=TRUE)))
+    print(paste("Non-potable storage sums to:",sum(storages$nonpotable,na.rm=TRUE)))
+    print(paste("Purification storage sums to:",sum(storages$purification,na.rm=TRUE)))
+    print(paste("Power storage sums to:",sum(storages$power,na.rm=TRUE)))
+    print(paste("Wastewater treatment storage sums to:",sum(storages$wtp,na.rm=TRUE)))
+    print(paste("Inflow and infiltration proportion of wastewater:",round(mean(inf2/k30,na.rm=TRUE),2)))
+    print(paste("Mean annual infiltration of precip:",round(sum(k4,na.rm=TRUE)/nyears,2)))
+    print(paste("Mean annual evapotranspiration:",round(sum(k16,na.rm=TRUE)/nyears,2)))
+    print(paste("Mean annual baseflow:",round(sum(k13,na.rm=TRUE)/nyears,2)))
+    print(paste("Mean annual recharge:",round(sum(recharge,na.rm=TRUE)/nyears,2)))
+    print(paste("Mean annual surface water balance:",round(sum(sw,na.rm=TRUE)/nyears,2)))
+    print(paste("Mean annual shallow groundwater balance:",round(sum(sgw,na.rm=TRUE)/nyears,2)))
+    print(paste("Mean annual css balance:",round(sum(css,na.rm=TRUE)/nyears,2)))
+    print(paste("Mean annual deep groundwater balance:",round(sum(dgw,na.rm=TRUE)/nyears,2)))
+    print(paste("Mean annual internal balance:",round(sum(IB,na.rm=TRUE)/nyears,2)))
+    print(paste("Mean annual global balance:",round(sum(GB,na.rm=TRUE)/nyears,2)))
+  }
+  
   
   return(list("global_flows"=global_flows,"int_nat_flows"=int_nat_flows,"int_man_flows"=int_man_flows,"storages"=storages,"consumers"=consumers,"producers"=producers,"global_balance"=GB,"internal_balance"=IB)) 
 }
