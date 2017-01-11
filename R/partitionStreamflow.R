@@ -14,18 +14,23 @@
 #' 
 #' @export
 
-partitionStreamflow <- function(streamflow,inflow=NULL,wastewater=NULL){
-  
-  s = streamflow
-  if (!is.null(inflow)) {s = s-inflow}
-  if (!is.null(wastewater)) {s = s-wastewater}
-  if (min(s,na.rm=TRUE)<0){print("WARNING: sum of inflow and wastewater greater than outflow")}
-  s = na.approx(s)
-  sep = BaseflowSeparation(as.numeric(s),0.925,3)
-  sflow = as.xts(sep,order.by=index(s))
-  names(sflow) = c("baseflow","stormflow")
-  
-  return(sflow)
-  
+partitionStreamflow <- function(streamflow, inflow = NULL, wastewater = NULL) {
+    
+    s <- streamflow
+    if (!is.null(inflow)) {
+        s <- s - inflow
+    }
+    if (!is.null(wastewater)) {
+        s <- s - wastewater
+    }
+    if (min(s, na.rm = TRUE) < 0) {
+        print("WARNING: sum of inflow and wastewater greater than outflow")
+    }
+    s <- na.approx(s)
+    sep <- BaseflowSeparation(as.numeric(s), 0.925, 3)
+    sflow <- as.xts(sep, order.by = index(s))
+    names(sflow) <- c("baseflow", "stormflow")
+    
+    return(sflow)
+    
 }
-  

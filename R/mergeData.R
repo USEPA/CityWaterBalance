@@ -21,73 +21,78 @@
 #' 
 #' @export
 
-mergeData <- function(area,atm,inflow,outflow,sfpart=NULL,wu,ws_imports=NULL,
-                      etc_imports=NULL,wweff=NULL,dgr=NULL,cso=NULL){
-  
-  noflow = as.xts(rep(0,nrow(atm)),order.by=index(atm))
-  
-  # divide by "a" for km3/month --> mm/month
-  a = 1e-6*area
-  
-  #  daily cfs data --> mm/month
-  cf = (60*60*24)/3.531e10       # (cfs --> cu km / day)
-  inflow = apply.monthly(inflow,FUN=sum)*cf/a
-  names(inflow) = c("inflow")
-  outflow = apply.monthly(outflow,FUN=sum)*cf/a
-  names(outflow) = c("outflow")
-  
-  if (is.null(sfpart)){
-    sfpart = cbind(noflow,noflow)
-    names(sfpart)=c("baseflow","stormflow")
-  } else {
-    sfpart = apply.monthly(sfpart,FUN=colSums)*cf/a
-  }
-  
-  #  MGal/month --> mm/month
-  cf = 3.7854e-6  # (MGal --> km3)
-  
-  wu = wu*cf/a
-  
-  if (is.null(wweff)){
-    wtpe = noflow
-  } else {
-    wtpe = apply.monthly(wweff,FUN=sum)*cf/a
-    index(wtpe)<-update(index(wtpe),day=1)
-  }
-  names(wtpe) = c("wtpe")
-  
-  if (is.null(ws_imports)){
-    ws_imports = noflow
-  } else {
-    ws_imports = ws_imports*cf/a
-  }
-  if (is.null(etc_imports)){
-    etc_imports = noflow
-  } else {
-    etc_imports = etc_imports*cf/a
-  }
-  
-  # placeholder 
-  if (is.null(dgr)){dgr = noflow}
-  names(dgr) = c("dgr")
-  if (is.null(cso)){cso = noflow}
-  names(cso) = c("cso")
-  
-  # split & rename variables
-  prcp = atm$prcp
-  et = atm$et
-  pet = atm$pet
-  flowin = inflow
-  index(flowin)<-update(index(flowin),day=1)
-  flowout = outflow
-  index(flowout)<-update(index(flowout),day=1)
-  bflow = sfpart$baseflow
-  index(bflow)<-update(index(bflow),day=1)
-  sflow = sfpart$stormflow
-  index(sflow)<-update(index(sflow),day=1)
-  
-  data = cbind(prcp,et,pet,flowin,flowout,bflow,sflow,wu,ws_imports,etc_imports,
-               wtpe,dgr,cso)
-  return(data)
-  
+mergeData <- function(area, atm, inflow, outflow, sfpart = NULL, wu, 
+                      ws_imports = NULL, etc_imports = NULL, wweff = NULL, 
+                      dgr = NULL, cso = NULL) {
+    
+    noflow <- as.xts(rep(0, nrow(atm)), order.by = index(atm))
+    
+    # divide by 'a' for km3/month --> mm/month
+    a <- 1e-06 * area
+    
+    # daily cfs data --> mm/month
+    cf <- (60 * 60 * 24)/3.531e+10  # (cfs --> cu km / day)
+    inflow <- apply.monthly(inflow, FUN = sum) * cf/a
+    names(inflow) <- c("inflow")
+    outflow <- apply.monthly(outflow, FUN = sum) * cf/a
+    names(outflow) <- c("outflow")
+    
+    if (is.null(sfpart)) {
+        sfpart <- cbind(noflow, noflow)
+        names(sfpart) <- c("baseflow", "stormflow")
+    } else {
+        sfpart <- apply.monthly(sfpart, FUN = colSums) * cf/a
+    }
+    
+    # MGal/month --> mm/month
+    cf <- 3.7854e-06  # (MGal --> km3)
+    
+    wu <- wu * cf/a
+    
+    if (is.null(wweff)) {
+        wtpe <- noflow
+    } else {
+        wtpe <- apply.monthly(wweff, FUN = sum) * cf/a
+        index(wtpe) <- update(index(wtpe), day = 1)
+    }
+    names(wtpe) <- c("wtpe")
+    
+    if (is.null(ws_imports)) {
+        ws_imports <- noflow
+    } else {
+        ws_imports <- ws_imports * cf/a
+    }
+    if (is.null(etc_imports)) {
+        etc_imports <- noflow
+    } else {
+        etc_imports <- etc_imports * cf/a
+    }
+    
+    # placeholder
+    if (is.null(dgr)) {
+        dgr <- noflow
+    }
+    names(dgr) <- c("dgr")
+    if (is.null(cso)) {
+        cso <- noflow
+    }
+    names(cso) <- c("cso")
+    
+    # split & rename variables
+    prcp <- atm$prcp
+    et <- atm$et
+    pet <- atm$pet
+    flowin <- inflow
+    index(flowin) <- update(index(flowin), day = 1)
+    flowout <- outflow
+    index(flowout) <- update(index(flowout), day = 1)
+    bflow <- sfpart$baseflow
+    index(bflow) <- update(index(bflow), day = 1)
+    sflow <- sfpart$stormflow
+    index(sflow) <- update(index(sflow), day = 1)
+    
+    data <- cbind(prcp, et, pet, flowin, flowout, bflow, sflow, wu, ws_imports, 
+                  etc_imports, wtpe, dgr, cso)
+    return(data)
+    
 }
