@@ -4,7 +4,7 @@
 \alias{CityWaterBalance}
 \title{Tracks flows and storages of water internal to an urban system}
 \usage{
-CityWaterBalance(data, fixed_pms, var_pms)
+CityWaterBalance(data, fix, var, print = TRUE)
 }
 \arguments{
 \item{data}{xts or zoo object with date index and columns of data for:
@@ -24,9 +24,10 @@ deep groundwater recharge (dgr),
 combined sewer overflow events (cso),
 wastewater treatment plant effluent (wtpe)}
 
-\item{fixed_pms}{list of parameter values for:
+\item{fix}{list of fixed parameter values for:
 fraction of area that is open water (openwat),
 fraction of et from interception (interc)
+amplification factor for runoff (runamp)
 fraction of runoff diverted to css (run_css),
 fraction of potable water supply lost to leaks (nonrev),
 fraction of cooling water that evaporates (powevap),
@@ -35,15 +36,19 @@ fraction of potable use that evaporates (potatm),
 fraction of potable use that infiltrates (potinfilt),
 fraction of nonpotable use that infiltrates (npotinfilt),
 fraction of wastewater that evaporated from sludge (evslud),
-fraction of wastewater effluent from I&I (css_leak)}
+fraction of wastewater effluent from I&I (css_leak)
+fraction of groundwater from deep, confinced aquifers (deepgw)
+fraction of deep groundwater not replaced by inflow (dgwloss)}
 
-\item{var_pms}{list of time-variant parameter values for:
+\item{var}{list of time-variant parameter values for:
 runoff, as a fraction of precip (roff)}
+
+\item{print}{option to print messages}
 }
 \value{
 list of dataframes for 1) global flows, 2) internal flows, 
-         3) storages, 4) global balance, 5) internal balance
-balance, flows and 2) storages
+       3) storages, 4) global balance, 5) internal balance
+       balance, flows and 2) storages
 }
 \description{
 This function tracks the environmental and manmade flows gathered using other

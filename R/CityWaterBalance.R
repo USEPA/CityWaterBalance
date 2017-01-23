@@ -23,6 +23,7 @@
 #' @param fix list of fixed parameter values for:
 #'        fraction of area that is open water (openwat),
 #'        fraction of et from interception (interc)
+#'        amplification factor for runoff (runamp)
 #'        fraction of runoff diverted to css (run_css),
 #'        fraction of potable water supply lost to leaks (nonrev),
 #'        fraction of cooling water that evaporates (powevap),
@@ -32,6 +33,8 @@
 #'        fraction of nonpotable use that infiltrates (npotinfilt),
 #'        fraction of wastewater that evaporated from sludge (evslud),
 #'        fraction of wastewater effluent from I&I (css_leak)
+#'        fraction of groundwater from deep, confinced aquifers (deepgw)
+#'        fraction of deep groundwater not replaced by inflow (dgwloss)
 #' @param var list of time-variant parameter values for:  
 #'        runoff, as a fraction of precip (roff)
 #' @param print option to print messages

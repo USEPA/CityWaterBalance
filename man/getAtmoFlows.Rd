@@ -7,11 +7,11 @@
 getAtmoFlows(start, end, geometry, attribute, latitude)
 }
 \arguments{
-\item{start}{start date in format "YYYY-MM-DD"}
+\item{start}{start date in format 'YYYY-MM-DD'}
 
-\item{end}{end date in format "YYYY-MM-DD"}
+\item{end}{end date in format 'YYYY-MM-DD'}
 
-\item{geometry}{name of geometry as displayed in Geo Data Portal}
+\item{geometry}{name of geometry as displayed in GDP}
 
 \item{attribute}{name of geometry attribute as displayed in GDP}
 
@@ -22,6 +22,8 @@ data as xts object
 }
 \description{
 This function gathers precipitation and evapotranspiration data, merges these
-with streamflow and water use data, calculates the time-varying balance
+with streamflow and water use data, calculates the time-varying balance.  
+NOTE:  Shapefile for geometry must already be uploaded to the USGS 
+Geo Data Portal (GDP)
 }
 

@@ -21,6 +21,6 @@ This function gathers and summarizes water use data from USGS NWIS by county,
 year, source (surface or groundwater) and quality (fresh or saline)
 }
 \examples{
-wu = getWaterUse(c("IL"),c("Cook","DeKalb"))
+wu <- getWaterUse(c('IL'),c('Cook','DeKalb'))
 }
 

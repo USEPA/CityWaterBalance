@@ -7,13 +7,13 @@
 getPrecipitation(start, end, geometry, attribute)
 }
 \arguments{
-\item{start}{start date in format "YYYY-MM-DD"}
+\item{start}{start date in format 'YYYY-MM-DD'}
 
-\item{end}{end date in format "YYYY-MM-DD"}
+\item{end}{end date in format 'YYYY-MM-DD'}
 
-\item{geometry}{"name" of area of interest (AOI) in the GDP}
+\item{geometry}{'name' of area of interest (AOI) in the GDP}
 
-\item{attribute}{"attribute" of AOI to aggegate over}
+\item{attribute}{'attribute' of AOI to aggegate over}
 }
 \value{
 prcp
@@ -23,7 +23,7 @@ This function aggregates monthly PRISM output for a given area using the USGS
 Geo Data Portal (GDP)
 }
 \examples{
-prcp = getPrecipitation("2010-09-01","2010-12-31",3139,"sample:CONUS_states",
-"STATES")
+prcp <- getPrecipitation('2010-09-01','2010-12-31',3139,'sample:CONUS_states',
+'STATES')
 }
 

@@ -7,14 +7,14 @@
 combineWaterUse(start, end, wu)
 }
 \arguments{
-\item{start}{start date in format "YYYY-MM-DD"}
+\item{start}{start date in format 'YYYY-MM-DD'}
 
-\item{end}{end date in format "YYYY-MM-DD"}
+\item{end}{end date in format 'YYYY-MM-DD'}
 
 \item{wu}{list of dataframes output by getWaterUse}
 }
 \value{
-wu_flows list of xts objects including:
+wu_flows list of xts objects including (units: MGal/month):
        surface water withdrawals for theromelectric power (sw_therm),
        surface water withdrawals for potable use (sw_pot),
        surface water withdrawals for nonpotable use (sw_npot),
@@ -28,7 +28,7 @@ and aggregates them for whole urban system according to flows in
 CityWaterBalance
 }
 \examples{
-wu = getWaterUse(c("IL"),c("Cook","Lake"))
-wu_flows = combineWaterUse("2000-01-01","2015-01-01",wu)
+wu <- getWaterUse(c('IL'),c('Cook','Lake'))
+wu_flows <- combineWaterUse('2000-01-01','2015-01-01',wu)
 }
 
