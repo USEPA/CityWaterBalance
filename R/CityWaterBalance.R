@@ -20,23 +20,22 @@
 #'        deep groundwater recharge (dgr),
 #'        combined sewer overflow events (cso),
 #'        wastewater treatment plant effluent (wtpe)
-#' @param fix list of fixed parameter values for:
+#'        runoff estimate (runoff)
+#'        baseflow estimate (baseflow)
+#' @param p list of fixed parameter values for:
 #'        fraction of area that is open water (openwat),
-#'        fraction of et from interception (interc)
+#'        fraction of pet lost to interception (interc)
 #'        amplification factor for runoff (runamp)
 #'        fraction of runoff diverted to css (run_css),
 #'        fraction of potable water supply lost to leaks (nonrev),
 #'        fraction of cooling water that evaporates (powevap),
 #'        fraction of potable use that returns to css (wastgen),
 #'        fraction of potable use that evaporates (potatm),
-#'        fraction of potable use that infiltrates (potinfilt),
 #'        fraction of nonpotable use that infiltrates (npotinfilt),
 #'        fraction of wastewater that evaporated from sludge (evslud),
-#'        fraction of wastewater effluent from I&I (css_leak)
-#'        fraction of groundwater from deep, confinced aquifers (deepgw)
+#'        fraction of wastewater effluent from gw infiltration (css_leak)
+#'        fraction of groundwater from deep, confined aquifers (deepgw)
 #'        fraction of deep groundwater not replaced by inflow (dgwloss)
-#' @param var list of time-variant parameter values for:  
-#'        runoff, as a fraction of precip (roff)
 #' @param print option to print messages
 #' @return list of dataframes for 1) global flows, 2) internal flows, 
 #'        3) storages, 4) global balance, 5) internal balance
@@ -50,15 +49,17 @@
 
 # -------------- Model -----------------
 
-CityWaterBalance <- function(data, fix, var, print = TRUE) {
-    
-    noflow <- rep(0, nrow(data))
-    var$frac_runoff <- var$frac_runoff * fix$run_amp
-    
+CityWaterBalance <- function(data, p, print = TRUE) {
+  
+    data$et <- data$et * p$et_amp
+    data$outflow <- data$outflow * p$flow_amp
+    data$runoff <- data$runoff * p$run_amp
+    data$baseflow <- data$baseflow * p$baseflow_amp
+  
     # ----------- Flow terms ---------------
-    k1 <- (data$pet) * (fix$interc)                                              #  prcp --> atm  ~  interception
-    k2 <- (data$prcp) * (var$frac_runoff) * (1 - fix$run_css)                    #  prcp --> isw  ~  runoff
-    k3 <- (data$prcp) * (var$frac_runoff) * (fix$run_css)                        #  prcp --> css   ~  runoff to sewer system
+    k1 <- data$pet * p$interc                                                    #  prcp --> atm  ~  interception
+    k2 <- data$runoff * (1 - p$run_css)                                           #  prcp --> isw  ~  runoff
+    k3 <- data$runoff * p$run_css                                                #  prcp --> css   ~  runoff to sewer system
     k4 <- data$prcp - k1 - k2 - k3                                               #  prcp --> gw ~ infiltration
     if (min(k4, na.rm = TRUE) < 0) {
         print("WARNING: negative infiltration")
@@ -68,35 +69,35 @@ CityWaterBalance <- function(data, fix, var, print = TRUE) {
     k5 <- data$inflow                                                            #  inflow --> isw ~  streamflow in
     k6 <- data$etc_imports                                                       #  etc_imports --> isw 
     k7 <- data$ws_imports                                                        #  LMich --> pur ~  purification
-    k8 <- data$pet * (fix$openwat)                                               #  direct evaporation from surface water
+    k8 <- data$pet * (p$openwat)                                                 #  direct evaporation from surface water
     k9 <- data$sw_therm                                                          #  isw --> pow   ~  through-flow, cooling + power gen
     k10 <- data$sw_pot                                                           #  isw --> pur   ~  purification
     k11 <- data$sw_npot                                                          #  isw --> npot  ~  extraction  
-    k13 <- (data$prcp) * (var$frac_baseflow)                                     #  sgw --> isw   ~ baseflow
-    k14 <- data$gw_therm * (1 - fix$deepgw)                                      #  sgw --> pow    ~ through-flow, cooling + power gen
-    k15 <- data$gw_pot * (1 - fix$deepgw)                                        #  sgw --> pur  ~ purification
+    k13 <- data$baseflow                                                         #  sgw --> isw   ~ baseflow
+    k14 <- data$gw_therm * (1 - p$deepgw)                                        #  sgw --> pow    ~ through-flow, cooling + power gen
+    k15 <- data$gw_pot * (1 - p$deepgw)                                          #  sgw --> pur  ~ purification
     k16 <- data$et                                                               #  sgw --> atm    ~  evapotranspiration from vegetated lands
-    k17 <- data$gw_npot * (1 - fix$deepgw)                                       #  sgw --> npot  ~ extraction
+    k17 <- data$gw_npot * (1 - p$deepgw)                                         #  sgw --> npot  ~ extraction
     k18 <- data$dgr                                                              #  sgw --> dgw    ~ deep groundwater recharge
-    k19 <- data$gw_therm * (fix$deepgw) * fix$dgwloss                            #  dgw --> pow    ~ through-flow, cooling + power gen
-    k20 <- data$gw_pot * (fix$deepgw) * fix$dgwloss                              #  dgw --> pur  ~ purification
-    ws_potable <- k7 + k10 + k15 + k20                                           #  total water supply for potable uses
-    k21 <- data$gw_npot * (fix$deepgw) * fix$dgwloss                             #  dgw --> npot  ~ extraction
-    ws_nonpotable <- k11 + k17 + k21                                             #  total water supply for nonpotable uses
+    k19 <- data$gw_therm * (p$deepgw) * p$dgwloss                                #  dgw --> pow    ~ through-flow, cooling + power gen
+    k20 <- data$gw_pot * (p$deepgw) * p$dgwloss                                  #  dgw --> pur  ~ purification
+    ws_potable <- k7 + k10 + data$gw_pot                                         #  total water supply for potable uses
+    k21 <- data$gw_npot * (p$deepgw) * p$dgwloss                                 #  dgw --> npot  ~ extraction
+    ws_nonpotable <- k11 + data$gw_npot                                          #  total water supply for nonpotable uses
     cooling <- k9 + k14 + k19                                                    #  total cooling water for thermoelectric power generation
-    k22 <- cooling * (fix$powevap)                                               #  pow --> atm   ~  evaporation (consumptive thermoe use) 
-    k23 <- cooling * (1 - fix$powevap)                                           #  pow --> isw   ~  power plant discharge
-    k24 <- ws_potable * (1 - fix$nonrev)                                         #  pur --> pot   ~  human use
-    k25 <- ws_potable * (fix$nonrev)                                             #  pur --> sgw   ~  leakage (non-revenue water) 
-    k26 <- k24 * (fix$potatm)                                                    #  pot --> atm   ~  evaporation   
-    k27 <- k24 * (fix$wastgen)                                                   #  pot --> css   ~  wastewater generation
-    k28 <- k24 * (fix$potinfilt)                                                 #  pot --> sgw    ~  infiltration
-    k29 <- ws_nonpotable * (1 - fix$npotinfilt)                                  #  npot --> atm  ~  evaporation
-    k33 <- ws_nonpotable * (fix$npotinfilt)                                      #  npot --> sgw   ~  infiltration
+    k22 <- cooling * (p$powevap)                                                 #  pow --> atm   ~  evaporation (consumptive thermoe use) 
+    k23 <- cooling * (1 - p$powevap)                                             #  pow --> isw   ~  power plant discharge
+    k24 <- ws_potable * (1 - p$nonrev)                                           #  pur --> pot   ~  human use
+    k25 <- ws_potable * (p$nonrev)                                               #  pur --> sgw   ~  leakage (non-revenue water) 
+    k26 <- k24 * (p$potatm)                                                      #  pot --> atm   ~  evaporation   
+    k27 <- k24 * (p$wastgen)                                                     #  pot --> css   ~  wastewater generation
+    k28 <- k24 * (1 - p$wastgen - p$potatm)                                      #  pot --> sgw    ~  infiltration
+    k29 <- ws_nonpotable * (1 - p$npotinfilt)                                    #  npot --> atm  ~  evaporation
+    k33 <- ws_nonpotable * (p$npotinfilt)                                        #  npot --> sgw   ~  infiltration
     k32 <- data$wtpe                                                             #  wtp --> isw   ~  treated wastewater discharge
-    k30 <- k32/(1 - fix$evslud)                                                  #  css --> wtp   ~  wastewater conveyance  
+    k30 <- k32/(1 - p$evslud)                                                    #  css --> wtp   ~  wastewater conveyance  
     k31 <- k30 - k32                                                             #  wtp --> atm   ~  evaporation of sludge 
-    k12 <- fix$css_leak * k30                                                    #  sgw --> css   ~  gw infiltration to sewer system
+    k12 <- p$css_leak * k30                                                      #  sgw --> css   ~  gw infiltration to sewer system
     leakage <- k12 + k25                                                         #  leakage of pipes
     infiltration <- k4 + k28 + k33
     recharge <- infiltration - k16                                               
