@@ -25,4 +25,3 @@ flow <- getStreamflow('2000-01-01','2010-12-31',gages)
 flow <- gapfillStreamflow(flow,list(c(gages[1],gages[2])))
 flow <- combineStreamflow(flow,c(0.5,0.5))
 }
-

@@ -24,8 +24,11 @@
 #'        baseflow estimate (baseflow)
 #' @param p list of fixed parameter values for:
 #'        fraction of area that is open water (openwat),
-#'        fraction of pet lost to interception (interc)
-#'        amplification factor for runoff (runamp)
+#'        fraction of pet lost to interception (interc),
+#'        amplification factor for et (et_amp),
+#'        amplification factor for outflow (flow_amp),
+#'        amplification factor for runoff (runamp),
+#'        amplification factor for baseflow (baseflow_amp),
 #'        fraction of runoff diverted to css (run_css),
 #'        fraction of potable water supply lost to leaks (nonrev),
 #'        fraction of cooling water that evaporates (powevap),
@@ -38,8 +41,7 @@
 #'        fraction of deep groundwater not replaced by inflow (dgwloss)
 #' @param print option to print messages
 #' @return list of dataframes for 1) global flows, 2) internal flows, 
-#'        3) storages, 4) global balance, 5) internal balance
-#'        balance, flows and 2) storages
+#'        3) storages, 4) global balance, 5) internal balance and 2) storages
 #' @importFrom grDevices rainbow
 #' @import zoo
 #' @importFrom utils flush.console
@@ -58,7 +60,7 @@ CityWaterBalance <- function(data, p, print = TRUE) {
   
     # ----------- Flow terms ---------------
     k1 <- data$pet * p$interc                                                    #  prcp --> atm  ~  interception
-    k2 <- data$runoff * (1 - p$run_css)                                           #  prcp --> isw  ~  runoff
+    k2 <- data$runoff * (1 - p$run_css)                                          #  prcp --> isw  ~  runoff
     k3 <- data$runoff * p$run_css                                                #  prcp --> css   ~  runoff to sewer system
     k4 <- data$prcp - k1 - k2 - k3                                               #  prcp --> gw ~ infiltration
     if (min(k4, na.rm = TRUE) < 0) {
@@ -149,14 +151,14 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     # Internal, natural flows
     int_nat_flows <- zoo(cbind(k1, k8, infiltration, recharge, k2, k13), 
                          order.by = index(data))
-    names(int_nat_flows) <- c("Interception", "Open water evap", "Infiltration", 
+    names(int_nat_flows) <- c("Interception", "Surface water evap", "Infiltration", 
                               "Recharge", "Runoff", "Baseflow")
     
     # Internal, manmade flows
     int_man_flows <- zoo(cbind(ws_potable, ws_nonpotable, cooling, leakage, k3, 
-                               k32), order.by = index(data))
+                               k32, k34), order.by = index(data))
     names(int_man_flows) <- c("Potable use", "Non-potable use", "Cooling", 
-                              "Leakage", "Stormwater", "Wastewater")
+                              "Leakage", "Stormwater", "Wastewater", "CSO")
     
     # Storages
     storages <- zoo(cbind(sw, sgw, dgw, css), order.by = index(data))

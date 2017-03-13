@@ -26,4 +26,3 @@ USGS Geo Data Portal (GDP)
 et = getEvapotranspiration('2010-09-01','2010-12-31','sample:CONUS_states',
 'STATES') 
 }
-

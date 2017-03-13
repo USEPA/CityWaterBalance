@@ -23,4 +23,3 @@ year, source (surface or groundwater) and quality (fresh or saline)
 \examples{
 wu <- getWaterUse(c('IL'),c('Cook','DeKalb'))
 }
-

@@ -15,4 +15,3 @@ plot
 \description{
 This function plots output from getStreamflow
 }
-

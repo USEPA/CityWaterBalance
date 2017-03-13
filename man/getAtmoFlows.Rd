@@ -26,4 +26,3 @@ with streamflow and water use data, calculates the time-varying balance.
 NOTE:  Shapefile for geometry must already be uploaded to the USGS 
 Geo Data Portal (GDP)
 }
-

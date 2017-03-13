@@ -41,4 +41,3 @@ area.
 \examples{
 
 }
-

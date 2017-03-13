@@ -21,4 +21,3 @@ This function plots components of the urban water balance (selected output
 from getData or CityWaterBalance) showing time-variant flows at monthly or 
 annual-aggregated resolution.
 }
-
