@@ -11,6 +11,8 @@ combineStreamflow(flowlist, mult, approx = FALSE)
 gapfillStreamflow}
 
 \item{mult}{list of multipliers, one for each gage}
+
+\item{approx}{option to interpolate missing values}
 }
 \value{
 vector of total flow for each timestep

@@ -25,6 +25,8 @@
 
 combineWaterUse <- function(start, end, wu) {
     
+    variable <- year <- value <- NULL    # for CRAN checks
+    
     # USGS estimate surface water withdrawals for thermoelectric power
     a <- wu$swf
     a <- a[, 5:length(a)]

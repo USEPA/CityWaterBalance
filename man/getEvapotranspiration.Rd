@@ -4,16 +4,18 @@
 \alias{getEvapotranspiration}
 \title{Assemble an evapotranspiration times series}
 \usage{
-getEvapotranspiration(start, end, geometry, attribute)
+getEvapotranspiration(start, end, geometry, att, val = NA)
 }
 \arguments{
 \item{start}{start date in format 'YYYY-MM-DD'}
 
 \item{end}{end date in format 'YYYY-MM-DD'}
 
-\item{geometry}{'name' of area of interest (AOI) in the GDP}
+\item{geometry}{name of geometry as displayed in GDP}
 
-\item{attribute}{'attribute' of AOI to aggegate over}
+\item{att}{attribute of geometry as displayed in GDP}
+
+\item{val}{values of attribute as displayed in GDP}
 }
 \value{
 ET
@@ -23,6 +25,6 @@ This function aggregates monthly SSEBop output for a given area using the
 USGS Geo Data Portal (GDP)
 }
 \examples{
-et = getEvapotranspiration('2010-09-01','2010-12-31','sample:CONUS_states',
-'STATES') 
+et = getEvapotranspiration('2010-01-01','2010-12-31','sample:Counties',
+'STATE', 'RI') 
 }

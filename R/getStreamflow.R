@@ -6,7 +6,6 @@
 #' @param start start date in format 'YYYY-MM-DD'
 #' @param end end date in format 'YYYY-MM-DD'
 #' @param gages list of USGS gage numbers 
-#' @param plot option to plot the data
 #' @return list list of 3: sites, site numbers, flow data as xts object
 #' @importFrom dataRetrieval readNWISdv
 #' @importFrom xts as.xts 

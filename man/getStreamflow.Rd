@@ -12,8 +12,6 @@ getStreamflow(start, end, gages)
 \item{end}{end date in format 'YYYY-MM-DD'}
 
 \item{gages}{list of USGS gage numbers}
-
-\item{plot}{option to plot the data}
 }
 \value{
 list list of 3: sites, site numbers, flow data as xts object

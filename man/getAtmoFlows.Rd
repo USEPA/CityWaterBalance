@@ -4,7 +4,7 @@
 \alias{getAtmoFlows}
 \title{Gather and consolidate all data time series for water balance}
 \usage{
-getAtmoFlows(start, end, geometry, attribute, latitude)
+getAtmoFlows(start, end, geometry, att, val = NA, latitude)
 }
 \arguments{
 \item{start}{start date in format 'YYYY-MM-DD'}
@@ -13,7 +13,9 @@ getAtmoFlows(start, end, geometry, attribute, latitude)
 
 \item{geometry}{name of geometry as displayed in GDP}
 
-\item{attribute}{name of geometry attribute as displayed in GDP}
+\item{att}{attribute of geometry as displayed in GDP}
+
+\item{val}{values of attribute as displayed in GDP}
 
 \item{latitude}{(degrees)}
 }
@@ -25,4 +27,8 @@ This function gathers precipitation and evapotranspiration data, merges these
 with streamflow and water use data, calculates the time-varying balance.  
 NOTE:  Shapefile for geometry must already be uploaded to the USGS 
 Geo Data Portal (GDP)
+}
+\examples{
+atm <- getAtmoFlows('2010-01-01','2010-12-31','sample:Counties','STATE','RI',
+41.824)
 }

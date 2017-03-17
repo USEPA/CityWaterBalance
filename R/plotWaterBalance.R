@@ -5,7 +5,7 @@
 #' annual-aggregated resolution.
 #'
 #' @param data xts or zoo object 
-#' @param annual flag indicating whether to plot annual averages
+#' @param annual flag indicating whether to plot annual totals
 #' @param ys ylim for plot 
 #' @return plot
 #' @importFrom zoo as.zoo
@@ -14,9 +14,9 @@
 #' @export
 
 
-plotWaterBalance <- function(data, ys, annual = NULL) {
+plotWaterBalance <- function(data, ys, annual = FALSE) {
     
-    if (!is.null(annual)) {
+    if (annual) {
         data <- apply.yearly(data, FUN = colSums)
     }
     d <- as.zoo(data)

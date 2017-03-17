@@ -8,21 +8,25 @@
 #' @param start start date in format 'YYYY-MM-DD'
 #' @param end end date in format 'YYYY-MM-DD'
 #' @param geometry name of geometry as displayed in GDP 
-#' @param attribute name of geometry attribute as displayed in GDP
+#' @param att attribute of geometry as displayed in GDP
+#' @param val values of attribute as displayed in GDP
 #' @param latitude (degrees)
 #' @return data as xts object
 #' @importFrom xts as.xts
 #' @importFrom utils flush.console
 #' @importFrom EcoHydRology PET_fromTemp
+#' @examples
+#' atm <- getAtmoFlows('2010-01-01','2010-12-31','sample:Counties','STATE','RI',
+#' 41.824)
 #' @export
 
-getAtmoFlows <- function(start, end, geometry, attribute, latitude) {
+getAtmoFlows <- function(start, end, geometry, att, val=NA, latitude) {
     
     # ------------------------- precipitation ---------------------------------
     print("Getting precipitation...")
     flush.console()
     
-    p <- getPrecipitation(start, end, geometry, attribute)
+    p <- getPrecipitation(start, end, geometry, att, val)
     colnames(p) <- c("Date", "data", "variable", "statistic", "units")
     
     a <- subset(p, p$variable == "ppt")
@@ -49,7 +53,7 @@ getAtmoFlows <- function(start, end, geometry, attribute, latitude) {
     print("Getting evapotranspiration...")
     flush.console()
     
-    et <- getEvapotranspiration(start, end, geometry, attribute)
+    et <- getEvapotranspiration(start, end, geometry, att, val)
     colnames(et) <- c("Date", "ET", "variable", "statistic", "units")
     et <- as.xts(et$ET, order.by = as.Date(et$Date))
     

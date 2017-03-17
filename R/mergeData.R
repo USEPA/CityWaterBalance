@@ -15,6 +15,7 @@
 #' @param etc_imports xts of other imports to surface water (MGal/month)
 #' @param dgr xts of deep groundwater recharge
 #' @param cso xts of cso events
+#' @import lubridate
 #' @return xts of all fluxes for each timestep (mm/month)
 #' @importFrom xts as.xts apply.monthly
 #' @examples 

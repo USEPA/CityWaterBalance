@@ -1,5 +1,5 @@
 # CityWaterBalance
-CityWaterBalance provides a suite of tools to model the urban water balance,
+`CityWaterBalance` provides a suite of tools to model the urban water balance,
 including natural and manmade flows, over user-defined temporal and spatial
 boundaries.  Data are acquired through web services or provided by the user. 
 Outputs include time series plots showing the relative magnitudes of flows.

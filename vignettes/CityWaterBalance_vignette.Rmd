@@ -1,0 +1,87 @@
+---
+title: "Introduction to the CityWaterBalance package"
+author: "Laura Erban"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to the CityWaterBalance package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+`CityWaterBalance` provides a reproducible workflow for analyzing an urban water
+system.  The network of urban water flows and storages is modeled and 
+visualized.  Any city may be modeled, but data for US cities can be 
+gathered via web services using this package and dependencies.  
+
+## Install
+
+Development version available on Github:
+
+```{r eval=FALSE}
+devtools::install_github("USEPA/CityWaterBalance")
+```
+
+```{r}
+library("CityWaterBalance")
+```
+
+
+## Usage, overview
+
+`CityWaterBalance` is based on a model of the urban water system, or network of
+major flows and storages.  This model is codified in a function of the same 
+name. 
+
+![alt text](https://github.com/USEPA/CityWaterBalance/blob/master/figures/urban_water_system.png "Model of the urban water system")
+
+There are two ways to run the CityWaterBalance model.
+1. Input preassembled data.  See function inputs for details.  Data should be in
+self-consistent units.  Each row must represent the same time period.
+2. Input data gathered from web services.  The CityWaterBalance package has 
+other functions that can grab and merge the requisite data.  At this time, these
+functions leverage US web services only.
+
+## Usage examples
+
+1. Input preassembled data
+
+```
+# Specify parameters
+p <- list("openwat"=0.02,"interc"=0,"et_amp" = 1,"flow_amp" = 1,"run_amp"=1,
+          "run_css"=0.35, "baseflow_amp" = 1, "nonrev"=0.08,"powevap"=0.012,
+          "wastgen"=0.85,"potatm"=0.13,"npotinfilt"=0.5,"evslud"=0,
+          "css_leak"=0.05,"deepgw"=0.5,"dgwloss"=1)
+
+# Run model
+m <- CityWaterBalance(data,p)
+
+# Visualize results
+plotWaterBalance(m$global_flows)
+plotWaterBalance(m$storages, annual=TRUE) 
+```
+
+2. Input data gathered from web services
+
+    + Specify spatial and temporal boundaries
+    To automate this example, geometry already available in the 
+    [USGS Geo Data Portal](https://cida.usgs.gov/gdp/) (GDP) is used.  A user 
+    will typically want to upload a zipped shapefile of their urban boundary 
+    and note the name given to that geometry by the GDP. 
+    
+    ```
+    geometry <- 'sample:Counties'
+    att <- 'STATE'
+    val <- 'RI'
+    start <- "2015-01-01"
+    end <- "2015-12-31"
+    ```
+
+    + Get atmospheric data
+    ```
+    latitude <- 41.878
+    atm <- getAtmoFlows('2010-01-01','2010-12-31','sample:Counties','STATE','RI',41.824)
+    ```
+    
+    + Get streamflow data
+    

@@ -1,8 +1,7 @@
-#' Tracks flows and storages of water internal to an urban system 
+#' Tracks flows of water through urban system 
 #' 
-#' This function tracks the environmental and manmade flows gathered using other
-#' CityWaterBalance functions as they move through pathways and storages
-#' within the urban system.
+#' This function tracks environmental and manmade flows of water they move 
+#' through pathways and storages within the urban system.
 #' 
 #' @param data xts or zoo object with date index and columns of data for:
 #'        precipitation (prcp),
@@ -142,7 +141,7 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     names(IB) <- c("Internal balance")
     
     # Global flows
-    global_flows <- zoo(cbind(data$prcp, et_tot, data$inflow, data$outflow, 
+    global_flows <- zoo(cbind(data$prcp, data$et, data$inflow, data$outflow, 
                               data$ws_imports, data$etc_imports), 
                               order.by = index(data))
     names(global_flows) <- c("PRCP", "ET", "INFLOW", "OUTFLOW", "IMPORTS1", 
@@ -157,8 +156,8 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     # Internal, manmade flows
     int_man_flows <- zoo(cbind(ws_potable, ws_nonpotable, cooling, leakage, k3, 
                                k32, k34), order.by = index(data))
-    names(int_man_flows) <- c("Potable use", "Non-potable use", "Cooling", 
-                              "Leakage", "Stormwater", "Wastewater", "CSO")
+    names(int_man_flows) <- c("Potable withdrawal", "Non-potable withdrawal", "Cooling", 
+                              "Leakage", "Runoff to sewer", "Wastewater", "CSO")
     
     # Storages
     storages <- zoo(cbind(sw, sgw, dgw, css), order.by = index(data))

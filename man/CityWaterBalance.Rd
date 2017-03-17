@@ -2,7 +2,7 @@
 % Please edit documentation in R/CityWaterBalance.R
 \name{CityWaterBalance}
 \alias{CityWaterBalance}
-\title{Tracks flows and storages of water internal to an urban system}
+\title{Tracks flows of water through urban system}
 \usage{
 CityWaterBalance(data, p, print = TRUE)
 }
@@ -51,7 +51,6 @@ list of dataframes for 1) global flows, 2) internal flows,
        3) storages, 4) global balance, 5) internal balance and 2) storages
 }
 \description{
-This function tracks the environmental and manmade flows gathered using other
-CityWaterBalance functions as they move through pathways and storages
-within the urban system.
+This function tracks environmental and manmade flows of water they move 
+through pathways and storages within the urban system.
 }
