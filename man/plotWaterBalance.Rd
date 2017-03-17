@@ -4,14 +4,14 @@
 \alias{plotWaterBalance}
 \title{Plot urban water balance}
 \usage{
-plotWaterBalance(data, ys, annual = FALSE)
+plotWaterBalance(data, annual = FALSE)
 }
 \arguments{
 \item{data}{xts or zoo object}
 
-\item{ys}{ylim for plot}
-
 \item{annual}{flag indicating whether to plot annual totals}
+
+\item{ys}{ylim for plot}
 }
 \value{
 plot

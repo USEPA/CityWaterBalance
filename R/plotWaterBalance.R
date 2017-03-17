@@ -14,7 +14,7 @@
 #' @export
 
 
-plotWaterBalance <- function(data, ys, annual = FALSE) {
+plotWaterBalance <- function(data, annual = FALSE) {
     
     if (annual) {
         data <- apply.yearly(data, FUN = colSums)
@@ -38,12 +38,12 @@ plotWaterBalance <- function(data, ys, annual = FALSE) {
         }
     } else cols <- c("blue")
     
-    plot(d, xlab = "Date", ylab = expression(paste("Change in storage (mm)")), 
-         ylim = ys, col = cols, lwd = 1.5, screens = 1)
-    # title(main='Water balance')
+    plot(d, xlab = "Date", ylab = expression(paste("Flux (mm/month)")), 
+         col = cols, lwd = 1.5, screens = 1)
+
     abline(0, 0)
     if (!is.null(ncol(d))) {
-        legend(x = "topright", legend = names(d), lty = 1, lwd = 1.5, 
+        legend(x = "topleft", legend = names(d), lty = 1, lwd = 1.5, 
                col = cols)
     }
     

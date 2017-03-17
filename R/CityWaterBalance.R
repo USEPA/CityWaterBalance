@@ -144,20 +144,22 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     global_flows <- zoo(cbind(data$prcp, data$et, data$inflow, data$outflow, 
                               data$ws_imports, data$etc_imports), 
                               order.by = index(data))
-    names(global_flows) <- c("PRCP", "ET", "INFLOW", "OUTFLOW", "IMPORTS1", 
-                             "IMPORTS2")
+    names(global_flows) <- c("Precipitation", "Evapotranspiration", 
+                             "Streamflow in", "Streamflow out", 
+                             "Water supply imports", "Other imports")
     
     # Internal, natural flows
     int_nat_flows <- zoo(cbind(k1, k8, infiltration, recharge, k2, k13), 
                          order.by = index(data))
-    names(int_nat_flows) <- c("Interception", "Surface water evap", "Infiltration", 
-                              "Recharge", "Runoff", "Baseflow")
+    names(int_nat_flows) <- c("Interception", "Surface water evap", 
+                              "Infiltration", "Recharge", "Runoff", "Baseflow")
     
     # Internal, manmade flows
     int_man_flows <- zoo(cbind(ws_potable, ws_nonpotable, cooling, leakage, k3, 
                                k32, k34), order.by = index(data))
-    names(int_man_flows) <- c("Potable withdrawal", "Non-potable withdrawal", "Cooling", 
-                              "Leakage", "Runoff to sewer", "Wastewater", "CSO")
+    names(int_man_flows) <- c("Potable withdrawal", "Non-potable withdrawal", 
+                              "Cooling","Leakage", "Runoff to sewer", 
+                              "Wastewater", "CSO")
     
     # Storages
     storages <- zoo(cbind(sw, sgw, dgw, css), order.by = index(data))

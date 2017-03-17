@@ -20,9 +20,11 @@ Development version available on Github:
 
 ```{r eval=FALSE}
 devtools::install_github("USEPA/CityWaterBalance")
-library("CityWaterBalance")
 ```
 
+```{r}
+library("CityWaterBalance")
+```
 
 ## Usage, overview
 
@@ -41,7 +43,7 @@ There are two ways to run the CityWaterBalance model.
 See function inputs for details.  Data should be in
 self-consistent units.  Each row must represent the same time period.
 
-```
+```{r}
 # Specify parameters
 p <- list("openwat"=0.02,"interc"=0,"et_amp" = 1,"flow_amp" = 1,"run_amp"=1,
           "run_css"=0.35, "baseflow_amp" = 1, "nonrev"=0.08,"powevap"=0.012,
@@ -49,11 +51,10 @@ p <- list("openwat"=0.02,"interc"=0,"et_amp" = 1,"flow_amp" = 1,"run_amp"=1,
           "css_leak"=0.05,"deepgw"=0.5,"dgwloss"=1)
 
 # Run model
-m <- CityWaterBalance(data,p)
+m <- CityWaterBalance(cwb_data,p, print=FALSE)
 
 # Visualize results
 plotWaterBalance(m$global_flows)
-plotWaterBalance(m$storages, annual=TRUE) 
 ```
 
 ### Option 2: Input data gathered from web services
