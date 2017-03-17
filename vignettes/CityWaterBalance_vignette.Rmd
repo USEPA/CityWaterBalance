@@ -1,5 +1,5 @@
 ---
-title: "Introduction to the CityWaterBalance package"
+title: "Introduction to CityWaterBalance"
 author: "Laura Erban"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -9,10 +9,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-`CityWaterBalance` provides a reproducible workflow for analyzing an urban water
-system.  The network of urban water flows and storages is modeled and 
-visualized.  Any city may be modeled, but data for US cities can be 
-gathered via web services using this package and dependencies.  
+`CityWaterBalance` provides a reproducible workflow for studying an urban water
+system.  The network of urban water flows and storages can be modeled and 
+visualized.  Any city may be modeled with preassembled data, but data for US 
+cities can be gathered via web services using this package and dependencies.  
 
 ## Install
 
@@ -20,9 +20,6 @@ Development version available on Github:
 
 ```{r eval=FALSE}
 devtools::install_github("USEPA/CityWaterBalance")
-```
-
-```{r}
 library("CityWaterBalance")
 ```
 
@@ -33,18 +30,16 @@ library("CityWaterBalance")
 major flows and storages.  This model is codified in a function of the same 
 name. 
 
-![alt text](https://github.com/USEPA/CityWaterBalance/blob/master/figures/urban_water_system.png "Model of the urban water system")
+![Model of the urban water system](urban_water_system.png)
 
-There are two ways to run the CityWaterBalance model.
-1. Input preassembled data.  See function inputs for details.  Data should be in
-self-consistent units.  Each row must represent the same time period.
-2. Input data gathered from web services.  The CityWaterBalance package has 
-other functions that can grab and merge the requisite data.  At this time, these
-functions leverage US web services only.
 
 ## Usage examples
+There are two ways to run the CityWaterBalance model.
 
-1. Input preassembled data
+### Option 1:  Input preassembled data
+
+See function inputs for details.  Data should be in
+self-consistent units.  Each row must represent the same time period.
 
 ```
 # Specify parameters
@@ -61,27 +56,30 @@ plotWaterBalance(m$global_flows)
 plotWaterBalance(m$storages, annual=TRUE) 
 ```
 
-2. Input data gathered from web services
+### Option 2: Input data gathered from web services
 
-    + Specify spatial and temporal boundaries
-    To automate this example, geometry already available in the 
-    [USGS Geo Data Portal](https://cida.usgs.gov/gdp/) (GDP) is used.  A user 
-    will typically want to upload a zipped shapefile of their urban boundary 
-    and note the name given to that geometry by the GDP. 
-    
-    ```
-    geometry <- 'sample:Counties'
-    att <- 'STATE'
-    val <- 'RI'
-    start <- "2015-01-01"
-    end <- "2015-12-31"
-    ```
+The CityWaterBalance package has other functions that can grab and merge the 
+requisite data.  At this time, these functions leverage US web services only.
 
-    + Get atmospheric data
-    ```
-    latitude <- 41.878
-    atm <- getAtmoFlows('2010-01-01','2010-12-31','sample:Counties','STATE','RI',41.824)
-    ```
-    
-    + Get streamflow data
+#### Specify spatial and temporal boundaries
+To automate this example, geometry already available in the 
+[USGS Geo Data Portal](https://cida.usgs.gov/gdp/) (GDP) is used.  A user 
+will typically want to upload a zipped shapefile of their urban boundary 
+and note the name given to that geometry by the GDP. 
+
+```
+geometry <- 'sample:Counties'
+att <- 'STATE'
+val <- 'RI'
+start <- "2015-01-01"
+end <- "2015-12-31"
+```
+
+#### Get atmospheric data
+```
+latitude <- 41.878
+atm <- getAtmoFlows('2010-01-01','2010-12-31','sample:Counties','STATE','RI',41.824)
+```
+
+#### Get streamflow data
     

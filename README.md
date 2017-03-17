@@ -1,8 +1,8 @@
 # CityWaterBalance
-`CityWaterBalance` provides a suite of tools to model the urban water balance,
-including natural and manmade flows, over user-defined temporal and spatial
-boundaries.  Data are acquired through web services or provided by the user. 
-Outputs include time series plots showing the relative magnitudes of flows.
+`CityWaterBalance` provides a reproducible workflow for studying an urban water
+system.  The network of urban water flows and storages can be modeled and 
+visualized.  Any city may be modeled with preassembled data, but data for US 
+cities can be gathered via web services using this package and dependencies.
 
 # To install
 Install the development version of CityWaterBalance from GitHub:
