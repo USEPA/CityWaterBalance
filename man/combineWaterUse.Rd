@@ -14,13 +14,13 @@ combineWaterUse(start, end, wu)
 \item{wu}{list of dataframes output by getWaterUse}
 }
 \value{
-wu_flows list of xts objects including (units: MGal/month):
-       surface water withdrawals for theromelectric power (sw_therm),
-       surface water withdrawals for potable use (sw_pot),
-       surface water withdrawals for nonpotable use (sw_npot),
-       groundwater withdrawls for thermoelectric power (gw_therm),
-       groundwater withdrawals for potable use (gw_pot),
-       groundwater withdrawals for nonpotable use (gw_npot)
+wu_flows list of xts objects aggregating water withdrawals (MGal) by:
+ \item{sw_therm}{surface water for theromelectric power}
+ \item{sw_pot}{surface water for potable use}
+ \item{sw_npot}{surface water for nonpotable use}
+ \item{gw_therm}{groundwater for theromelectric power}
+ \item{gw_pot}{groundwater for potable use}
+ \item{gw_npot}{groundwater for nonpotable use}
 }
 \description{
 This function takes county-level USGS water use data gathered by getWaterUse

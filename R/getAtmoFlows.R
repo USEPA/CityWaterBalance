@@ -1,9 +1,9 @@
-#' Gather and consolidate all data time series for water balance
+#' Gather all atmospheric data time series
 #' 
-#' This function gathers precipitation and evapotranspiration data, merges these
-#' with streamflow and water use data, calculates the time-varying balance.  
-#' NOTE:  Shapefile for geometry must already be uploaded to the USGS 
-#' Geo Data Portal (GDP)
+#' This function gathers precipitation, evapotranspiration and temperature data 
+#' from the USGS Geo Data Portal (GDP), and calculates potential 
+#' evapotranspiration. NOTE:  Shapefile for geometry must already be uploaded to 
+#' the GDP.
 #'
 #' @param start start date in format 'YYYY-MM-DD'
 #' @param end end date in format 'YYYY-MM-DD'
@@ -11,7 +11,12 @@
 #' @param att attribute of geometry as displayed in GDP
 #' @param val values of attribute as displayed in GDP
 #' @param latitude (degrees)
-#' @return data as xts object
+#' @return xts object consisting of:
+#'  \item{prcp}{precipitation (mm)}
+#'  \item{et}{evapotranspiration (mm)}
+#'  \item{tmax}{max temperature (deg C)}
+#'  \item{tmin}{min temperature (deg C)}
+#'  \item{pet}{potential evapotranspiration (mm)}
 #' @importFrom xts as.xts
 #' @importFrom utils flush.console
 #' @importFrom EcoHydRology PET_fromTemp

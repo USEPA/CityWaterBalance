@@ -38,7 +38,7 @@ plotWaterBalance <- function(data, annual = FALSE) {
         }
     } else cols <- c("blue")
     
-    plot(d, xlab = "Date", ylab = expression(paste("Flux (mm/month)")), 
+    plot(d, xlab = "Year", ylab = expression(paste("Flux (mm/month)")), 
          col = cols, lwd = 1.5, screens = 1)
 
     abline(0, 0)

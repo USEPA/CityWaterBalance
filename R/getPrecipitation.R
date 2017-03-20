@@ -8,7 +8,7 @@
 #' @param geometry name of geometry as displayed in GDP 
 #' @param att attribute of geometry as displayed in GDP
 #' @param val values of attribute as displayed in GDP
-#' @return prcp 
+#' @return monthly precipitation, averaged spatially over geometry
 #' @import geoknife
 #' @examples
 #' prcp <- getPrecipitation('2010-01-01','2010-12-31','sample:Counties','STATE',

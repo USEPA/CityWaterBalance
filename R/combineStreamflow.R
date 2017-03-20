@@ -7,7 +7,7 @@
 #'        gapfillStreamflow
 #' @param mult list of multipliers, one for each gage
 #' @param approx option to interpolate missing values
-#' @return vector of total flow for each timestep
+#' @return total flow for each timestep (as xts)
 #' @importFrom xts as.xts
 #' @importFrom zoo na.approx
 #' @examples 

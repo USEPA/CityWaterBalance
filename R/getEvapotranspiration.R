@@ -8,7 +8,7 @@
 #' @param geometry name of geometry as displayed in GDP 
 #' @param att attribute of geometry as displayed in GDP
 #' @param val values of attribute as displayed in GDP
-#' @return ET
+#' @return monthly evapotranspiration, averaged spatially over geometry
 #' @import geoknife
 #' @examples
 #' et = getEvapotranspiration('2010-01-01','2010-12-31','sample:Counties',

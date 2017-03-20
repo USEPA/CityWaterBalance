@@ -26,9 +26,9 @@ mergeData(area, atm, inflow, outflow, sfpart = NULL, wu, ws_imports = NULL,
 
 \item{wweff}{xts of wastewater effluent (MGD)}
 
-\item{dgr}{xts of deep groundwater recharge}
+\item{dgr}{xts of deep groundwater recharge (mm/month)}
 
-\item{cso}{xts of cso events}
+\item{cso}{xts of cso events (mm/month)}
 }
 \value{
 xts of all fluxes for each timestep (mm/month)

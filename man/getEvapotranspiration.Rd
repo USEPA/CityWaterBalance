@@ -18,7 +18,7 @@ getEvapotranspiration(start, end, geometry, att, val = NA)
 \item{val}{values of attribute as displayed in GDP}
 }
 \value{
-ET
+monthly evapotranspiration, averaged spatially over geometry
 }
 \description{
 This function aggregates monthly SSEBop output for a given area using the 

@@ -175,10 +175,9 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     
     nyears <- nrow(data)/12
     
-    if (min((k3 + k27 - k34), na.rm = TRUE) < 0) {
-        print("WARNING:  CSO volumes greater than runoff + sewage")
-    }
     if (print == TRUE) {
+        if (min((k3 + k27 - k34), na.rm = TRUE) < 0) {
+          print("WARNING:  CSO volumes greater than runoff + sewage")}
         print(paste("Potable storage sums to:", sum(storages$potable, 
                                                     na.rm = TRUE)))
         print(paste("Non-potable storage sums to:", sum(storages$nonpotable, 

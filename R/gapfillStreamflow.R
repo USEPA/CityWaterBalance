@@ -5,7 +5,10 @@
 #' 
 #' @param flowlist list of gage data and information from getStreamflow
 #' @param paired_gages list of gage pairs';;, where pair < -c(gappy,master)
-#' @return list list of 2: sites, gap-filled flow data as xts object
+#' @return list of: 
+#'  \item{sites}{list of gage site names}
+#'  \item{site_num}{list of gage numbers}
+#'  \item{flows}{xts of gap-filled daily average discharge}
 #' @importFrom stats median
 #' @examples 
 #' gages <- c('05551540','05552500')

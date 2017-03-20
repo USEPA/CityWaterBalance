@@ -12,7 +12,10 @@ gapfillStreamflow(flowlist, paired_gages)
 \item{paired_gages}{list of gage pairs';;, where pair < -c(gappy,master)}
 }
 \value{
-list list of 2: sites, gap-filled flow data as xts object
+list of: 
+ \item{sites}{list of gage site names}
+ \item{site_num}{list of gage numbers}
+ \item{flows}{xts of gap-filled daily average discharge}
 }
 \description{
 This function fills in gappy streamflow records using median of discharge 

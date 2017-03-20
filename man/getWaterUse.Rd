@@ -14,7 +14,12 @@ getWaterUse(states, counties, years = "ALL")
 \item{years}{list of years of available data}
 }
 \value{
-list of dataframes, one for each water source and quality (MGD)
+list of dataframes of water withdrawals (MGD) by category of use, 
+one for each water source and quality (MGD):
+ \item{swf}{surface water, fresh}
+ \item{gwf}{groundwater, fresh}
+ \item{sws}{surface water, saline}
+ \item{gws}{groundwater, saline}
 }
 \description{
 This function gathers and summarizes water use data from USGS NWIS by county,  

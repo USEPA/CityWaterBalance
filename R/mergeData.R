@@ -13,8 +13,8 @@
 #' @param wu xts of water use, from combineWaterUse (MGal/month)
 #' @param ws_imports xts of imports for water supply (MGal/month)
 #' @param etc_imports xts of other imports to surface water (MGal/month)
-#' @param dgr xts of deep groundwater recharge
-#' @param cso xts of cso events
+#' @param dgr xts of deep groundwater recharge (mm/month)
+#' @param cso xts of cso events (mm/month)
 #' @import lubridate
 #' @return xts of all fluxes for each timestep (mm/month)
 #' @importFrom xts as.xts apply.monthly

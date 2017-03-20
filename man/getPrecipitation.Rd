@@ -18,7 +18,7 @@ getPrecipitation(start, end, geometry, att, val = NA)
 \item{val}{values of attribute as displayed in GDP}
 }
 \value{
-prcp
+monthly precipitation, averaged spatially over geometry
 }
 \description{
 This function aggregates monthly PRISM output for a given area using the USGS 

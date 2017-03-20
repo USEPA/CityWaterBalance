@@ -2,7 +2,7 @@
 % Please edit documentation in R/getAtmoFlows.R
 \name{getAtmoFlows}
 \alias{getAtmoFlows}
-\title{Gather and consolidate all data time series for water balance}
+\title{Gather all atmospheric data time series}
 \usage{
 getAtmoFlows(start, end, geometry, att, val = NA, latitude)
 }
@@ -20,13 +20,18 @@ getAtmoFlows(start, end, geometry, att, val = NA, latitude)
 \item{latitude}{(degrees)}
 }
 \value{
-data as xts object
+xts object consisting of:
+ \item{prcp}{precipitation (mm)}
+ \item{et}{evapotranspiration (mm)}
+ \item{tmax}{max temperature (deg C)}
+ \item{tmin}{min temperature (deg C)}
+ \item{pet}{potential evapotranspiration (mm)}
 }
 \description{
-This function gathers precipitation and evapotranspiration data, merges these
-with streamflow and water use data, calculates the time-varying balance.  
-NOTE:  Shapefile for geometry must already be uploaded to the USGS 
-Geo Data Portal (GDP)
+This function gathers precipitation, evapotranspiration and temperature data 
+from the USGS Geo Data Portal (GDP), and calculates potential 
+evapotranspiration. NOTE:  Shapefile for geometry must already be uploaded to 
+the GDP.
 }
 \examples{
 atm <- getAtmoFlows('2010-01-01','2010-12-31','sample:Counties','STATE','RI',

@@ -15,7 +15,7 @@ gapfillStreamflow}
 \item{approx}{option to interpolate missing values}
 }
 \value{
-vector of total flow for each timestep
+total flow for each timestep (as xts)
 }
 \description{
 This function combines streamflow data from multiple gages, averaging records

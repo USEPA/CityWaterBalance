@@ -6,7 +6,11 @@
 #' @param start start date in format 'YYYY-MM-DD'
 #' @param end end date in format 'YYYY-MM-DD'
 #' @param gages list of USGS gage numbers 
-#' @return list list of 3: sites, site numbers, flow data as xts object
+#' @return list of: 
+#'  \item{sites}{list of gage site names}
+#'  \item{site_num}{list of gage numbers}
+#'  \item{flows}{xts of daily average discharge (cfs)}
+#' sites, site numbers, flow data as xts object
 #' @importFrom dataRetrieval readNWISdv
 #' @importFrom xts as.xts 
 #' @importFrom zoo as.zoo
