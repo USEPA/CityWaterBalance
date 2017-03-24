@@ -1,52 +1,65 @@
 #' Tracks flows of water through urban system 
 #' 
 #' This function tracks environmental and manmade flows of water they move 
-#' through pathways and storages within the urban system.
+#' through pathways and storages within the urban system. Data can be in any 
+#' self-consistent units.
 #' 
-#' @param data xts or zoo object with date index and columns of data for:
-#'        precipitation (prcp),
-#'        evapotranspiration (et),
-#'        streamflow in (inflow),
-#'        streamflow out (outflow),
-#'        water supply imports (ws_imports),
-#'        other imports (etc_imports),
-#'        surface water withdrawals for thermoelectric power (sw_therm),
-#'        surface water withdrawals for potable use (sw_pot),
-#'        surface water withdrawals for nonpotable use (sw_npot),
-#'        groundwater withdrawls for thermoelectric power (gw_therm),
-#'        groundwater withdrawals for potable use (gw_pot),
-#'        groundwater withdrawals for nonpotable use (gw_npot),
-#'        deep groundwater recharge (dgr),
-#'        combined sewer overflow events (cso),
-#'        wastewater treatment plant effluent (wtpe)
-#'        runoff estimate (runoff)
-#'        baseflow estimate (baseflow)
-#' @param p list of fixed parameter values for:
-#'        fraction of area that is open water (openwat),
-#'        fraction of pet lost to interception (interc),
-#'        amplification factor for et (et_amp),
-#'        amplification factor for outflow (flow_amp),
-#'        amplification factor for runoff (runamp),
-#'        amplification factor for baseflow (baseflow_amp),
-#'        fraction of runoff diverted to css (run_css),
-#'        fraction of potable water supply lost to leaks (nonrev),
-#'        fraction of cooling water that evaporates (powevap),
-#'        fraction of potable use that returns to css (wastgen),
-#'        fraction of potable use that evaporates (potatm),
-#'        fraction of nonpotable use that infiltrates (npotinfilt),
-#'        fraction of wastewater that evaporated from sludge (evslud),
-#'        fraction of wastewater effluent from gw infiltration (css_leak)
-#'        fraction of groundwater from deep, confined aquifers (deepgw)
-#'        fraction of deep groundwater not replaced by inflow (dgwloss)
+#' @param data xts or zoo object with date index and columns of data for:\cr
+#'        precipitation (prcp) \cr
+#'        evapotranspiration (et) \cr
+#'        streamflow in (inflow) \cr
+#'        streamflow out (outflow) \cr
+#'        water supply imports (ws_imports) \cr
+#'        other imports (etc_imports) \cr
+#'        surface water withdrawals for thermoelectric power (sw_therm) \cr
+#'        surface water withdrawals for potable use (sw_pot) \cr
+#'        surface water withdrawals for nonpotable use (sw_npot) \cr
+#'        groundwater withdrawls for thermoelectric power (gw_therm) \cr
+#'        groundwater withdrawals for potable use (gw_pot) \cr
+#'        groundwater withdrawals for nonpotable use (gw_npot) \cr
+#'        deep groundwater recharge (dgr) \cr
+#'        combined sewer overflow events (cso) \cr
+#'        wastewater treatment plant effluent (wtpe) \cr
+#'        runoff estimate (runoff) \cr
+#'        baseflow estimate (baseflow) \cr
+#' @param p list of fixed parameter values for: \cr
+#'        fraction of area that is open water (openwat) \cr
+#'        fraction of pet lost to interception (interc) \cr
+#'        amplification factor for et (et_amp) \cr
+#'        amplification factor for outflow (flow_amp) \cr
+#'        amplification factor for runoff (runamp) \cr
+#'        amplification factor for baseflow (baseflow_amp) \cr
+#'        fraction of runoff diverted to css (run_css) \cr
+#'        fraction of potable water supply lost to leaks (nonrev) \cr
+#'        fraction of cooling water that evaporates (powevap) \cr
+#'        fraction of potable use that returns to css (wastgen) \cr
+#'        fraction of potable use that evaporates (potatm) \cr
+#'        fraction of nonpotable use that infiltrates (npotinfilt) \cr
+#'        fraction of wastewater that evaporates from sludge (evslud) \cr
+#'        fraction of wastewater effluent from gw infiltration (css_leak) \cr
+#'        fraction of groundwater from deep, confined aquifers (deepgw) \cr
+#'        fraction of deep groundwater not replaced by inflow (dgwloss) \cr
 #' @param print option to print messages
-#' @return list of dataframes for 1) global flows, 2) internal flows, 
-#'        3) storages, 4) global balance, 5) internal balance and 2) storages
+#' @return list of dataframes:
+#'  \item{global_flows}{global flows}
+#'  \item{int_env_flows}{internal environmental flows}
+#'  \item{int_man_flows}{internal manmade flows (major)}
+#'  \item{all_flows}{all flows} 
+#'  \item{storages}{storages}
+#'  \item{producers}{producers}
+#'  \item{consumers}{consumers}
+#'  \item{global_balance}{global water balance} 
+#'  \item{internal_balance}{internal water balance}   
 #' @importFrom grDevices rainbow
 #' @import zoo
 #' @importFrom utils flush.console
 #' @examples
+#' p <- list("openwat"=0.02,"interc"=0,"et_amp" = 1,"flow_amp" = 1,"run_amp"=3.378,
+#'          "run_css"=0.35, "baseflow_amp" = 1, "nonrev"=0.08,"powevap"=0.012,
+#'          "wastgen"=0.85,"potatm"=0.13,"potinfilt"=0,"npotinfilt"=0.5,
+#'          "evslud"=0,"css_leak"=0.05,"deepgw"=0.5,"dgwloss"=1)
+#' m <- CityWaterBalance(cwb_data,p) 
 #' @export
-
 
 # -------------- Model -----------------
 
@@ -149,17 +162,27 @@ CityWaterBalance <- function(data, p, print = TRUE) {
                              "Water supply imports", "Other imports")
     
     # Internal, natural flows
-    int_nat_flows <- zoo(cbind(k1, k8, infiltration, recharge, k2, k13), 
+    int_env_flows <- zoo(cbind(k1, k8, infiltration, recharge, k2, k13), 
                          order.by = index(data))
-    names(int_nat_flows) <- c("Interception", "Surface water evap", 
+    names(int_env_flows) <- c("Interception", "Surface water evap", 
                               "Infiltration", "Recharge", "Runoff", "Baseflow")
     
-    # Internal, manmade flows
+    # Internal, major manmade flows
     int_man_flows <- zoo(cbind(ws_potable, ws_nonpotable, cooling, leakage, k3, 
                                k32, k34), order.by = index(data))
-    names(int_man_flows) <- c("Potable withdrawal", "Non-potable withdrawal", 
+    names(int_man_flows) <- c("Potable withdrawal", "Nonpotable withdrawal", 
                               "Cooling","Leakage", "Runoff to sewer", 
                               "Wastewater", "CSO")
+    
+    # All flows
+    all_flows <- zoo(cbind(k1,k2,k3,k4,k5,k6,k7,k8,k9,k10,k11,k12,k13,k14,k15,
+                           k16,k17,k18,k19,k20,k21,k22,k23,k24,k25,k26,k27,k28,
+                           k29,k30,k31,k32,k33,k34,k35), 
+                           order.by = index(data))
+    names(all_flows) <- c("k1","k2","k3","k4","k5","k6","k7","k8","k9","k10",
+                          "k11","k12","k13","k14","k15", "k16","k17","k18",
+                          "k19","k20","k21","k22","k23","k24","k25","k26","k27",
+                          "k28","k29","k30","k31","k32","k33","k34","k35")
     
     # Storages
     storages <- zoo(cbind(sw, sgw, dgw, css), order.by = index(data))
@@ -213,8 +236,9 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     }
     
     
-    return(list(global_flows = global_flows, int_nat_flows = int_nat_flows, 
-                int_man_flows = int_man_flows, storages = storages, 
+    return(list(global_flows = global_flows, int_env_flows = int_env_flows, 
+                int_man_flows = int_man_flows, 
+                all_flows = all_flows, storages = storages, 
                 consumers = consumers, producers = producers, 
                 global_balance = GB, internal_balance = IB))
 }

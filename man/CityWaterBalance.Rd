@@ -7,50 +7,66 @@
 CityWaterBalance(data, p, print = TRUE)
 }
 \arguments{
-\item{data}{xts or zoo object with date index and columns of data for:
-precipitation (prcp),
-evapotranspiration (et),
-streamflow in (inflow),
-streamflow out (outflow),
-water supply imports (ws_imports),
-other imports (etc_imports),
-surface water withdrawals for thermoelectric power (sw_therm),
-surface water withdrawals for potable use (sw_pot),
-surface water withdrawals for nonpotable use (sw_npot),
-groundwater withdrawls for thermoelectric power (gw_therm),
-groundwater withdrawals for potable use (gw_pot),
-groundwater withdrawals for nonpotable use (gw_npot),
-deep groundwater recharge (dgr),
-combined sewer overflow events (cso),
-wastewater treatment plant effluent (wtpe)
-runoff estimate (runoff)
-baseflow estimate (baseflow)}
+\item{data}{xts or zoo object with date index and columns of data for:\cr
+precipitation (prcp) \cr
+evapotranspiration (et) \cr
+streamflow in (inflow) \cr
+streamflow out (outflow) \cr
+water supply imports (ws_imports) \cr
+other imports (etc_imports) \cr
+surface water withdrawals for thermoelectric power (sw_therm) \cr
+surface water withdrawals for potable use (sw_pot) \cr
+surface water withdrawals for nonpotable use (sw_npot) \cr
+groundwater withdrawls for thermoelectric power (gw_therm) \cr
+groundwater withdrawals for potable use (gw_pot) \cr
+groundwater withdrawals for nonpotable use (gw_npot) \cr
+deep groundwater recharge (dgr) \cr
+combined sewer overflow events (cso) \cr
+wastewater treatment plant effluent (wtpe) \cr
+runoff estimate (runoff) \cr
+baseflow estimate (baseflow) \cr}
 
-\item{p}{list of fixed parameter values for:
-fraction of area that is open water (openwat),
-fraction of pet lost to interception (interc),
-amplification factor for et (et_amp),
-amplification factor for outflow (flow_amp),
-amplification factor for runoff (runamp),
-amplification factor for baseflow (baseflow_amp),
-fraction of runoff diverted to css (run_css),
-fraction of potable water supply lost to leaks (nonrev),
-fraction of cooling water that evaporates (powevap),
-fraction of potable use that returns to css (wastgen),
-fraction of potable use that evaporates (potatm),
-fraction of nonpotable use that infiltrates (npotinfilt),
-fraction of wastewater that evaporated from sludge (evslud),
-fraction of wastewater effluent from gw infiltration (css_leak)
-fraction of groundwater from deep, confined aquifers (deepgw)
-fraction of deep groundwater not replaced by inflow (dgwloss)}
+\item{p}{list of fixed parameter values for: \cr
+fraction of area that is open water (openwat) \cr
+fraction of pet lost to interception (interc) \cr
+amplification factor for et (et_amp) \cr
+amplification factor for outflow (flow_amp) \cr
+amplification factor for runoff (runamp) \cr
+amplification factor for baseflow (baseflow_amp) \cr
+fraction of runoff diverted to css (run_css) \cr
+fraction of potable water supply lost to leaks (nonrev) \cr
+fraction of cooling water that evaporates (powevap) \cr
+fraction of potable use that returns to css (wastgen) \cr
+fraction of potable use that evaporates (potatm) \cr
+fraction of nonpotable use that infiltrates (npotinfilt) \cr
+fraction of wastewater that evaporates from sludge (evslud) \cr
+fraction of wastewater effluent from gw infiltration (css_leak) \cr
+fraction of groundwater from deep, confined aquifers (deepgw) \cr
+fraction of deep groundwater not replaced by inflow (dgwloss) \cr}
 
 \item{print}{option to print messages}
 }
 \value{
-list of dataframes for 1) global flows, 2) internal flows, 
-       3) storages, 4) global balance, 5) internal balance and 2) storages
+list of dataframes:
+ \item{global_flows}{global flows}
+ \item{int_env_flows}{internal environmental flows}
+ \item{int_man_flows}{internal manmade flows (major)}
+ \item{all_flows}{all flows} 
+ \item{storages}{storages}
+ \item{producers}{producers}
+ \item{consumers}{consumers}
+ \item{global_balance}{global water balance} 
+ \item{internal_balance}{internal water balance}
 }
 \description{
 This function tracks environmental and manmade flows of water they move 
-through pathways and storages within the urban system.
+through pathways and storages within the urban system. Data can be in any 
+self-consistent units.
+}
+\examples{
+p <- list("openwat"=0.02,"interc"=0,"et_amp" = 1,"flow_amp" = 1,"run_amp"=3.378,
+         "run_css"=0.35, "baseflow_amp" = 1, "nonrev"=0.08,"powevap"=0.012,
+         "wastgen"=0.85,"potatm"=0.13,"potinfilt"=0,"npotinfilt"=0.5,
+         "evslud"=0,"css_leak"=0.05,"deepgw"=0.5,"dgwloss"=1)
+m <- CityWaterBalance(cwb_data,p) 
 }

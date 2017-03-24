@@ -3,6 +3,7 @@
 export(CityWaterBalance)
 export(combineStreamflow)
 export(combineWaterUse)
+export(cwb_scenarios)
 export(gapfillStreamflow)
 export(getAtmoFlows)
 export(getEvapotranspiration)
