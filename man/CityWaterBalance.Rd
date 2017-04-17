@@ -27,34 +27,29 @@ runoff estimate (runoff) \cr
 baseflow estimate (baseflow) \cr}
 
 \item{p}{list of fixed parameter values for: \cr
-fraction of area that is open water (openwat) \cr
 fraction of pet lost to interception (interc) \cr
-amplification factor for et (et_amp) \cr
-amplification factor for outflow (flow_amp) \cr
-amplification factor for runoff (runamp) \cr
-amplification factor for baseflow (baseflow_amp) \cr
+multiplier for et (et_mult) \cr
+multiplier for outflow (flow_mult) \cr
+multiplier for runoff (run_mult) \cr
+fraction of deep groundwater not replaced by inflow (dgw_loss) \cr
+fraction of area that is open water (open_wat) \cr
+multiplier for baseflow (bf_mult) \cr
 fraction of runoff diverted to css (run_css) \cr
 fraction of potable water supply lost to leaks (nonrev) \cr
-fraction of cooling water that evaporates (powevap) \cr
-fraction of potable use that returns to css (wastgen) \cr
-fraction of potable use that evaporates (potatm) \cr
-fraction of nonpotable use that infiltrates (npotinfilt) \cr
-fraction of wastewater that evaporates from sludge (evslud) \cr
-fraction of wastewater effluent from gw infiltration (css_leak) \cr
-fraction of groundwater from deep, confined aquifers (deepgw) \cr
-fraction of deep groundwater not replaced by inflow (dgwloss) \cr}
+fraction of cooling water that evaporates (pow_evap) \cr
+fraction of potable use that returns to css (wast_gen) \cr
+fraction of potable use that evaporates (pot_atm) \cr
+fraction of nonpotable use that infiltrates (npot_infilt) \cr
+fraction of wastewater that evaporates from sludge (slud_evap) \cr
+fraction of wastewater effluent from gw infiltration (leak_css) \cr
+fraction of groundwater from deep, confined aquifers (deep_gw) \cr}
 
 \item{print}{option to print messages}
 }
 \value{
 list of dataframes:
- \item{global_flows}{global flows}
- \item{int_env_flows}{internal environmental flows}
- \item{int_man_flows}{internal manmade flows (major)}
  \item{all_flows}{all flows} 
- \item{storages}{storages}
- \item{producers}{producers}
- \item{consumers}{consumers}
+ \item{state_vars}{state variables}
  \item{global_balance}{global water balance} 
  \item{internal_balance}{internal water balance}
 }
@@ -64,9 +59,10 @@ through pathways and storages within the urban system. Data can be in any
 self-consistent units.
 }
 \examples{
-p <- list("openwat"=0.02,"interc"=0,"et_amp" = 1,"flow_amp" = 1,"run_amp"=3.378,
-         "run_css"=0.35, "baseflow_amp" = 1, "nonrev"=0.08,"powevap"=0.012,
-         "wastgen"=0.85,"potatm"=0.13,"potinfilt"=0,"npotinfilt"=0.5,
-         "evslud"=0,"css_leak"=0.05,"deepgw"=0.5,"dgwloss"=1)
+p <- list("interc" = 0,"et_mult" = 1,"flow_mult" = 1, 
+         "open_wat" = 0.02, "run_mult" = 3.378, "run_css" = 0.35, 
+         "bf_mult" = 1, "nonrev"=0.08,"pow_evap"=0.012,
+         "wast_gen" = 0.85,"pot_atm" = 0.13,"npot_infilt" = 0.5,
+         "slud_evap" = 0,"leak_css" = 0.05,"deep_gw" = 0.5)
 m <- CityWaterBalance(cwb_data,p) 
 }
