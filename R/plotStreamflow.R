@@ -1,12 +1,15 @@
 #' Plot discharge at a set of gages
 #' 
-#' This function plots output from getStreamflow
+#' This function plots streamflow data
 #'
-#' @param flowlist list object created by getStreamflow
+#' @param flowlist list object of flow data output from, e.g., getStreamflow
 #' @return plot
 #' @importFrom zoo as.zoo
 #' @importFrom graphics legend 
 #' @importFrom grDevices rainbow
+#' @examples 
+#' flow <- getStreamflow('2000-01-01','2010-12-31',c('05551540','05552500'))
+#' plotStreamflow(flow)
 #' @export
 
 

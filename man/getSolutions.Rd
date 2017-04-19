@@ -4,44 +4,44 @@
 \alias{getSolutions}
 \title{Evaluate parameter uncertainty}
 \usage{
-getSolutions(data, p, n, n2, tol = 10, interc = c(0, 0.05), et_mult = c(1,
+getSolutions(data, p, n, tol = 0.01, interc = c(0, 0.05), et_mult = c(1,
   1.1367), flow_mult = c(1.02, 1.1179), open_wat = c(0.02, 0.02),
   run_mult = c(1, 4.3), run_css = c(0.2, 1), bf_mult = c(0.5, 1),
   nonrev = c(0.08, 0.16), pow_evap = c(0.012, 0.012), wast_gen = c(0.78,
   0.78), pot_atm = c(0.1, 0.15), npot_infilt = c(0.5, 0.5),
-  slud_evap = c(0, 0), leak_css = c(0.05, 0.24), deep_gw = c(0.5, 0.5),
-  global_bal = c(-119.7, 0), sw_bal = c(-500, 500), css_bal = c(65, 310),
-  sgw_bal = c(-500, 500), dgw_bal = c(-119.7, 0))
+  slud_evap = c(0, 0), leak_css = c(0.05, 0.24), dgw = c(0.5, 0.5),
+  dgw_rep = c(0, 1), global_bal = c(-119.7, 0), sw_bal = c(-500, 500),
+  css_bal = c(-310, 310), sgw_bal = c(-500, 500), dgw_bal = c(-119.7, 0))
 }
 \arguments{
 \item{data}{xts or zoo object. See CityWaterBalance function for details.}
 
-\item{p}{list of initial parameter values. See CityWaterBalance function or 
-below for descriptions.}
+\item{p}{list of initial parameter values. See CityWaterBalance function or
+the inputs below for descriptions.}
 
-\item{n}{integer number of global parameter sets to search}
+\item{n}{integer number of initial parameter sets to search}
 
-\item{n2}{integer number of internal parameter sets to search}
-
-\item{tol}{tolerance acceptible difference in flow means between successive
-iterations before stopping}
+\item{tol}{tolerance acceptible difference mean flow solutions}
 
 \item{interc}{vector of min and max fraction of pet lost to interception}
 
-\item{et_mult}{vector of min and max multipliers for et}
+\item{et_mult}{vector of min and max multiplier for et}
 
-\item{flow_mult}{vector of min and max multipliers for outflow}
+\item{flow_mult}{vector of min and max multiplier for outflow}
 
 \item{open_wat}{vector of min and max fraction of area that is open water}
 
-\item{run_mult}{vector of min and max multipliers for runoff}
+\item{run_mult}{vector of min and max multiplier for runoff}
 
-\item{run_css}{vector of min and max fraction of runoff diverted to css}
+\item{run_css}{vector of min and max fraction of runoff diverted to sewers}
 
-\item{bf_mult}{vector of min and max multipliers for baseflow}
+\item{bf_mult}{vector of min and max multiplier for baseflow}
 
 \item{nonrev}{vector of min and max fraction of potable water supply lost to 
 leaks}
+
+\item{pow_evap}{vector of min and max fraction of cooling water that 
+evaporates}
 
 \item{wast_gen}{vector of min and max fraction of potable use that returns to 
 sewers}
@@ -57,18 +57,40 @@ wastewater sludge}
 \item{leak_css}{vector of min and max fraction of wastewater effluent from gw 
 infiltration}
 
-\item{deep_gw}{vector of min and max fraction of groundwater from deep, 
-confined aquifers}
+\item{dgw}{vector of min and max fraction of groundwater from deep, confined 
+aquifers}
 
-\item{powevap}{vector of min and max fraction of cooling water that 
-evaporates}
+\item{dgw_rep}{vector of min and max multiplier for deep groundwater pumping 
+replacement}
+
+\item{global_bal}{vector of min and max acceptable global water balance 
+values, cumulative over model run}
+
+\item{sw_bal}{vector of min and max acceptable surface water balance 
+values, cumulative over model run}
+
+\item{css_bal}{vector of min and max acceptable sewer system water balance 
+values, cumulative over model run}
+
+\item{sgw_bal}{vector of min and max acceptable shallow groundwater balance 
+values, cumulative over model run}
+
+\item{dgw_bal}{vector of min and max acceptable deep groundwater balance 
+values, cumulative over model run}
 }
 \value{
 out numeric solutions
 }
 \description{
-This function searches for solutions within the uncertainty of model 
+This function searches for acceptable model solutions within the uncertainty 
 parameters and long-term storage balances using Latin hypercubes.
+}
+\details{
+The function creates n parameter sets using a Latin hupercube.  It runs
+CityWaterBalance with each set, accepting solutions that meet user-defined
+criteria for storage balances.  It then computes the mean of flow solutions, 
+and doubles n until the difference between the means of old and new solutions 
+is less than tol for all flows.
 }
 \examples{
 data <- cwb_data
@@ -77,6 +99,6 @@ p <- list("interc" = 0,"et_mult" = 1,"flow_mult" = 1,
           "open_wat" = 0.02, "run_mult" = 3.378, "run_css" = 0.35,
           "bf_mult" = 1, "nonrev"=0.08,"pow_evap"=0.012,"wast_gen" = 0.85,
           "pot_atm" = 0.13,"npot_infilt" = 0.5,"slud_evap" = 0,
-          "leak_css" = 0.05,"deep_gw" = 0.5)
-out <- getSolutions(data,p,12,36)
+          "leak_css" = 0.05,"dgw" = 0.5, "dgw_rep" = 0.5)
+out <- getSolutions(data,p,100,0.1)
 }

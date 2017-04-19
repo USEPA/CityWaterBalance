@@ -1,8 +1,6 @@
 #' Plot urban water balance
 #' 
-#' This function plots components of the urban water balance (selected output 
-#' from getData or CityWaterBalance) showing time-variant flows at monthly or 
-#' annual-aggregated resolution.
+#' This function plots time series components of the urban water balance. 
 #'
 #' @param data xts or zoo object 
 #' @param annual flag indicating whether to plot annual totals
@@ -11,6 +9,9 @@
 #' @importFrom zoo as.zoo
 #' @importFrom xts apply.yearly
 #' @importFrom graphics legend abline plot
+#' @examples
+#' data <- cwb_data[,c(1:4)]
+#' plotWaterBalance(data)
 #' @export
 
 
@@ -21,22 +22,7 @@ plotWaterBalance <- function(data, annual = FALSE) {
     }
     d <- as.zoo(data)
     
-    cols <- c("blue", "springgreen3", "darkorange1", "red")
-    
-    if (!is.null(ncol(d))) {
-        if (ncol(data) == 5) {
-            cols <- c("blue", "springgreen3", "darkorange1", "red", 
-                      "darkorchid1")
-        }
-        if (ncol(data) == 6) {
-            cols <- c("blue", "red", "cyan3", "chartreuse3", "darkorchid1", 
-                      "darkorange1")
-        }
-        if (ncol(data) == 8) {
-            cols <- c("blue", "red", "green4", "cornflowerblue", "chartreuse3", 
-                      "cyan3", "darkorchid2", "darkorange1")
-        }
-    } else cols <- c("blue")
+    cols <- c("blue", "darkorange", "cyan2", "green3", "darkorchid1")
     
     plot(d, xlab = "Year", ylab = expression(paste("Flux (mm/month)")), 
          col = cols, lwd = 1.5, screens = 1)

@@ -7,11 +7,11 @@
 plotStreamflow(flowlist)
 }
 \arguments{
-\item{flowlist}{list object created by getStreamflow}
+\item{flowlist}{list object of flow data output from, e.g., getStreamflow}
 }
 \value{
 plot
 }
 \description{
-This function plots output from getStreamflow
+This function plots streamflow data
 }

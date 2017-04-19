@@ -17,7 +17,5 @@ plotWaterBalance(data, annual = FALSE)
 plot
 }
 \description{
-This function plots components of the urban water balance (selected output 
-from getData or CityWaterBalance) showing time-variant flows at monthly or 
-annual-aggregated resolution.
+This function plots time series components of the urban water balance.
 }
