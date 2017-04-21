@@ -43,7 +43,7 @@ a mathematical solution for unknown flows or changes in system storages.
 
 
 ## Usage examples
-There are two ways to run the CityWaterBalance model.
+There are two ways to run the model in \code{\link{CityWaterBalance}}.
 
 ### Option 1:  Input preassembled data
 
@@ -101,7 +101,8 @@ atm <- getAtmoFlows(start,end,geometry,att,val,latitude)
 
 #### Get streamflow data
 
-Choose streamgages to evaluate total inflow and outflow for the AOI.  [NWIS mapper](https://maps.waterdata.usgs.gov/) may be useful here.
+Choose streamgages to evaluate total inflow and outflow for the AOI.  
+[NWIS mapper](https://maps.waterdata.usgs.gov/) may be useful here.
 
 ```
 ingages <- c("01112500")
@@ -111,9 +112,10 @@ inflow <- getStreamflow(start,end,ingages)
 outflow <- getStreamflow(start,end,outgages)
 ```
 
-Look at the streamflow data with plotStreamflow. Gaps can be filled using 
-gapfillStreamflow.  When there all time series of flows are complete, use
-combineStreamflow (which has an example of this entire process).
+Look at the streamflow data with \code{\link{plotStreamflow}}.  Gaps can be 
+filled using \code{\link{gapfillStreamflow}}.  When there all time series of 
+flows are complete, use \code{\link{combineStreamflow}} (which has an example of 
+this process).
 
 #### Get water use data
 
@@ -128,7 +130,7 @@ wu <- getWaterUse(states,counties,years="ALL")
 
 The above retrieves [USGS water use](https://water.usgs.gov/watuse/) data for 
 the specified counties for all available years and withdrawal categories. To 
-reorganize this output for use by the CityWaterBalance model, use:
+reorganize this output for use by \code{\link{CityWaterBalance}}, use:
 
 ```
 wu = combineWaterUse(start,end,wu)
@@ -137,13 +139,25 @@ wu = combineWaterUse(start,end,wu)
 #### Get other data
 
 Not all requisite data is currently available through web services.  These
-inputs must be gathered from other sources and converted to xts object with the
-same temporal range and resolution as the other flows.  Units for these flows 
-must correspond with those specified for inputs to function mergeData.
+inputs (wastewater effluent, sewer overflows, runoff, baseflow and deep 
+groundwater recharge) must be gathered from other sources and converted to xts 
+objects with the same temporal range and resolution as the other flows. Unit 
+must correspond with those specified for inputs to \code{\link{mergeData}}.
 
-Finally, merge these data into a single time series of fluxes (flow/AOI) for 
-CityWaterBalance.  
+Finally, merge the data into a single xts of fluxes (i.e., flow/AOI) for input 
+to \code{\link{CityWaterBalance}}.  
 
 ```
-data = mergeData(area,atm,inflow,outflow,sfpart=NULL,wu,ws_imports,etc_imports,wweff,dgr,cso)
+data <- mergeData(area,atm,inflow,outflow,wu)
 ```
+
+### Solution
+
+CityWaterBalance solves for the change in storages of all state variables and
+cumulatively, the global storage. Uncertainty in the data and parameters creates
+a solution space, or range of acceptable solutions according to ancillary
+observations of storage changes throughout the system.  The function 
+getSolutions
+
+
+
