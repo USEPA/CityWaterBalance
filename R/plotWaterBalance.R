@@ -4,13 +4,12 @@
 #'
 #' @param data xts or zoo object 
 #' @param annual flag indicating whether to plot annual totals
-#' @param ys ylim for plot 
 #' @return plot
 #' @importFrom zoo as.zoo
 #' @importFrom xts apply.yearly
 #' @importFrom graphics legend abline plot
 #' @examples
-#' data <- cwb_data[,c(1:4)]
+#' data <- cwb_data[,c(1,2,4,5)]
 #' plotWaterBalance(data)
 #' @export
 

@@ -58,7 +58,7 @@
 #'           "bf_mult" = 1, "nonrev"=0.08,"pow_evap"=0.012,"wast_gen" = 0.85,
 #'           "pot_atm" = 0.13,"npot_infilt" = 0.5,"slud_evap" = 0,
 #'           "leak_css" = 0.05,"dgw" = 0.5, "dgw_rep" = 0.5)
-#' out <- getSolutions(data,p,100,0.1)
+#' out <- getSolutions(data,p,10,0.1)
 #' @export
 
 getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05), 
@@ -69,9 +69,9 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
                         wast_gen = c(0.78,0.78), pot_atm = c(0.10,0.15),
                         npot_infilt = c(0.5,0.5), slud_evap = c(0,0), 
                         leak_css = c(0.05,0.24), dgw = c(0.5,0.5), 
-                        dgw_rep = c(0,1), global_bal = c(-119.7,0), 
-                        sw_bal =c(-500,500), css_bal = c (-310,310), 
-                        sgw_bal = c(-500,500), dgw_bal = c(-119.7,0)){
+                        dgw_rep = c(0,1), global_bal = c(-500,500), 
+                        sw_bal =c(-500,500), css_bal = c (-500,500), 
+                        sgw_bal = c(-500,500), dgw_bal = c(-500,500)){
 
   # initilize vectors
   old <- rep(0,35)

@@ -15,10 +15,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-`CityWaterBalance` provides a reproducible workflow for studying an urban water
-system.  The network of urban water flows and storages can be modeled and 
-visualized.  Any city may be modeled with preassembled data, but data for US 
-cities can be gathered via web services using this package and dependencies.  
+`CityWaterBalance` provides a reproducible workflow for studying urban water
+systems.  Any system may be modeled with preassembled data, but data 
+for US cities can be gathered via web services using this package and 
+dependencies. 
+
 
 ## Install
 
@@ -35,8 +36,8 @@ library("CityWaterBalance")
 ## Usage overview
 
 `CityWaterBalance` is based on a model of the urban water system, shown in the
-diagram below.  This diagram specifies the network for water flows along with
-a mathematical solution for unknown flows or changes in storage.  
+diagram below.  This diagram specifies the network of water flows along with
+a mathematical solution for unknown flows or changes in system storages.  
 
 ![](urban_water_system.png)
 
@@ -51,40 +52,42 @@ self-consistent units.  Each row of data must represent the same time period.
 
 ```{r}
 # Specify parameters
-p <- list("openwat"=0.02,"interc"=0,"et_amp" = 1,"flow_amp" = 1,"run_amp"=1,
-          "run_css"=0.35, "baseflow_amp" = 1, "nonrev"=0.08,"powevap"=0.012,
-          "wastgen"=0.85,"potatm"=0.13,"npotinfilt"=0.5,"evslud"=0,
-          "css_leak"=0.05,"deepgw"=0.5,"dgwloss"=1)
+p <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, "open_wat" = 0.02,
+          "run_mult" = 1, "run_css" = 0.35, "bf_mult" = 1, "nonrev" = 0.08,
+          "pow_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, 
+          "npot_infilt" = 0.5, "slud_evap" = 0, "leak_css" = 0.05, "dgw" = 0.5,
+          "dgw_rep" = 0.5)
 
 # Run model
 m <- CityWaterBalance(cwb_data,p, print=FALSE)
 ```
 
-Output from the model includes a list of zoo series of grouped system components
-(e.g. global flows).  To see the results for a group:
+Output from the model includes a list of zoo series with values at each timestep
+for the: global flows, internal flows, state variables (storages, producers and 
+consumers), internal and global water balances,
 
 ```{r}
-# Visualize results
+# Visualize output
 plotWaterBalance(m$global_flows)
 ```
 
 ### Option 2: Input data gathered from web services
 
-The CityWaterBalance package has other functions that can grab and merge the 
-requisite data.  At this time, these functions leverage US web services only.
+The CityWaterBalance package has other functions that assemble data for the 
+model.  At this time, these functions access US-based web services.
 
 #### Specify spatial and temporal boundaries
 
-The user should define an area of interest (AOI) and upload that geometry to the 
-[USGS Geo Data Portal](https://cida.usgs.gov/gdp/) (GDP). The GDP will give this
-geometry a name, which may start wuth 'upload:'.  To automate this example, 
-we use a geometry already available to the GDP.
+Define an area of interest (AOI) and upload that geometry to the 
+[USGS Geo Data Portal](https://cida.usgs.gov/gdp/) (GDP). The GDP will give the
+geometry a name, which may start wuth 'upload:'.  Here we use a geometry that is 
+already available to the GDP in order to automate the example.
 
 ```
 geometry <- 'sample:Counties'
 att <- 'STATE'
 val <- 'RI'
-area <- 3140
+area <- 2707
 start <- "2015-01-01"
 end <- "2015-12-31"
 ```
@@ -92,40 +95,34 @@ end <- "2015-12-31"
 #### Get atmospheric data
 
 ```
-latitude <- 41.878
+latitude <- 41.5801
 atm <- getAtmoFlows(start,end,geometry,att,val,latitude)
 ```
 
 #### Get streamflow data
 
-The user should choose streamgages to evaluate total inflow and outflow for 
-their AOI.  [NWIS mapper](https://maps.waterdata.usgs.gov/) may be useful here.
+Choose streamgages to evaluate total inflow and outflow for the AOI.  [NWIS mapper](https://maps.waterdata.usgs.gov/) may be useful here.
 
 ```
-ingages <- c("05545750","05527800","05536195")
-outgages <-c ("05438500","05551540","05552500","05540500","05537980")
+ingages <- c("01112500")
+outgages <-c("01113895","01114000","01117000","01118500")
 
 inflow <- getStreamflow(start,end,ingages)
 outflow <- getStreamflow(start,end,outgages)
 ```
 
-These data may have gaps, and total in/outflow may need to estimated by 
-combining data from multiple gages. For example:
-
-```
-outmult <- c(1,0.5,0.5,1,1)
-outflow <- gapfillStreamflow(outflow,paired_gages)
-outflow <- combineStreamflow(outflow,outmult,approx=TRUE)
-```
+Look at the streamflow data with plotStreamflow. Gaps can be filled using 
+gapfillStreamflow.  When there all time series of flows are complete, use
+combineStreamflow (which has an example of this entire process).
 
 #### Get water use data
 
-First, identify the states and counties in your AOI. County is the finest 
-spatial scale for served USGS water use data.
+Identify the states and counties in your AOI. County is the finest spatial scale 
+for [USGS water use data](https://waterdata.usgs.gov/nwis/wu) served by NWIS.
 
 ```
-states <- c("IL")
-counties <- list(c("Cook","DuPage","Kane","Kendall","Lake","McHenry","Will"))
+states <- c("RI")
+counties <- list(c("Providence","Kent","Bristol","Newport","Washington"))
 wu <- getWaterUse(states,counties,years="ALL")
 ```
 

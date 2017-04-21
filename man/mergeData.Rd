@@ -4,8 +4,9 @@
 \alias{mergeData}
 \title{Merge data sources into input for CityWaterBalance}
 \usage{
-mergeData(area, atm, inflow, outflow, sfpart = NULL, wu, ws_imports = NULL,
-  etc_imports = NULL, wweff = NULL, dgr = NULL, cso = NULL)
+mergeData(area, atm, inflow, outflow, wu, ws_imports = NULL,
+  etc_imports = NULL, wweff = NULL, dgr = NULL, cso = NULL,
+  runoff = NULL, baseflow = NULL)
 }
 \arguments{
 \item{area}{numeric study area (sq km)}
@@ -15,8 +16,6 @@ mergeData(area, atm, inflow, outflow, sfpart = NULL, wu, ws_imports = NULL,
 \item{inflow}{xts  of daily steamflow into area (cfs)}
 
 \item{outflow}{xts of daily streamflow out of area (cfs)}
-
-\item{sfpart}{xts of partitioned streamflow out of area (cfs)}
 
 \item{wu}{xts of water use, from combineWaterUse (MGal/month)}
 
@@ -29,15 +28,31 @@ mergeData(area, atm, inflow, outflow, sfpart = NULL, wu, ws_imports = NULL,
 \item{dgr}{xts of deep groundwater recharge (mm/month)}
 
 \item{cso}{xts of cso events (mm/month)}
+
+\item{runoff}{xts of runoff (mm/month)}
+
+\item{baseflow}{xts of baseflow (mm/month)}
 }
 \value{
-xts of all fluxes for each timestep (mm/month)
+all fluxes (as xts) for each timestep (mm/month)
 }
 \description{
 This functions converts units and merges data needed by CityWaterBalance.  
-All inputs must span same time period. Outputs are in mm/month over study 
-area.
+All inputs must represent the same time intervals. Outputs are fluxes 
+(mm/month) over study area.
 }
 \examples{
-
+start <- "2010-01-01"
+end <- "2010-12-31"
+area <- 2707
+atm <- getAtmoFlows(start,end,'sample:Counties','STATE','RI', 41.5801)
+inflow <- getStreamflow(start,end,c("01112500"))
+inflow <- combineStreamflow(inflow,c(1))
+outflow <- getStreamflow(start,end,c("01113895","01114000","01117000",
+"01118500"))
+outflow <- combineStreamflow(outflow,c(1,1,1,1))
+wu <- getWaterUse(c('RI'),c('Providence','Kent','Bristol','Newport',
+'Washington'))
+wu <- combineWaterUse(start,end,wu)
+data <- mergeData(area,atm,inflow,outflow,wu)
 }

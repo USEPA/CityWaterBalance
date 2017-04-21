@@ -16,6 +16,7 @@ Imports:
     lubridate,
     reshape2,
     stats,
+    tgp,
     utils,
     xts,
     zoo

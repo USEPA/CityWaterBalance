@@ -22,7 +22,7 @@
 #' @importFrom EcoHydRology PET_fromTemp
 #' @examples
 #' atm <- getAtmoFlows('2010-01-01','2010-12-31','sample:Counties','STATE','RI',
-#' 41.824)
+#' 41.5801)
 #' @export
 
 getAtmoFlows <- function(start, end, geometry, att, val=NA, latitude) {

@@ -15,3 +15,7 @@ plot
 \description{
 This function plots streamflow data
 }
+\examples{
+flow <- getStreamflow('2000-01-01','2010-12-31',c('05551540','05552500'))
+plotStreamflow(flow)
+}

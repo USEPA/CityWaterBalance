@@ -114,23 +114,23 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     
     # ------------ State variables -------------------------
     
-    # 1) inland surface water
+    # 1) surface water (sw)
     sw <- k2 + k5 + k6 + k13 + k23 + k32 + k34 - k8 - k9 - k10 - k11 - k35
-    # 2) shallow groundwater
+    # 2) shallow groundwater (sgw)
     sgw <- k4 + k25 + k28 + k33 - k12 - k13 - k14 - k15 - k16 - k17 - k18
-    # 3) deep groundwater
+    # 3) deep groundwater (dgw)
     dgw <- k18 + dgw_in - k19 - k20 - k21
-    # 4) potable use
+    # 4) potable use (pot)
     pot <- k24 - k26 - k27 - k28
-    # 5) non-potable use
+    # 5) non-potable use (npot)
     npot <- ws_nonpotable - k29 - k33
-    # 6) combined sewer system / TARP
+    # 6) combined sewer system (css)
     css <- k3 + k12 + k27 - k30 - k34
-    # 7) purification plant
+    # 7) purification plant (pur)
     pur <- ws_potable - k24 - k25
-    # 8) power plant
+    # 8) power plant (pow)
     pow <- cooling - k22 - k23
-    # 9) wastewater treatment plant
+    # 9) wastewater treatment plant (wtp)
     wtp <- k30 - k31 - k32
     
     # ------------- outputs ---------------------- 
@@ -160,7 +160,7 @@ CityWaterBalance <- function(data, p, print = TRUE) {
                               order.by = index(data))
     names(global_flows) <- c("prcp","et","inflow","outflow","imports")
     
-    # state variables
+    # State variables
     state_vars <- zoo(cbind(sw, css, sgw, dgw, pot, npot, pur, pow, wtp), 
                       order.by = index(data))
     names(state_vars) <- c("sw","css", "sgw", "dgw", "pot", "npot", "pur", 

@@ -10,12 +10,14 @@ plotWaterBalance(data, annual = FALSE)
 \item{data}{xts or zoo object}
 
 \item{annual}{flag indicating whether to plot annual totals}
-
-\item{ys}{ylim for plot}
 }
 \value{
 plot
 }
 \description{
 This function plots time series components of the urban water balance.
+}
+\examples{
+data <- cwb_data[,c(1,2,4,5)]
+plotWaterBalance(data)
 }
