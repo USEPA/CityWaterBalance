@@ -1,5 +1,5 @@
 # CityWaterBalance
-[![Travis-CI Build Status](https://travis-ci.org/NA/NA.svg?branch=master)](https://travis-ci.org/NA/NA)
+[![Build Status](https://travis-ci.org/lerban/CityWaterBalance.svg?branch=master)](https://travis-ci.org/lerban/CityWaterBalance)
 
 `CityWaterBalance` provides a reproducible workflow for studying an urban water
 system.  The network of urban water flows and storages can be modeled and 
