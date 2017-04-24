@@ -40,15 +40,18 @@ diagram below.  This diagram specifies the network of water flows along with
 a mathematical solution for unknown flows or changes in system storages.  
 
 ![](urban_water_system.png)
+![](flow_table.png)
 
 
 ## Usage examples
-There are two ways to run the model in \code{\link{CityWaterBalance}}.
+There are two ways to run the `CityWaterBalance` model.
 
 ### Option 1:  Input preassembled data
 
-See function inputs for details.  Data should be in
+See `CityWaterBalance` function inputs for details.  Data should be in
 self-consistent units.  Each row of data must represent the same time period.
+The example below is based on the included dataset (`cwb_data`) on flows of 
+water in the Chicago metropolitan area.
 
 ```{r}
 # Specify parameters
@@ -62,9 +65,9 @@ p <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, "open_wat" = 0.02,
 m <- CityWaterBalance(cwb_data,p, print=FALSE)
 ```
 
-Output from the model includes a list of zoo series with values at each timestep
-for the: global flows, internal flows, state variables (storages, producers and 
-consumers), internal and global water balances,
+Output from the model includes a list of 5 zoo series with values at each 
+timestep for: 1) global flows, 2) internal flows, 3) state variables (storages,
+producers and consumers), 4) internal and 5) global water balances.
 
 ```{r}
 # Visualize output
@@ -73,14 +76,14 @@ plotWaterBalance(m$global_flows)
 
 ### Option 2: Input data gathered from web services
 
-The CityWaterBalance package has other functions that assemble data for the 
-model.  At this time, these functions access US-based web services.
+`CityWaterBalance` has other functions that assemble data for the model.  At 
+this time, these functions access US-based web services.
 
 #### Specify spatial and temporal boundaries
 
 Define an area of interest (AOI) and upload that geometry to the 
 [USGS Geo Data Portal](https://cida.usgs.gov/gdp/) (GDP). The GDP will give the
-geometry a name, which may start wuth 'upload:'.  Here we use a geometry that is 
+geometry a name, which may start with 'upload:'.  Here we use a geometry that is 
 already available to the GDP in order to automate the example.
 
 ```
@@ -88,8 +91,8 @@ geometry <- 'sample:Counties'
 att <- 'STATE'
 val <- 'RI'
 area <- 2707
-start <- "2015-01-01"
-end <- "2015-12-31"
+start <- "2010-01-01"
+end <- "2010-12-31"
 ```
 
 #### Get atmospheric data
@@ -112,10 +115,8 @@ inflow <- getStreamflow(start,end,ingages)
 outflow <- getStreamflow(start,end,outgages)
 ```
 
-Look at the streamflow data with \code{\link{plotStreamflow}}.  Gaps can be 
-filled using \code{\link{gapfillStreamflow}}.  When there all time series of 
-flows are complete, use \code{\link{combineStreamflow}} (which has an example of 
-this process).
+Look at the streamflow data with the function `plotStreamflow`.  Gaps can be 
+filled using `gapfillStreamflow`.  When time series for all gages are complete, use `combineStreamflow` to aggegate total in/outflow.
 
 #### Get water use data
 
@@ -130,34 +131,60 @@ wu <- getWaterUse(states,counties,years="ALL")
 
 The above retrieves [USGS water use](https://water.usgs.gov/watuse/) data for 
 the specified counties for all available years and withdrawal categories. To 
-reorganize this output for use by \code{\link{CityWaterBalance}}, use:
+reorganize this output for use by `CityWaterBalance` use:
 
 ```
-wu = combineWaterUse(start,end,wu)
+wu <- combineWaterUse(start,end,wu)
 ```
 
 #### Get other data
 
-Not all requisite data is currently available through web services.  These
-inputs (wastewater effluent, sewer overflows, runoff, baseflow and deep 
+Not all input data is currently available via web services.  These
+inputs (i.e., wastewater effluent, sewer overflows, runoff, baseflow and deep 
 groundwater recharge) must be gathered from other sources and converted to xts 
-objects with the same temporal range and resolution as the other flows. Unit 
-must correspond with those specified for inputs to \code{\link{mergeData}}.
+objects with the same temporal range and resolution as the other flows. Units 
+must correspond with those specified for inputs to `mergeData`.
 
 Finally, merge the data into a single xts of fluxes (i.e., flow/AOI) for input 
-to \code{\link{CityWaterBalance}}.  
+to `CityWaterBalance`.  
 
 ```
 data <- mergeData(area,atm,inflow,outflow,wu)
 ```
 
-### Solution
+### Solve
 
-CityWaterBalance solves for the change in storages of all state variables and
-cumulatively, the global storage. Uncertainty in the data and parameters creates
-a solution space, or range of acceptable solutions according to ancillary
-observations of storage changes throughout the system.  The function 
-getSolutions
+`CityWaterBalance` solves for the changes in storage of all state variables and
+cumulatively, the change in global storage.  Acceptable solutions can be
+determined using ancillary observations of system components (e.g., groundwater
+levels). Owing to uncertainty in input data and parameters, and ancillary 
+observations of system storages, acceptable solutions will vary within a 
+solution space.  This space is defined by criteria for system storages.  
+
+The function `getSolutions` tests parameter sets that satistify solution 
+criteria. `getSolutions` will continue testing additional parameter sets until 
+the mean flow solution differs by less than a user-specified tolerance (tol). 
+Though the `CityWaterBalance` model runs quickly, running it many times to 
+achieve a stable solution may take quite a while.
+
+In `cwb_data`, the combined sewer overflow (cso) do not span the complete 
+analysis period.  To compensate, this flow is set to zero and the css balance 
+criteria are set to within the mean and median of the cso flow data.  Other 
+criteria are set to default values. The tol is set high so the example will run 
+in a reasonable amount of time.
+
+```{r}
+data <- cwb_data
+data$cso <- 0
+low <- median(cwb_data$cso,na.rm=TRUE)*nrow(cwb_data)
+high <- mean(cwb_data$cso,na.rm=TRUE)*nrow(cwb_data)
+css_crit <- c(low,high)
+out <- getSolutions(data,p,100,0.02,css_bal = css_crit)
+boxplot(out[,order(colMeans(out),decreasing=TRUE)],las = 2, ylab = "Flow/precip")
+
+```
+
+
 
 
 

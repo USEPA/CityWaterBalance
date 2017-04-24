@@ -21,7 +21,7 @@ plotWaterBalance <- function(data, annual = FALSE) {
     }
     d <- as.zoo(data)
     
-    cols <- c("blue", "darkorange", "cyan2", "green3", "darkorchid1")
+    cols <- c("royalblue1", "darkorange", "cyan2", "green3", "darkorchid1")
     
     plot(d, xlab = "Year", ylab = expression(paste("Flux (mm/month)")), 
          col = cols, lwd = 1.5, screens = 1)

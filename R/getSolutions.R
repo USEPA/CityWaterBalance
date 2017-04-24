@@ -70,7 +70,7 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
                         npot_infilt = c(0.5,0.5), slud_evap = c(0,0), 
                         leak_css = c(0.05,0.24), dgw = c(0.5,0.5), 
                         dgw_rep = c(0,1), global_bal = c(-500,500), 
-                        sw_bal =c(-500,500), css_bal = c (-500,500), 
+                        sw_bal =c(-500,500), css_bal = c(-500,500), 
                         sgw_bal = c(-500,500), dgw_bal = c(-500,500)){
 
   # initilize vectors

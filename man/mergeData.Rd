@@ -51,8 +51,7 @@ inflow <- combineStreamflow(inflow,c(1))
 outflow <- getStreamflow(start,end,c("01113895","01114000","01117000",
 "01118500"))
 outflow <- combineStreamflow(outflow,c(1,1,1,1))
-wu <- getWaterUse(c('RI'),c('Providence','Kent','Bristol','Newport',
-'Washington'))
+wu <- getWaterUse(c('RI'),'ALL')
 wu <- combineWaterUse(start,end,wu)
 data <- mergeData(area,atm,inflow,outflow,wu)
 }

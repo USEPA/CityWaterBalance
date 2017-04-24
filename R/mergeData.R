@@ -16,7 +16,7 @@
 #' @param cso xts of cso events (mm/month)
 #' @param runoff xts of runoff (mm/month)
 #' @param baseflow xts of baseflow (mm/month)
-#' @importFrom lubridate update.POSIXt
+#' @import lubridate
 #' @return all fluxes (as xts) for each timestep (mm/month)
 #' @importFrom xts as.xts apply.monthly
 #' @examples 
