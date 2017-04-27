@@ -17,6 +17,7 @@
 #' @param runoff xts of runoff (mm/month)
 #' @param baseflow xts of baseflow (mm/month)
 #' @import lubridate
+#' @importFrom stats update
 #' @return all fluxes (as xts) for each timestep (mm/month)
 #' @importFrom xts as.xts apply.monthly
 #' @examples 
