@@ -147,6 +147,29 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
     n <- n*2
   }
 
+  colnames(flows) <- c("Interception", "Runoff", "Runoff to sewers",
+                       "Infiltration","River inflow",
+                       "Imports to surface waters","Imports for potable use",
+                       "Surface water evaporation",
+                       "Thermoelectric cooling (SW)","Potable withdrawals (SW)",
+                       "Non-potable withdrawals (SW)","Sewer infiltration", 
+                       "Baseflow","Thermoelectric cooling (SGW)",
+                       "Potable withdrawals (SGW)","Evapotranspiration",
+                       "Non-potable withdrawals (SGW)", 
+                       "Recharge of deep groundwater",
+                       "Thermoelectric cooling (DGW)",
+                       "Potable withdrawals (DGW)", 
+                       "Non-potable withdrawals (DGW)",
+                       "Evaporation of cooling water",
+                       "Discharge of cooling water", 
+                       "Conveyance of potable water","Leakage of potable water",
+                       "Evaporation of potable water","Wastewater generation",
+                       "Infiltration of potable water",
+                       "Evapotranspiration of non-potable water",
+                       "Conveyance of wastewater","Evaporation of sludge",
+                       "Wastewater discharge",
+                       "Infiltration of non-potable water",
+                       "Combined sewer overflows","River outflow")
   return(flows)
 
 }

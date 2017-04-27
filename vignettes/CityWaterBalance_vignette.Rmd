@@ -37,9 +37,16 @@ library("CityWaterBalance")
 
 `CityWaterBalance` is based on a model of the urban water system, shown in the
 diagram below.  This diagram specifies the network of water flows along with
-a mathematical solution for unknown flows or changes in system storages.  
+a mathematical solution for the changes in water storages (i.e., inflows - 
+outflows) within the system.  
 
 ![](urban_water_system.png)
+
+
+<br><br>
+The function `CityWaterBalance` evaluates the urban system model according to
+the numbered flows described in the table below.
+
 ![](flow_table.png)
 
 
@@ -48,18 +55,16 @@ There are two ways to run the `CityWaterBalance` model.
 
 ### Option 1:  Input preassembled data
 
-See `CityWaterBalance` function inputs for details.  Data should be in
-self-consistent units.  Each row of data must represent the same time period.
-The example below is based on the included dataset (`cwb_data`) on flows of 
+See `CityWaterBalance` function inputs for details on data and parameter inputs.  
+Data must be in self-consistent units.  Each row of data must represent the same 
+time period. 
+
+The following example is based on the included dataset (`cwb_data`) on flows of 
 water in the Chicago metropolitan area.
 
 ```{r}
 # Specify parameters
-p <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, "open_wat" = 0.02,
-          "run_mult" = 1, "run_css" = 0.35, "bf_mult" = 1, "nonrev" = 0.08,
-          "pow_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, 
-          "npot_infilt" = 0.5, "slud_evap" = 0, "leak_css" = 0.05, "dgw" = 0.5,
-          "dgw_rep" = 0.5)
+p <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, "open_wat" = 0.02, "run_mult" = 1, "run_css" = 0.35, "bf_mult" = 1, "nonrev" = 0.08,"pow_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0, "leak_css" = 0.05, "dgw" = 0.5,"dgw_rep" = 0.5)
 
 # Run model
 m <- CityWaterBalance(cwb_data,p, print=FALSE)
@@ -116,7 +121,8 @@ outflow <- getStreamflow(start,end,outgages)
 ```
 
 Look at the streamflow data with the function `plotStreamflow`.  Gaps can be 
-filled using `gapfillStreamflow`.  When time series for all gages are complete, use `combineStreamflow` to aggegate total in/outflow.
+filled using `gapfillStreamflow`.  When time series for all gages are complete, 
+use `combineStreamflow` to aggegate total in/outflow.
 
 #### Get water use data
 
@@ -131,7 +137,7 @@ wu <- getWaterUse(states,counties,years="ALL")
 
 The above retrieves [USGS water use](https://water.usgs.gov/watuse/) data for 
 the specified counties for all available years and withdrawal categories. To 
-reorganize this output for use by `CityWaterBalance` use:
+reorganize the output for use by `CityWaterBalance` use:
 
 ```
 wu <- combineWaterUse(start,end,wu)
@@ -154,36 +160,47 @@ data <- mergeData(area,atm,inflow,outflow,wu)
 
 ### Solve
 
-`CityWaterBalance` solves for the changes in storage of all state variables and
-cumulatively, the change in global storage.  Acceptable solutions can be
-determined using ancillary observations of system components (e.g., groundwater
-levels). Owing to uncertainty in input data and parameters, and ancillary 
-observations of system storages, acceptable solutions will vary within a 
-solution space.  This space is defined by criteria for system storages.  
+`CityWaterBalance` solves for the changes in storage of system components. 
+Acceptable solutions can be determined using ancillary observations (e.g., 
+groundwater levels). Owing to uncertainty in input data, parameters, and 
+ancillary observations of system storages, acceptable solutions will vary within 
+a solution space.  
 
-The function `getSolutions` tests parameter sets that satistify solution 
-criteria. `getSolutions` will continue testing additional parameter sets until 
-the mean flow solution differs by less than a user-specified tolerance (tol). 
-Though the `CityWaterBalance` model runs quickly, running it many times to 
-achieve a stable solution may take quite a while.
+Solutions with this space may be discovered, and the sensitivity of modeled flow 
+explored, with the function `getSolutions`.  `getSolutions` tests for parameter
+sets that satisfy criteria for the changes in all system storages. It will 
+continue testing additional parameter sets until the mean flow solution differs 
+by less than a user-specified tolerance (tol). Although the `CityWaterBalance` 
+model runs quickly, running it many times to achieve a stable solution may take 
+quite a while.
 
-In `cwb_data`, the combined sewer overflow (cso) do not span the complete 
-analysis period.  To compensate, this flow is set to zero and the css balance 
-criteria are set to within the mean and median of the cso flow data.  Other 
-criteria are set to default values. The tol is set high so the example will run 
-in a reasonable amount of time.
+The following example shows how to search for model solutions that satisfy a
+criteria for storage in the combined sewer system again using `cwb_data`.  In 
+this dataset, the combined sewer overflow (cso) do not span the complete 
+analysis period.  To compensate, the cso flow is set to zero and the acceptable 
+range for the css balance is set to the mean and median of the original data. 
+Other criteria are left at default values. The tol is set high so the example 
+will run in a reasonable amount of time. 
 
-```{r}
+The boxplot call illustrates one way that results may be visualized.
+
+```
 data <- cwb_data
 data$cso <- 0
+
+p <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, "open_wat" = 0.02, "run_mult" = 1, "run_css" = 0.35, "bf_mult" = 1, "nonrev" = 0.08,"pow_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0, "leak_css" = 0.05, "dgw" = 0.5,"dgw_rep" = 0.5)
+
 low <- median(cwb_data$cso,na.rm=TRUE)*nrow(cwb_data)
 high <- mean(cwb_data$cso,na.rm=TRUE)*nrow(cwb_data)
 css_crit <- c(low,high)
+
 out <- getSolutions(data,p,100,0.02,css_bal = css_crit)
-boxplot(out[,order(colMeans(out),decreasing=TRUE)],las = 2, ylab = "Flow/precip")
+boxplot(out[,order(colMeans(out),decreasing=TRUE)],las = 2, 
+ylab = "flow/precipitation", ylim = c(0,1),col = c("lightblue1"), 
+border = c("royalblue3"))
 
 ```
-
+![](solutions.png)
 
 
 

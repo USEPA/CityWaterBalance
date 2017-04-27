@@ -37,7 +37,7 @@
 #'        fraction of wastewater that evaporates from sludge (slud_evap) \cr
 #'        fraction of wastewater effluent from gw infiltration (leak_css) \cr
 #'        fraction of groundwater from deep, confined aquifers (dgw) \cr
-#'        multiplier for deep groundwater pumping replacement (dgw_rep) \cr
+#'        multiplier for deep pumping replaced by lateral flow (dgw_rep) \cr
 #' @param print option to print messages
 #' @return list of dataframes:
 #'  \item{all_flows}{all flows} 

@@ -42,7 +42,7 @@ fraction of nonpotable use that infiltrates (npot_infilt) \cr
 fraction of wastewater that evaporates from sludge (slud_evap) \cr
 fraction of wastewater effluent from gw infiltration (leak_css) \cr
 fraction of groundwater from deep, confined aquifers (dgw) \cr
-multiplier for deep groundwater pumping replacement (dgw_rep) \cr}
+multiplier for deep pumping replaced by lateral flow (dgw_rep) \cr}
 
 \item{print}{option to print messages}
 }
