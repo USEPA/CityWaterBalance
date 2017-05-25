@@ -19,8 +19,8 @@
 #' @import reshape2
 #' @import zoo
 #' @examples
-#' wu <- getWaterUse(c('IL'),c('Cook','Lake'))
-#' wu_flows <- combineWaterUse('2000-01-01','2015-01-01',wu)
+#' wu <- getWaterUse(c('IL'), c('Cook', 'Lake'))
+#' wu_flows <- combineWaterUse('2000-01-01', '2015-01-01', wu)
 #' @export 
 
 combineWaterUse <- function(start, end, wu) {

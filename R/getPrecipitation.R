@@ -11,7 +11,7 @@
 #' @return monthly precipitation, averaged spatially over geometry
 #' @import geoknife
 #' @examples
-#' prcp <- getPrecipitation('2010-01-01','2010-12-31','sample:Counties','STATE',
+#' prcp <- getPrecipitation('2010-01-01', '2010-12-31', 'sample:Counties', 'STATE',
 #' 'RI')
 #' @export 
 

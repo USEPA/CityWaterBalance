@@ -15,7 +15,7 @@
 #' @importFrom xts as.xts 
 #' @importFrom zoo as.zoo
 #' @examples 
-#' flow <- getStreamflow('2000-01-01','2010-12-31',c('05551540','05552500'))
+#' flow <- getStreamflow('2000-01-01', '2010-12-31', c('05551540', '05552500'))
 #' @export
 
 getStreamflow <- function(start, end, gages) {
