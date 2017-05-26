@@ -9,7 +9,7 @@
 #' @importFrom xts apply.yearly
 #' @importFrom graphics legend abline plot
 #' @examples
-#' data <- cwb_data[,c(1,2,4,5)]
+#' data <- cwb_data[, c(1, 2, 4, 5)]
 #' plotWaterBalance(data)
 #' @export
 

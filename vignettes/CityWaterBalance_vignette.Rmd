@@ -59,15 +59,15 @@ See `CityWaterBalance` function inputs for details on data and parameter inputs.
 Data must be in self-consistent units.  Each row of data must represent the same 
 time period. 
 
-The following example is based on the included dataset (`cwb_data`) on flows of 
+The following example is based on the included dataset (`cwb_data`) of flows of 
 water in the Chicago metropolitan area.
 
 ```{r}
 # Specify parameters
-p <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, "open_wat" = 0.02, "run_mult" = 1, "run_css" = 0.35, "bf_mult" = 1, "nonrev" = 0.08,"pow_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0, "leak_css" = 0.05, "dgw" = 0.5,"dgw_rep" = 0.5)
+p <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, "open_wat" = 0.02, "run_mult" = 1, "run_css" = 0.35, "bf_mult" = 1, "nonrev" = 0.08, "pow_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0, "leak_css" = 0.05, "dgw" = 0.5, "dgw_rep" = 0.5)
 
 # Run model
-m <- CityWaterBalance(cwb_data,p, print=FALSE)
+m <- CityWaterBalance(cwb_data, p, print = FALSE)
 ```
 
 Output from the model includes a list of 5 zoo series with values at each 
@@ -86,10 +86,10 @@ this time, these functions access US-based web services.
 
 #### Specify spatial and temporal boundaries
 
-Define an area of interest (AOI) and upload that geometry to the 
+Define an Area Of Interest (AOI) and upload that geometry to the 
 [USGS Geo Data Portal](https://cida.usgs.gov/gdp/) (GDP). The GDP will give the
 geometry a name, which may start with 'upload:'.  Here we use a geometry that is 
-already available to the GDP in order to automate the example.
+already available on the GDP in order to automate the example.
 
 ```
 geometry <- 'sample:Counties'
@@ -104,7 +104,7 @@ end <- "2010-12-31"
 
 ```
 latitude <- 41.5801
-atm <- getAtmoFlows(start,end,geometry,att,val,latitude)
+atm <- getAtmoFlows(start, end, geometry, att, val, latitude)
 ```
 
 #### Get streamflow data
@@ -114,10 +114,10 @@ Choose streamgages to evaluate total inflow and outflow for the AOI.
 
 ```
 ingages <- c("01112500")
-outgages <-c("01113895","01114000","01117000","01118500")
+outgages <-c("01113895", "01114000", "01117000", "01118500")
 
-inflow <- getStreamflow(start,end,ingages)
-outflow <- getStreamflow(start,end,outgages)
+inflow <- getStreamflow(start, end, ingages)
+outflow <- getStreamflow(start, end, outgages)
 ```
 
 Look at the streamflow data with the function `plotStreamflow`.  Gaps can be 
@@ -131,8 +131,8 @@ for [USGS water use data](https://waterdata.usgs.gov/nwis/wu) served by NWIS.
 
 ```
 states <- c("RI")
-counties <- list(c("Providence","Kent","Bristol","Newport","Washington"))
-wu <- getWaterUse(states,counties,years="ALL")
+counties <- list(c("Providence", "Kent", "Bristol", "Newport", "Washington"))
+wu <- getWaterUse(states, counties, years = "ALL")
 ```
 
 The above retrieves [USGS water use](https://water.usgs.gov/watuse/) data for 
@@ -140,7 +140,7 @@ the specified counties for all available years and withdrawal categories. To
 reorganize the output for use by `CityWaterBalance` use:
 
 ```
-wu <- combineWaterUse(start,end,wu)
+wu <- combineWaterUse(start, end, wu)
 ```
 
 #### Get other data
@@ -155,7 +155,7 @@ Finally, merge the data into a single xts of fluxes (i.e., flow/AOI) for input
 to `CityWaterBalance`.  
 
 ```
-data <- mergeData(area,atm,inflow,outflow,wu)
+data <- mergeData(area, atm, inflow, outflow, wu)
 ```
 
 ### Solve
@@ -176,11 +176,10 @@ quite a while.
 
 The following example shows how to search for model solutions that satisfy a
 criteria for storage in the combined sewer system again using `cwb_data`.  In 
-this dataset, the combined sewer overflow (cso) do not span the complete 
+this dataset, the combined sewer overflow (cso) does not span the complete 
 analysis period.  To compensate, the cso flow is set to zero and the acceptable 
-range for the css balance is set to the mean and median of the original data. 
-Other criteria are left at default values. The tol is set high so the example 
-will run in a reasonable amount of time. 
+range for the Combined Source Sink (css) balance is set to the mean and median of the original data. 
+Other criteria are left at default values. The example tol is set high so the example will run in a reasonable amount of time. 
 
 The boxplot call illustrates one way that results may be visualized.
 
