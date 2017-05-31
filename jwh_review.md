@@ -51,6 +51,20 @@ are wrapped in \`. It helps a lot when reading to see which words relate to the
 code itself.  I also like to inlcude the parenthesis when refering to a 
 function, like: `ls()`.
 
+# Check
+
+You'll need to add in a .Rbuildgnore and include .travis.yml as well as the .Rproj (and my review if you want that included in the repo).  Check will fail on that.
+
+Also, the timing on your examples is going to get the package kicked back from CRAN.  You can wrap the longer running examples in a \dontrun{}.
+
+```
+mergeData             20.954 10.740  52.939
+getAtmoFlows          12.081  6.148  44.871
+getEvapotranspiration  5.392  2.774  15.044
+getPrecipitation       3.473  1.767  13.961
+```
+
+
 # Code
 
 For a future version, might want to think about converting plots to S3 methods (not necessary now).   At a minimum have plotWaterBalance or plotStreamflow work more seamlessly with the output of CityWaterBalance.  For instance, you currently require specification of the list item (e.g. global_flows).  If that is the item that will always be plotted, you could pull it out in the code, or if other items could be plotted as part of plotWaterBalance you could have a function that works like
