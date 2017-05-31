@@ -29,7 +29,7 @@ getWaterUse <- function(states, counties, years = "ALL") {
     for (i in 1:length(states)) {
         
         # get NWIS water use data
-        w <- dataRetrieval::readNWISuse(stateC = states[i], 
+        w <- dataRetrieval::readNWISuse(stateCd = states[i], 
                                         countyCd = counties[[i]], years = years)
         
         # exclude double-counting and totals

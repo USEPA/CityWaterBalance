@@ -30,8 +30,8 @@
 #' @param pot_atm vector of min and max fraction of potable use that evaporates      
 #' @param npot_infilt vector of min and max fraction of nonpotable use that 
 #'        infiltrates
-#' @param slud_evap vector of min and max fraction of water that evaporates from 
-#'        wastewater sludge 
+#' @param slud_evap vector of min and max fraction of wastewater that evaporates 
+#'        from sludge 
 #' @param leak_css vector of min and max fraction of wastewater effluent from gw 
 #'        infiltration
 #' @param dgw vector of min and max fraction of groundwater from deep, confined 
@@ -55,43 +55,51 @@
 #' data$cso <- 0
 #' p <- list("interc" = 0,"et_mult" = 1,"flow_mult" = 1,
 #'           "open_wat" = 0.02, "run_mult" = 3.378, "run_css" = 0.35,
-#'           "bf_mult" = 1, "nonrev"=0.08,"pow_evap"=0.012,"wast_gen" = 0.85,
+#'           "bf_mult" = 1, "nonrev" = 0.08,"pow_evap" = 0.012,"wast_gen" = 0.85,
 #'           "pot_atm" = 0.13,"npot_infilt" = 0.5,"slud_evap" = 0,
 #'           "leak_css" = 0.05,"dgw" = 0.5, "dgw_rep" = 0.5)
-#' out <- getSolutions(data,p,10,0.1)
+#' out <- getSolutions(data, p, 10, 0.1)
 #' @export
 
 getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05), 
-                        et_mult = c(1,1.1367), flow_mult = c(1.02,1.1179), 
-                        open_wat = c(0.02,0.02), run_mult = c(1,4.3), 
-                        run_css = c(0.2,1), bf_mult = c(0.5,1), 
-                        nonrev = c(0.08,0.16), pow_evap = c(0.012,0.012),
-                        wast_gen = c(0.78,0.78), pot_atm = c(0.10,0.15),
-                        npot_infilt = c(0.5,0.5), slud_evap = c(0,0), 
-                        leak_css = c(0.05,0.24), dgw = c(0.5,0.5), 
+                        et_mult = c(1,1.1), flow_mult = c(1,1.1), 
+                        open_wat = c(0.01,0.1), run_mult = c(1,5), 
+                        run_css = c(0.1,1), bf_mult = c(0.5,1.5), 
+                        nonrev = c(0.05,0.2), pow_evap = c(0.01,0.02),
+                        wast_gen = c(0.75,0.9), pot_atm = c(0.10,0.15),
+                        npot_infilt = c(0.25,0.75), slud_evap = c(0,0), 
+                        leak_css = c(0.05,0.25), dgw = c(0.5,0.5), 
                         dgw_rep = c(0,1), global_bal = c(-500,500), 
                         sw_bal =c(-500,500), css_bal = c(-500,500), 
                         sgw_bal = c(-500,500), dgw_bal = c(-500,500)){
 
-  # initilize vectors
-  old <- rep(0,35)
-  new <- rep(tol*2,35)
+  # start clock
+  tstart <- proc.time() 
   
-  # increase n until flow solutions differ (new - old) below tol
-  while (abs(max(new-old))>tol | is.na(max(new-old))){
+  # initialize vectors 
+  old <- rep(0,35) 
+  new <- rep(tol*2,35) 
+  
+  # initialize solutions list
+  sols <- list()
+  sols[[1]] <- rep(NA,35)
+  j <- 1
+  k <- 1
+  
+  # establish iteration criteria
+  crit <- max(abs(new-old))
+  
+  # search until mean flow solution is below tol for all flows
+  while (crit == 0 | crit > tol | is.na(max(new-old))){
     
     # create Latin hypercube for sampling parameter values
     params <- lhs(n, rbind(interc,et_mult,flow_mult,open_wat,run_mult,run_css,
                            bf_mult,nonrev,pow_evap,wast_gen,pot_atm,npot_infilt,
                            slud_evap,leak_css,dgw, dgw_rep)) 
     
-    flows <- list()
-    flows[[1]] <- rep(NA,35)
-    j <- 1
-    
+    # run each parameter set through CityWaterBalance model
     for (i in 1:nrow(params)){
-      
-      # substitute a new parameter set
+    
       p$interc <- params[i,1] 
       p$et_mult <- params[i,2]
       p$flow_mult <- params[i,3]
@@ -118,7 +126,7 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
       b <- colSums(m$state_vars)[2]
       c <- colSums(m$state_vars)[3]
       d <- colSums(m$state_vars)[4]
-      f <- colSums(m$all_flows)/sum(data$prcp)
+      f <- colSums(m$all_flows)
       
       # test if solution conditions are met and if so, save results
       if (g >= global_bal[1] && g<= global_bal[2] && a >= sw_bal[1] && 
@@ -126,25 +134,28 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
           c >= sgw_bal[1] && c <= sgw_bal[2] && d >= dgw_bal[1] && 
           d <= dgw_bal[2] ){    
         
-        flows[[j]] <- f  
+        sols[[j]] <- f  
         j <- j+1
 
       } 
     }
     
     # aggregate results
-    print(paste("n = ", n))
     old <- new
-    flows <- do.call(rbind,flows)
+    flows <- do.call(rbind,sols)
     new <- apply(flows,2,mean)
+    crit <- max(abs(new-old))
+    print(paste("crit = ", crit))
     
     if (is.na(max(new))){
       print("No solutions found")
     } else {
       print(paste("Solutions: ", nrow(flows)))
-      print(paste("Max difference: ", max(new-old)))
+      print(paste("Max difference: ", crit))
     }
-    n <- n*2
+
+    print(paste("Runs: ",k))
+    k <- k+1
   }
 
   colnames(flows) <- c("Interception", "Runoff", "Runoff to sewers",
@@ -165,11 +176,13 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
                        "Conveyance of potable water","Leakage of potable water",
                        "Evaporation of potable water","Wastewater generation",
                        "Infiltration of potable water",
-                       "Evapotranspiration of non-potable water",
+                       "Evaporation of non-potable water",
                        "Conveyance of wastewater","Evaporation of sludge",
                        "Wastewater discharge",
                        "Infiltration of non-potable water",
                        "Combined sewer overflows","River outflow")
+  
+  print(proc.time()-tstart)
   return(flows)
 
 }

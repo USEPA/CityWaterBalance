@@ -22,7 +22,7 @@ plotStreamflow <- function(flowlist) {
     
     z <- as.zoo(f)
     tsRainbow <- rainbow(ncol(z))
-    plot(x = z, xlab = "Year", ylab = "Flow", col = tsRainbow, screens = 1)
-    legend(x = "topleft", legend = sites, lty = 1, col = tsRainbow)
+    plot(x = z, xlab = "Year", ylab = "Flow", lwd = 2, col = tsRainbow, screens = 1)
+    legend(x = "topleft", legend = sites, lwd = 2,lty = 1, col = tsRainbow)
     
 }
