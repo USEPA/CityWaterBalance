@@ -53,8 +53,13 @@ function, like: `ls()`.
 
 # Code
 
-convert plots to S3 methods at a minimum have plotWaterBalance of plotStreamflow
-work directly with the output of CityWaterBalance.
+For a future version, might want to think about converting plots to S3 methods (not necessary now).   At a minimum have plotWaterBalance or plotStreamflow work more seamlessly with the output of CityWaterBalance.  For instance, you currently require specification of the list item (e.g. global_flows).  If that is the item that will always be plotted, you could pull it out in the code, or if other items could be plotted as part of plotWaterBalance you could have a function that works like
+
+```
+plotWaterBalance(m, "global_flows")
+```
+
+
 
 
 
