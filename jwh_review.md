@@ -11,7 +11,7 @@ No issues with install, load, or opening help.
 
 # README
 
-Looks good.  Few small changes in [PR]().
+Looks good.  Few small changes in [PR](https://github.com/USEPA/CityWaterBalance/pull/2).
 
 # DESCRIPTION
 
@@ -21,7 +21,7 @@ version and drop the .9000.  I use 0.1.0 for my first versions.
 
 # Vignette
 
-Made a couple of changes on the vignette itself and included in [PR]().
+Made a couple of changes on the vignette itself and included in [PR](https://github.com/USEPA/CityWaterBalance/pull/2).
 
 Some additional comments:
 
