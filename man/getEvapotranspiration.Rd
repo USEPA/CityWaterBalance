@@ -25,6 +25,8 @@ This function aggregates monthly SSEBop output for a given area using the
 USGS Geo Data Portal (GDP)
 }
 \examples{
-et = getEvapotranspiration('2010-01-01','2010-12-31','sample:Counties',
+\dontrun{
+et = getEvapotranspiration('2010-01-01', '2010-12-31', 'sample:Counties',
 'STATE', 'RI') 
+}
 }

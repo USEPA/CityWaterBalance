@@ -1,7 +1,7 @@
 #' Tracks flows of water through the urban system 
 #' 
-#' This function tracks flows of water as they move through pathways and storages 
-#' within the urban system. Data can be in any self-consistent units.
+#' This function tracks flows of water as they move through pathways and 
+#' storages within the urban system. Data can be in any self-consistent units.
 #' 
 #' @param data xts or zoo object with date index and columns of data for:\cr
 #'        precipitation (prcp) \cr
@@ -60,42 +60,67 @@
 
 CityWaterBalance <- function(data, p, print = TRUE) {
   
+    # ----------- Adjust data within undertainty ------------------------------
     data$et <- data$et * p$et_mult
     data$outflow <- data$outflow * p$flow_mult
     data$runoff <- data$runoff * p$run_mult
     data$baseflow <- data$baseflow * p$bf_mult
   
-    # ----------- Flow terms ---------------
-    k1 <- data$pet * p$interc                                                    #  prcp --> atm  ~  interception
-    k2 <- data$runoff * (1 - p$run_css)                                          #  prcp --> isw  ~  runoff
-    k3 <- data$runoff * p$run_css                                                #  prcp --> css   ~  runoff to sewer system
-    k4 <- data$prcp - k1 - k2 - k3                                               #  prcp --> gw ~ infiltration
+    # ----------- Define flow terms -------------------------------------------
+    
+    #  1. Interception  
+    k1 <- data$pet * p$interc                                                    
+    #  2. Runoff  
+    k2 <- data$runoff * (1 - p$run_css)
+    #  3. Runoff to sewers  
+    k3 <- data$runoff * p$run_css                                                
+    #  4. Infiltration 
+    k4 <- data$prcp - k1 - k2 - k3                                               
     if (min(k4, na.rm = TRUE) < 0) {
         print("WARNING: negative infiltration")
         flush.console()
     }
     tot_runoff <- k2 + k3
-    k5 <- data$inflow                                                            #  inflow --> isw ~  streamflow in
-    k6 <- data$etc_imports                                                       #  etc_imports --> isw 
-    k7 <- data$ws_imports                                                        #  LMich --> pur ~  purification
-    k8 <- data$pet * (p$open_wat)                                                #  direct evaporation from surface water
-    k9 <- data$sw_therm                                                          #  isw --> pow   ~  through-flow, cooling + power gen
-    k10 <- data$sw_pot                                                           #  isw --> pur   ~  purification
-    k11 <- data$sw_npot                                                          #  isw --> npot  ~  extraction  
-    k13 <- data$baseflow                                                         #  sgw --> isw   ~ baseflow
-    k14 <- data$gw_therm * (1 - p$dgw)                                           #  sgw --> pow    ~ through-flow, cooling + power gen
-    k15 <- data$gw_pot * (1 - p$dgw)                                             #  sgw --> pur  ~ purification
-    k16 <- data$et                                                               #  sgw --> atm    ~  evapotranspiration from vegetated lands
-    k17 <- data$gw_npot * (1 - p$dgw)                                            #  sgw --> npot  ~ extraction
-    k18 <- data$dgr                                                              #  sgw --> dgw    ~ deep groundwater recharge
-    k19 <- data$gw_therm * (p$dgw)                                               #  dgw --> pow    ~ through-flow, cooling + power gen
-    k20 <- data$gw_pot * (p$dgw)                                                 #  dgw --> pur  ~ purification
-    ws_potable <- k7 + k10 + data$gw_pot                                         #  total water supply for potable uses
-    k21 <- data$gw_npot * (p$dgw)                                                #  dgw --> npot  ~ extraction
-    ws_nonpotable <- k11 + data$gw_npot                                          #  total water supply for nonpotable uses
-    cooling <- k9 + k14 + k19                                                    #  total cooling water for thermoelectric power generation
-    k22 <- cooling * (p$pow_evap)                                                #  pow --> atm   ~  evaporation (consumptive thermoe use) 
+    # 5. River inflow
+    k5 <- data$inflow                                                            
+    # 6. Imports to surface water
+    k6 <- data$etc_imports                                                        
+    # 7. Imports for potable use
+    k7 <- data$ws_imports                                                        
+    # 8. Surface water evaporation
+    k8 <- data$pet * (p$open_wat)                                                
+    # 9. Industrial withdrawals (SW)
+    k9 <- data$sw_therm                                                          
+    # 10. Potable withdrawals (SW)
+    k10 <- data$sw_pot                                                           
+    # 11. Non-potable withdrawals (SW)
+    k11 <- data$sw_npot                                                            
+    # 13. Baseflow 
+    k13 <- data$baseflow                                                         
+    # 14. Industrial withdrawals (SGW)
+    k14 <- data$gw_therm * (1 - p$dgw)                                           
+    # 15. Potable withdrawals (SGW)
+    k15 <- data$gw_pot * (1 - p$dgw)                                             
+    # 16. Evapotranspiration 
+    k16 <- data$et                                                               
+    # 17. Non-potable withdrawals (SGW)
+    k17 <- data$gw_npot * (1 - p$dgw)                                            
+    # 18. Deep groundwater recharge
+    k18 <- data$dgr                                                              
+    # 19. Industrial withdrawals (DGW)
+    k19 <- data$gw_therm * (p$dgw)                                               
+    # 20. Potable withdrawals (DGW)
+    k20 <- data$gw_pot * (p$dgw)                                                 
+    ws_potable <- k7 + k10 + data$gw_pot                                         
+    # 21. Non-potable withdrawals (DGW)
+    k21 <- data$gw_npot * (p$dgw)                                                
+    ws_nonpotable <- k11 + data$gw_npot                                          
+    cooling <- k9 + k14 + k19                                                    
+    # 22. Evaporation of industrial water
+    k22 <- cooling * (p$pow_evap)                                                
+    # 23. Discharge of industrial water
     k23 <- cooling * (1 - p$pow_evap)                                            #  pow --> isw   ~  power plant discharge
+    # 24. Conveyance of potable water
     k24 <- ws_potable * (1 - p$nonrev)                                           #  pur --> pot   ~  human use
     k25 <- ws_potable * (p$nonrev)                                               #  pur --> sgw   ~  leakage (non-revenue water) 
     k26 <- k24 * (p$pot_atm)                                                     #  pot --> atm   ~  evaporation   

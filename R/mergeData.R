@@ -20,7 +20,8 @@
 #' @importFrom stats update
 #' @return all fluxes (as xts) for each timestep (mm/month)
 #' @importFrom xts as.xts apply.monthly
-#' @examples 
+#' @examples
+#' \dontrun{
 #' start <- "2010-01-01"
 #' end <- "2010-12-31"
 #' area <- 2707
@@ -33,6 +34,7 @@
 #' wu <- getWaterUse(c('RI'), 'ALL')
 #' wu <- combineWaterUse(start, end, wu)
 #' data <- mergeData(area, atm, inflow, outflow, wu)
+#' }
 #' @export
 
 mergeData <- function(area, atm, inflow, outflow, wu, 

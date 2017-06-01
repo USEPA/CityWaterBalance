@@ -25,5 +25,5 @@ This function gathers daily average streamgage data for a group of gages
 from USGS NWIS
 }
 \examples{
-flow <- getStreamflow('2000-01-01','2010-12-31',c('05551540','05552500'))
+flow <- getStreamflow('2000-01-01', '2010-12-31', c('05551540', '05552500'))
 }

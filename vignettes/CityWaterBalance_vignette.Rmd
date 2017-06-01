@@ -18,7 +18,8 @@ vignette: >
 `CityWaterBalance` provides a reproducible workflow for studying urban water
 systems.  Any system may be modeled with preassembled data, but data 
 for US cities can be gathered via web services using this package and 
-dependencies. 
+dependencies [geoknife](https://cran.r-project.org/package=geoknife) and 
+[dataRetrieval](https://cran.r-project.org/package=dataRetrieval).
 
 
 ## Install
@@ -51,12 +52,12 @@ the numbered flows described in the table below.
 
 
 ## Usage examples
-There are two ways to run the `CityWaterBalance` model.
+There are two ways to apply the `CityWaterBalance` workflow.
 
 ### Option 1:  Input preassembled data
 
-See `CityWaterBalance` function inputs for details on data and parameter inputs.  
-Data must be in self-consistent units.  Each row of data must represent the same 
+See `CityWaterBalance()` inputs for details on data and parameter inputs.  Data 
+must be in self-consistent units.  Each row of data must represent the same 
 time period. 
 
 The following example is based on the included dataset (`cwb_data`) on flows of 
@@ -76,7 +77,8 @@ producers and consumers), 4) internal and 5) global water balances.
 
 ```{r}
 # Visualize output
-plotWaterBalance(m$global_flows)
+gf <- m$global_flows
+plotWaterBalance(gf, yl = "Flux (mm/month)")
 ```
 
 ### Option 2: Input data gathered from web services
@@ -93,8 +95,8 @@ already available to the GDP in order to automate the example.
 
 ```{r, eval=FALSE}
 geometry <- 'sample:Counties'
-att <- 'STATE'
-val <- 'RI'
+attribute <- 'STATE'
+value <- 'RI'
 area <- 2707
 start <- "2010-01-01"
 end <- "2010-12-31"
@@ -104,7 +106,7 @@ end <- "2010-12-31"
 
 ```{r, eval=FALSE}
 latitude <- 41.5801
-atm <- getAtmoFlows(start,end,geometry,att,val,latitude)
+atm <- getAtmoFlows(start, end, geometry, attribute, value, latitude)
 ```
 
 #### Get streamflow data
@@ -113,16 +115,18 @@ Choose streamgages to evaluate total inflow and outflow for the AOI.
 [NWIS mapper](https://maps.waterdata.usgs.gov/) may be useful here.
 
 ```{r, eval=FALSE}
+
 ingages <- c("01112500")
 outgages <-c("01113895","01114000","01117000","01118500")
 
-inflow <- getStreamflow(start,end,ingages)
-outflow <- getStreamflow(start,end,outgages)
+inflows <- getStreamflow(start,end,ingages)
+outflows<- getStreamflow(start,end,outgages)
+
 ```
 
-Look at the streamflow data with the function `plotStreamflow`.  Gaps can be 
-filled using `gapfillStreamflow`.  When time series for all gages are complete, 
-use `combineStreamflow` to aggegate total in/outflow.
+Look at the streamflow data with the function `plotStreamflow()`.  Gaps can be 
+filled using `gapfillStreamflow()`.  When time series for all gages are complete, 
+use `combineStreamflow()` to aggegate total in/outflow.
 
 #### Get water use data
 
@@ -132,15 +136,15 @@ for [USGS water use data](https://waterdata.usgs.gov/nwis/wu) served by NWIS.
 ```{r, eval=FALSE}
 states <- c("RI")
 counties <- list(c("Providence","Kent","Bristol","Newport","Washington"))
-wu <- getWaterUse(states,counties,years="ALL")
+wu_raw <- getWaterUse(states,counties,years="ALL")
 ```
 
 The above retrieves [USGS water use](https://water.usgs.gov/watuse/) data for 
 the specified counties for all available years and withdrawal categories. To 
-reorganize the output for use by `CityWaterBalance` use:
+reorganize the output for use by `CityWaterBalance()` use:
 
 ```{r, eval=FALSE}
-wu <- combineWaterUse(start,end,wu)
+wu <- combineWaterUse(start,end,wu_raw)
 ```
 
 #### Get other data
@@ -149,30 +153,34 @@ Not all input data is currently available via web services.  These
 inputs (i.e., wastewater effluent, sewer overflows, runoff, baseflow and deep 
 groundwater recharge) must be gathered from other sources and converted to xts 
 objects with the same temporal range and resolution as the other flows. Units 
-must correspond with those specified for inputs to `mergeData`.
+must correspond with those specified for inputs to `mergeData()`.
 
 Finally, merge the data into a single xts of fluxes (i.e., flow/AOI) for input 
-to `CityWaterBalance`.  
+to `CityWaterBalance()`.  
 
 ```{r, eval=FALSE}
-data <- mergeData(area,atm,inflow,outflow,wu)
+
+# combine streamflow among gauges
+inflow <- combineStreamflow(inflows, c(1))
+outflow <- combineStreamflow(outflows, c(1,1,1,1))
+model_data <- mergeData(area,atm,inflow,outflow,wu)
 ```
 
 ### Solve
 
-`CityWaterBalance` solves for the changes in storage of system components. 
+`CityWaterBalance()` solves for the changes in storage of system components. 
 Acceptable solutions can be determined using ancillary observations (e.g., 
 groundwater levels). Owing to uncertainty in input data, parameters, and 
 ancillary observations of system storages, acceptable solutions will vary within 
 a solution space.  
 
-Solutions within this space may be discovered, and the sensitivity of modeled flow 
-explored, with the function `getSolutions`.  `getSolutions` tests for parameter
-sets that satisfy criteria for the changes in all system storages. It will 
-continue testing additional parameter sets until the mean flow solution differs 
-by less than a user-specified tolerance (`tol`). Although the `CityWaterBalance` 
-model runs quickly, running it many times to achieve a stable solution may take 
-quite a while.
+Solutions within this space may be discovered, and the sensitivity of modeled 
+flow explored, with the function `getSolutions()`.  `getSolutions()` tests for 
+parameter sets that satisfy criteria for the changes in all system storages. It 
+will continue testing additional parameter sets until the mean flow solution 
+differs by less than a user-specified tolerance (`tol`). Although the 
+`CityWaterBalance()` model runs quickly, running it many times to achieve a 
+stable solution may take quite a while.
 
 The following example shows how to search for model solutions that satisfy a
 criteria for storage in the combined sewer system again using `cwb_data`.  In 
@@ -185,17 +193,18 @@ will run in a reasonable amount of time.
 The boxplot call illustrates one way that results may be visualized.
 
 ```{r, eval=FALSE}
-data <- cwb_data
-data$cso <- 0
 
-p <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, "open_wat" = 0.02, "run_mult" = 1, "run_css" = 0.35, "bf_mult" = 1, "nonrev" = 0.08,"pow_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0, "leak_css" = 0.05, "dgw" = 0.5,"dgw_rep" = 0.5)
+d <- cwb_data
+d$cso <- 0
+
+params <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, "open_wat" = 0.02, "run_mult" = 1, "run_css" = 0.35, "bf_mult" = 1, "nonrev" = 0.08,"pow_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0, "leak_css" = 0.05, "dgw" = 0.5,"dgw_rep" = 0.5)
 
 low <- median(cwb_data$cso,na.rm=TRUE)*nrow(cwb_data)
 high <- mean(cwb_data$cso,na.rm=TRUE)*nrow(cwb_data)
 css_crit <- c(low,high)
 
-out <- getSolutions(data,p,100,0.02,css_bal = css_crit)
-boxplot(out[,order(colMeans(out),decreasing=TRUE)],las = 2, 
+out <- getSolutions(data = d, p = params, n = 100, tol = 100, css_bal = css_crit)
+boxplot(out[,order(colMeans(out),decreasing=TRUE)]/sum(d$prcp),las = 2, 
 ylab = "flow/precipitation", ylim = c(0,1),col = c("lightblue1"), 
 border = c("royalblue3"))
 

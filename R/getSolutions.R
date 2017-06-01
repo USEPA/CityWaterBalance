@@ -4,10 +4,14 @@
 #' parameters and long-term storage balances using Latin hypercubes.
 #' 
 #' The function creates n parameter sets using a Latin hupercube.  It runs
-#' CityWaterBalance with each set, accepting solutions that meet user-defined
-#' criteria for storage balances.  It then computes the mean of flow solutions, 
-#' and doubles n until the difference between the means of old and new solutions 
-#' is less than tol for all flows.
+#' `CityWaterBalance()` with each set, accepting solutions that meet 
+#' user-defined criteria for storage balances.  It then computes the mean of 
+#' flow solutions, and doubles n until the difference between the means of old 
+#' and new solutions is less than tol for all flows.  Defaults for parameter 
+#' value ranges are set to reasonable values, but they should be reconsidered 
+#' for each application.  Defaults for storage balances are set high to allow
+#' for solution discovery, however, acceptable values must be determined on a 
+#' case-by-case basis.
 #' 
 #' @param data xts or zoo object. See CityWaterBalance function for details.
 #' @param p list of initial parameter values. See CityWaterBalance function or
@@ -51,6 +55,7 @@
 #' @return out numeric solutions  
 #' @importFrom tgp lhs
 #' @examples
+#' \dontrun{
 #' data <- cwb_data
 #' data$cso <- 0
 #' p <- list("interc" = 0,"et_mult" = 1,"flow_mult" = 1, "open_wat" = 0.02, 
@@ -59,6 +64,7 @@
 #'           "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0,
 #'           "leak_css" = 0.05, "dgw" = 0.5, "dgw_rep" = 0.5)
 #' out <- getSolutions(data, p, 10, 0.1)
+#' }
 #' @export
 
 getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05), 
@@ -142,17 +148,16 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
     flows <- do.call(rbind,sols)
     new <- apply(flows,2,mean)
     crit <- max(abs(new-old))
-    print(paste("crit = ", crit))
     
     if (is.na(max(new))){
       print("No solutions found")
     } else {
-      print(paste("Solutions: ", nrow(flows)))
-      print(paste("Max difference: ", crit))
+      print(paste("Number of solutions: ", nrow(flows)))
+      print(paste("Max change between runs: ", crit))
     }
 
-    print(paste("Runs: ",k))
     k <- k+1
+    print(paste("------- Run ",k,"--------"))
   }
 
   colnames(flows) <- c("Interception", "Runoff", "Runoff to sewers",

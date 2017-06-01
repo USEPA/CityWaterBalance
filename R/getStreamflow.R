@@ -1,16 +1,15 @@
 #' Gather time series of streamflow data
 #' 
-#' This function gathers daily average streamgage data for a group of gages
+#' This function gathers daily average streamgage data for a group of gauges
 #' from USGS NWIS 
 #'
 #' @param start start date in format 'YYYY-MM-DD'
 #' @param end end date in format 'YYYY-MM-DD'
-#' @param gages list of USGS gage numbers 
+#' @param gages list of USGS gauge numbers 
 #' @return list of: 
-#'  \item{sites}{list of gage site names}
-#'  \item{site_num}{list of gage numbers}
+#'  \item{sites}{list of gauge site names}
+#'  \item{site_num}{list of gauge numbers}
 #'  \item{flows}{xts of daily average discharge (cfs)}
-#' sites, site numbers, flow data as xts object
 #' @importFrom dataRetrieval readNWISdv
 #' @importFrom xts as.xts 
 #' @importFrom zoo as.zoo
@@ -20,13 +19,15 @@
 
 getStreamflow <- function(start, end, gages) {
     
-    tot <- list()
+    # initialize output lists
     flows <- list()
     sites <- list()
     sn <- list()
     
+    # retrieve gauge data
     for (i in 1:length(gages)) {
         flow <- readNWISdv(gages[i], "00060", start, end)
+        
         if (length(flow) > 0) {
             sites[i] <- attr(flow, "siteInfo")$station_nm
             sn[i] <- attr(flow, "siteInfo")$site_no

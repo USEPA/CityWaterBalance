@@ -4,7 +4,8 @@
 `CityWaterBalance` provides a reproducible workflow for studying an urban water
 system.  The network of urban water flows and storages can be modeled and 
 visualized.  Any city may be modeled with preassembled data, but data for US 
-cities can be gathered via web services using this package and dependencies, [geoknife](https://cran.r-project.org/package=geoknife), [EcoHydRology](https://cran.r-project.org/package=EcoHydRology) and [dataRetrieval](https://cran.r-project.org/package=dataRetrieval).
+cities can be gathered via web services using this package and dependencies, [geoknife](https://cran.r-project.org/package=geoknife) and 
+[dataRetrieval](https://cran.r-project.org/package=dataRetrieval).
 
 # To install
 Install the development version of CityWaterBalance from GitHub:

@@ -4,7 +4,7 @@
 #' ratio from master gages.   
 #' 
 #' @param flowlist list of gage data and information from getStreamflow
-#' @param paired_gages list of gage pairs';;, where pair < -c(gappy,master)
+#' @param paired_gages list of gage pairs where pair <- c(gappy,master)
 #' @return list of: 
 #'  \item{sites}{list of gage site names}
 #'  \item{site_num}{list of gage numbers}

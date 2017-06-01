@@ -1,6 +1,7 @@
 #' Assemble a precipitation times series
 #' 
-#' This function aggregates monthly PRISM output for a given area using the USGS 
+#' This function retrieves monthly precipitation, minimum and maximum 
+#' temperatures for a given area from PRISM model output hosted by the USGS 
 #' Geo Data Portal (GDP)
 #'
 #' @param start start date in format 'YYYY-MM-DD'
@@ -11,8 +12,10 @@
 #' @return monthly precipitation, averaged spatially over geometry
 #' @import geoknife
 #' @examples
+#' \dontrun{
 #' prcp <- getPrecipitation('2010-01-01', '2010-12-31', 'sample:Counties', 'STATE',
 #' 'RI')
+#' }
 #' @export 
 
 

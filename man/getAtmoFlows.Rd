@@ -34,6 +34,8 @@ evapotranspiration. NOTE:  Shapefile for geometry must already be uploaded to
 the GDP.
 }
 \examples{
-atm <- getAtmoFlows('2010-01-01','2010-12-31','sample:Counties','STATE','RI',
+\dontrun{
+atm <- getAtmoFlows('2010-01-01', '2010-12-31', 'sample:Counties', 'STATE','RI',
 41.5801)
+}
 }

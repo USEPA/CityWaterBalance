@@ -1,7 +1,7 @@
 #' Assemble an evapotranspiration times series
 #' 
-#' This function aggregates monthly SSEBop output for a given area using the 
-#' USGS Geo Data Portal (GDP)
+#' This function retrieves monthly actual evapotranspiration for a given area
+#' from SSEBop model output hosted by the USGS Geo Data Portal (GDP)
 #'
 #' @param start start date in format 'YYYY-MM-DD'
 #' @param end end date in format 'YYYY-MM-DD'
@@ -11,8 +11,10 @@
 #' @return monthly evapotranspiration, averaged spatially over geometry
 #' @import geoknife
 #' @examples
+#' \dontrun{
 #' et = getEvapotranspiration('2010-01-01', '2010-12-31', 'sample:Counties',
 #' 'STATE', 'RI') 
+#' }
 #' @export
 
 getEvapotranspiration <- function(start, end, geometry, att, val=NA) {

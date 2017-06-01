@@ -37,21 +37,23 @@ mergeData(area, atm, inflow, outflow, wu, ws_imports = NULL,
 all fluxes (as xts) for each timestep (mm/month)
 }
 \description{
-This functions converts units and merges data needed by CityWaterBalance.  
+This function converts units and merges data needed by CityWaterBalance.  
 All inputs must represent the same time intervals. Outputs are fluxes 
 (mm/month) over study area.
 }
 \examples{
+\dontrun{
 start <- "2010-01-01"
 end <- "2010-12-31"
 area <- 2707
-atm <- getAtmoFlows(start,end,'sample:Counties','STATE','RI', 41.5801)
-inflow <- getStreamflow(start,end,c("01112500"))
-inflow <- combineStreamflow(inflow,c(1))
-outflow <- getStreamflow(start,end,c("01113895","01114000","01117000",
+atm <- getAtmoFlows(start, end, 'sample:Counties', 'STATE', 'RI', 41.5801)
+inflow <- getStreamflow(start, end, c("01112500"))
+inflow <- combineStreamflow(inflow, c(1))
+outflow <- getStreamflow(start, end, c("01113895", "01114000", "01117000",
 "01118500"))
-outflow <- combineStreamflow(outflow,c(1,1,1,1))
-wu <- getWaterUse(c('RI'),'ALL')
-wu <- combineWaterUse(start,end,wu)
-data <- mergeData(area,atm,inflow,outflow,wu)
+outflow <- combineStreamflow(outflow, c(1, 1, 1, 1))
+wu <- getWaterUse(c('RI'), 'ALL')
+wu <- combineWaterUse(start, end, wu)
+data <- mergeData(area, atm, inflow, outflow, wu)
+}
 }

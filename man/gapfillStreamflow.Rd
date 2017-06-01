@@ -18,11 +18,11 @@ list of:
  \item{flows}{xts of gap-filled daily average discharge}
 }
 \description{
-This function fills in gappy streamflow records using median of discharge 
-ratio with master gages.
+This function fills in gappy streamflow records using a median of discharge
+ratio from master gages.
 }
 \examples{
-gages <- c('05551540','05552500')
-flow <- getStreamflow('2000-01-01','2010-12-31',gages)
-flow <- gapfillStreamflow(flow,list(c(gages[1],gages[2])))
+gages <- c('05551540', '05552500')
+flow <- getStreamflow('2000-01-01', '2010-12-31', gages)
+flow <- gapfillStreamflow(flow, list(c(gages[1], gages[2])))
 }
