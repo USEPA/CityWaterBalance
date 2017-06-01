@@ -53,11 +53,11 @@
 #' @examples
 #' data <- cwb_data
 #' data$cso <- 0
-#' p <- list("interc" = 0,"et_mult" = 1,"flow_mult" = 1,
-#'           "open_wat" = 0.02, "run_mult" = 3.378, "run_css" = 0.35,
-#'           "bf_mult" = 1, "nonrev" = 0.08,"pow_evap" = 0.012,"wast_gen" = 0.85,
-#'           "pot_atm" = 0.13,"npot_infilt" = 0.5,"slud_evap" = 0,
-#'           "leak_css" = 0.05,"dgw" = 0.5, "dgw_rep" = 0.5)
+#' p <- list("interc" = 0,"et_mult" = 1,"flow_mult" = 1, "open_wat" = 0.02, 
+#'           "run_mult" = 3.378, "run_css" = 0.35, "bf_mult" = 1, 
+#'           "nonrev" = 0.08, "pow_evap" = 0.012, "wast_gen" = 0.85, 
+#'           "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0,
+#'           "leak_css" = 0.05, "dgw" = 0.5, "dgw_rep" = 0.5)
 #' out <- getSolutions(data, p, 10, 0.1)
 #' @export
 
@@ -73,9 +73,6 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
                         sw_bal =c(-500,500), css_bal = c(-500,500), 
                         sgw_bal = c(-500,500), dgw_bal = c(-500,500)){
 
-  # start clock
-  tstart <- proc.time() 
-  
   # initialize vectors 
   old <- rep(0,35) 
   new <- rep(tol*2,35) 
@@ -95,7 +92,7 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
     # create Latin hypercube for sampling parameter values
     params <- lhs(n, rbind(interc,et_mult,flow_mult,open_wat,run_mult,run_css,
                            bf_mult,nonrev,pow_evap,wast_gen,pot_atm,npot_infilt,
-                           slud_evap,leak_css,dgw, dgw_rep)) 
+                           slud_evap,leak_css,dgw,dgw_rep)) 
     
     # run each parameter set through CityWaterBalance model
     for (i in 1:nrow(params)){
@@ -182,7 +179,6 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
                        "Infiltration of non-potable water",
                        "Combined sewer overflows","River outflow")
   
-  print(proc.time()-tstart)
   return(flows)
 
 }

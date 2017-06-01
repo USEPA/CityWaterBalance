@@ -11,7 +11,7 @@
 #' @return monthly evapotranspiration, averaged spatially over geometry
 #' @import geoknife
 #' @examples
-#' et = getEvapotranspiration('2010-01-01','2010-12-31','sample:Counties',
+#' et = getEvapotranspiration('2010-01-01', '2010-12-31', 'sample:Counties',
 #' 'STATE', 'RI') 
 #' @export
 

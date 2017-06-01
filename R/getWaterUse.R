@@ -7,14 +7,14 @@
 #' @param counties list of county name lists for each state
 #' @param years list of years of available data
 #' @importFrom dataRetrieval readNWISuse
-#' @return list of dataframes of water withdrawals (MGD) by category of use, 
-#' one for each water source and quality (MGD):
+#' @return list of dataframes of water withdrawals (MGD) by use category, 
+#' one for each water source and quality:
 #'  \item{swf}{surface water, fresh}
 #'  \item{gwf}{groundwater, fresh}
 #'  \item{sws}{surface water, saline}
 #'  \item{gws}{groundwater, saline}  
 #' @examples
-#' wu <- getWaterUse(c('IL'),c('Cook','DeKalb'))
+#' wu <- getWaterUse(c('IL'), c('Cook', 'DeKalb'))
 #' @export 
 
 getWaterUse <- function(states, counties, years = "ALL") {
