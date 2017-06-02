@@ -10,10 +10,10 @@
 #'        streamflow out (outflow) \cr
 #'        water supply imports (ws_imports) \cr
 #'        other imports (etc_imports) \cr
-#'        surface water withdrawals for thermoelectric power (sw_therm) \cr
+#'        surface water for industrial uses  (sw_ind) \cr
 #'        surface water withdrawals for potable use (sw_pot) \cr
 #'        surface water withdrawals for nonpotable use (sw_npot) \cr
-#'        groundwater withdrawls for thermoelectric power (gw_therm) \cr
+#'        groundwater withdrawls for industrial uses (gw_ind) \cr
 #'        groundwater withdrawals for potable use (gw_pot) \cr
 #'        groundwater withdrawals for nonpotable use (gw_npot) \cr
 #'        deep groundwater recharge (dgr) \cr
@@ -30,7 +30,7 @@
 #'        fraction of runoff diverted to sewers (run_css) \cr
 #'        multiplier for baseflow (bf_mult) \cr
 #'        fraction of potable water supply lost to leaks (nonrev) \cr
-#'        fraction of cooling water that evaporates (pow_evap) \cr
+#'        fraction of industrial water that evaporates (ind_evap) \cr
 #'        fraction of potable use that returns to sewers (wast_gen) \cr
 #'        fraction of potable use that evaporates (pot_atm) \cr
 #'        fraction of nonpotable use that infiltrates (npot_infilt) \cr
@@ -50,7 +50,7 @@
 #' @examples
 #' p <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, 
 #'          "open_wat" = 0.02, "run_mult" = 3.378, "run_css" = 0.35, 
-#'          "bf_mult" = 1, "nonrev" = 0.08, "pow_evap" = 0.012,
+#'          "bf_mult" = 1, "nonrev" = 0.08, "ind_evap" = 0.012,
 #'          "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5,
 #'          "slud_evap" = 0, "leak_css" = 0.05,"dgw" = 0.5, "dgw_rep" = 0.5)
 #' m <- CityWaterBalance(cwb_data, p) 
@@ -90,7 +90,7 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     # 8. Surface water evaporation
     k8 <- data$pet * (p$open_wat)                                                
     # 9. Industrial withdrawals (SW)
-    k9 <- data$sw_therm                                                          
+    k9 <- data$sw_ind                                                          
     # 10. Potable withdrawals (SW)
     k10 <- data$sw_pot                                                           
     # 11. Non-potable withdrawals (SW)
@@ -98,7 +98,7 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     # 13. Baseflow 
     k13 <- data$baseflow                                                         
     # 14. Industrial withdrawals (SGW)
-    k14 <- data$gw_therm * (1 - p$dgw)                                           
+    k14 <- data$gw_ind * (1 - p$dgw)                                           
     # 15. Potable withdrawals (SGW)
     k15 <- data$gw_pot * (1 - p$dgw)                                             
     # 16. Evapotranspiration 
@@ -108,36 +108,48 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     # 18. Deep groundwater recharge
     k18 <- data$dgr                                                              
     # 19. Industrial withdrawals (DGW)
-    k19 <- data$gw_therm * (p$dgw)                                               
+    k19 <- data$gw_ind * (p$dgw)                                               
     # 20. Potable withdrawals (DGW)
     k20 <- data$gw_pot * (p$dgw)                                                 
     ws_potable <- k7 + k10 + data$gw_pot                                         
     # 21. Non-potable withdrawals (DGW)
     k21 <- data$gw_npot * (p$dgw)                                                
     ws_nonpotable <- k11 + data$gw_npot                                          
-    cooling <- k9 + k14 + k19                                                    
+    ind_use <- k9 + k14 + k19                                                    
     # 22. Evaporation of industrial water
-    k22 <- cooling * (p$pow_evap)                                                
+    k22 <- ind_use * (p$ind_evap)                                                
     # 23. Discharge of industrial water
-    k23 <- cooling * (1 - p$pow_evap)                                            #  pow --> isw   ~  power plant discharge
+    k23 <- ind_use * (1 - p$ind_evap)                                            
     # 24. Conveyance of potable water
-    k24 <- ws_potable * (1 - p$nonrev)                                           #  pur --> pot   ~  human use
-    k25 <- ws_potable * (p$nonrev)                                               #  pur --> sgw   ~  leakage (non-revenue water) 
-    k26 <- k24 * (p$pot_atm)                                                     #  pot --> atm   ~  evaporation   
-    k27 <- k24 * (p$wast_gen)                                                    #  pot --> css   ~  wastewater generation
-    k28 <- k24 * (1 - p$wast_gen - p$pot_atm)                                    #  pot --> sgw    ~  infiltration
-    k29 <- ws_nonpotable * (1 - p$npot_infilt)                                   #  npot --> atm  ~  evaporation
-    k33 <- ws_nonpotable * (p$npot_infilt)                                       #  npot --> sgw   ~  infiltration
-    k32 <- data$wtpe                                                             #  wtp --> isw   ~  treated wastewater discharge
-    k30 <- k32/(1 - p$slud_evap)                                                 #  css --> wtp   ~  wastewater conveyance  
-    k31 <- k30 - k32                                                             #  wtp --> atm   ~  evaporation of sludge 
-    k12 <- p$leak_css * k30                                                      #  sgw --> css   ~  gw infiltration to sewer system
-    k34 <- data$cso                                                              #  css --> isw  ~ CSO events
-    k35 <- data$outflow                                                          #  isw --> outflow  ~ streamflow out
+    k24 <- ws_potable * (1 - p$nonrev)                                           
+    # 25. Leakage of potable water
+    k25 <- ws_potable * (p$nonrev)                                                
+    # 26. Evaporation of potable water
+    k26 <- k24 * (p$pot_atm)                                                        
+    # 27. Wastewater generation
+    k27 <- k24 * (p$wast_gen)                                                    
+    # 28. Infiltration of potable water
+    k28 <- k24 * (1 - p$wast_gen - p$pot_atm)                                    
+    # 29. Evaporation of non-potable water
+    k29 <- ws_nonpotable * (1 - p$npot_infilt)                                   
+    # 33. Infiltration of non-potable water
+    k33 <- ws_nonpotable * (p$npot_infilt)                                       
+    # 32. Wastewater discharge
+    k32 <- data$wtpe                                                             
+    # 30. Conveyance of wastewater
+    k30 <- k32/(1 - p$slud_evap)                                                   
+    # 31. Evaporation of sludge
+    k31 <- k30 - k32                                                              
+    # 12. Sewer infiltration
+    k12 <- p$leak_css * k30                                                      
+    # 34. Combined sewer overflows
+    k34 <- data$cso                                                              
+    # River outflow
+    k35 <- data$outflow                                                          
     et_tot <- k1 + k8 + k16 + k22 + k26 + k29 + k31
     dgw_in <- (k19+k20+k21) * p$dgw_rep
     
-    # ------------ State variables -------------------------
+    # ------------ Calculate state variable balances -------------------------
     
     # 1) surface water (sw)
     sw <- k2 + k5 + k6 + k13 + k23 + k32 + k34 - k8 - k9 - k10 - k11 - k35
@@ -153,12 +165,12 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     css <- k3 + k12 + k27 - k30 - k34
     # 7) purification plant (pur)
     pur <- ws_potable - k24 - k25
-    # 8) power plant (pow)
-    pow <- cooling - k22 - k23
+    # 8) industrial facilities (ind)
+    ind <- ind_use - k22 - k23
     # 9) wastewater treatment plant (wtp)
     wtp <- k30 - k31 - k32
     
-    # ------------- outputs ---------------------- 
+    # ------------- Define outputs -------------------------------------------- 
     
     # Global balance
     GB <- zoo((data$prcp + data$inflow + data$ws_imports + data$etc_imports + 
@@ -166,7 +178,7 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     names(GB) <- c("Global balance")
     
     # Internal balance
-    IB <- zoo((sw + sgw + css + dgw + pot + npot + pow + pur + wtp), 
+    IB <- zoo((sw + sgw + css + dgw + pot + npot + ind + pur + wtp), 
               order.by = index(data))
     names(IB) <- c("Internal balance")
     
@@ -186,12 +198,13 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     names(global_flows) <- c("prcp","et","inflow","outflow","imports")
     
     # State variables
-    state_vars <- zoo(cbind(sw, css, sgw, dgw, pot, npot, pur, pow, wtp), 
+    state_vars <- zoo(cbind(sw, css, sgw, dgw, pot, npot, pur, ind, wtp), 
                       order.by = index(data))
     names(state_vars) <- c("sw","css", "sgw", "dgw", "pot", "npot", "pur", 
-                           "pow", "wtp")
+                           "ind", "wtp")
     
     
+    # ------------- Print messages --------------------------------------------
     if (print == TRUE) {
       if (min((k3 + k27 - k34), na.rm = TRUE) < 0) {
         print("WARNING:  CSO volumes greater than runoff + sewage")}

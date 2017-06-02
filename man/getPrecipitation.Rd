@@ -21,7 +21,8 @@ getPrecipitation(start, end, geometry, att, val = NA)
 monthly precipitation, averaged spatially over geometry
 }
 \description{
-This function aggregates monthly PRISM output for a given area using the USGS 
+This function retrieves monthly precipitation, minimum and maximum 
+temperatures for a given area from PRISM model output hosted by the USGS 
 Geo Data Portal (GDP)
 }
 \examples{

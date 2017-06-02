@@ -7,7 +7,7 @@
 getSolutions(data, p, n, tol = 0.01, interc = c(0, 0.05), et_mult = c(1,
   1.1), flow_mult = c(1, 1.1), open_wat = c(0.01, 0.1), run_mult = c(1,
   5), run_css = c(0.1, 1), bf_mult = c(0.5, 1.5), nonrev = c(0.05, 0.2),
-  pow_evap = c(0.01, 0.02), wast_gen = c(0.75, 0.9), pot_atm = c(0.1,
+  ind_evap = c(0.01, 0.02), wast_gen = c(0.75, 0.9), pot_atm = c(0.1,
   0.15), npot_infilt = c(0.25, 0.75), slud_evap = c(0, 0),
   leak_css = c(0.05, 0.25), dgw = c(0.5, 0.5), dgw_rep = c(0, 1),
   global_bal = c(-500, 500), sw_bal = c(-500, 500), css_bal = c(-500,
@@ -40,7 +40,7 @@ the inputs below for descriptions.}
 \item{nonrev}{vector of min and max fraction of potable water supply lost to 
 leaks}
 
-\item{pow_evap}{vector of min and max fraction of cooling water that 
+\item{ind_evap}{vector of min and max fraction of industrial use that 
 evaporates}
 
 \item{wast_gen}{vector of min and max fraction of potable use that returns to 
@@ -87,10 +87,14 @@ parameters and long-term storage balances using Latin hypercubes.
 }
 \details{
 The function creates n parameter sets using a Latin hupercube.  It runs
-CityWaterBalance with each set, accepting solutions that meet user-defined
-criteria for storage balances.  It then computes the mean of flow solutions, 
-and doubles n until the difference between the means of old and new solutions 
-is less than tol for all flows.
+`CityWaterBalance()` with each set, accepting solutions that meet 
+user-defined criteria for storage balances.  It then computes the mean of 
+flow solutions, and doubles n until the difference between the means of old 
+and new solutions is less than tol for all flows.  Defaults for parameter 
+value ranges are set to reasonable values, but they should be reconsidered 
+for each application.  Defaults for storage balances are set high to allow
+for solution discovery, however, acceptable values must be determined on a 
+case-by-case basis.
 }
 \examples{
 \dontrun{
@@ -98,7 +102,7 @@ data <- cwb_data
 data$cso <- 0
 p <- list("interc" = 0,"et_mult" = 1,"flow_mult" = 1, "open_wat" = 0.02, 
           "run_mult" = 3.378, "run_css" = 0.35, "bf_mult" = 1, 
-          "nonrev" = 0.08, "pow_evap" = 0.012, "wast_gen" = 0.85, 
+          "nonrev" = 0.08, "ind_evap" = 0.012, "wast_gen" = 0.85, 
           "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0,
           "leak_css" = 0.05, "dgw" = 0.5, "dgw_rep" = 0.5)
 out <- getSolutions(data, p, 10, 0.1)

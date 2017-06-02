@@ -8,10 +8,10 @@
 #' @param end end date in format 'YYYY-MM-DD'
 #' @param wu list of dataframes output by getWaterUse
 #' @return wu_flows list of xts objects aggregating water withdrawals (MGal) by:
-#'  \item{sw_therm}{surface water for theromelectric power}
+#'  \item{sw_ind}{surface water for industrial use}
 #'  \item{sw_pot}{surface water for potable use}
 #'  \item{sw_npot}{surface water for nonpotable use}
-#'  \item{gw_therm}{groundwater for theromelectric power}
+#'  \item{gw_ind}{groundwater for industrial use}
 #'  \item{gw_pot}{groundwater for potable use}
 #'  \item{gw_npot}{groundwater for nonpotable use}  
 #' @importFrom dplyr filter summarize group_by
@@ -19,24 +19,26 @@
 #' @import reshape2
 #' @import zoo
 #' @examples
+#' \dontrun{
 #' wu <- getWaterUse(c('IL'), c('Cook', 'Lake'))
 #' wu_flows <- combineWaterUse('2000-01-01', '2015-01-01', wu)
+#' }
 #' @export 
 
 combineWaterUse <- function(start, end, wu) {
     
     variable <- year <- value <- NULL    # for CRAN checks
     
-    # USGS estimate surface water withdrawals for thermoelectric power
+    # USGS estimate surface water withdrawals for industrial use
     a <- wu$swf
     a <- a[, 5:length(a)]
     a <- reshape2::melt(a, id.vars = "year")
-    b <- filter(a, variable %in% c("Thermoelectric"))
+    b <- filter(a, variable %in% c("Thermoelectric", "Industrial"))
     b <- summarize(group_by(b, year), total = sum(value, na.rm = TRUE))
-    sw_therm <- as.xts(b$total, order.by = as.Date(paste(b$year, "-12-01", sep = "")))
+    sw_ind <- as.xts(b$total, order.by = as.Date(paste(b$year, "-12-01", sep = "")))
     
     # USGS estimate surface water withdrawals for potable use
-    b <- filter(a, variable %in% c("Public", "Domestic", "Industrial", "Commercial"))
+    b <- filter(a, variable %in% c("Public", "Domestic", "Commercial"))
     b <- summarize(group_by(b, year), total = sum(value, na.rm = TRUE))
     sw_pot <- as.xts(b$total, order.by = as.Date(paste(b$year, "-12-01", sep = "")))
     
@@ -45,16 +47,16 @@ combineWaterUse <- function(start, end, wu) {
     b <- summarize(group_by(b, year), total = sum(value, na.rm = TRUE))
     sw_npot <- as.xts(b$total, order.by = as.Date(paste(b$year, "-12-01", sep = "")))
     
-    # USGS estimate groundwater withdrawals for thermoelectric power
+    # USGS estimate groundwater withdrawals for industrial use
     a <- wu$gwf
     a <- a[, 5:length(a)]
     a <- reshape2::melt(a, id.vars = "year")
-    b <- filter(a, variable %in% c("Thermoelectric"))
+    b <- filter(a, variable %in% c("Thermoelectric", "Industrial"))
     b <- summarize(group_by(b, year), total = sum(value, na.rm = TRUE))
-    gw_therm <- as.xts(b$total, order.by = as.Date(paste(b$year, "-12-01", sep = "")))
+    gw_ind <- as.xts(b$total, order.by = as.Date(paste(b$year, "-12-01", sep = "")))
     
     # USGS estimate groundwater withdrawals for potable use
-    b <- filter(a, variable %in% c("Public", "Domestic", "Industrial", "Commercial"))
+    b <- filter(a, variable %in% c("Public", "Domestic", "Commercial"))
     b <- summarize(group_by(b, year), total = sum(value, na.rm = TRUE))
     gw_pot <- as.xts(b$total, order.by = as.Date(paste(b$year, "-12-01", sep = "")))
     
@@ -64,12 +66,12 @@ combineWaterUse <- function(start, end, wu) {
     gw_npot <- as.xts(b$total, order.by = as.Date(paste(b$year, "-12-01", sep = "")))
     
     # interpolate monthly totals
-    wu_flows <- cbind(sw_therm, sw_pot, sw_npot, gw_therm, gw_pot, gw_npot) * (365/12)
+    wu_flows <- cbind(sw_ind, sw_pot, sw_npot, gw_ind, gw_pot, gw_npot) * (365/12)
     wu_flows <- merge(wu_flows, zoo(, seq(as.Date(start), as.Date(end), by = "month")))
     wu_flows <- na.approx(wu_flows)
     wu_flows <- merge(wu_flows, zoo(, seq(as.Date(start), as.Date(end), by = "month")))
     wu_flows <- wu_flows[paste(start, end, sep = "/")]
-    names(wu_flows) <- c("sw_therm", "sw_pot", "sw_npot", "gw_therm", "gw_pot", "gw_npot")
+    names(wu_flows) <- c("sw_ind", "sw_pot", "sw_npot", "gw_ind", "gw_pot", "gw_npot")
     
     return(wu_flows)
 }

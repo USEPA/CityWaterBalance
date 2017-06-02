@@ -11,17 +11,16 @@ getStreamflow(start, end, gages)
 
 \item{end}{end date in format 'YYYY-MM-DD'}
 
-\item{gages}{list of USGS gage numbers}
+\item{gages}{list of USGS gauge numbers}
 }
 \value{
 list of: 
- \item{sites}{list of gage site names}
- \item{site_num}{list of gage numbers}
+ \item{sites}{list of gauge site names}
+ \item{site_num}{list of gauge numbers}
  \item{flows}{xts of daily average discharge (cfs)}
-sites, site numbers, flow data as xts object
 }
 \description{
-This function gathers daily average streamgage data for a group of gages
+This function gathers daily average streamgage data for a group of gauges
 from USGS NWIS
 }
 \examples{

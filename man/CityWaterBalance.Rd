@@ -14,10 +14,10 @@ streamflow in (inflow) \cr
 streamflow out (outflow) \cr
 water supply imports (ws_imports) \cr
 other imports (etc_imports) \cr
-surface water withdrawals for thermoelectric power (sw_therm) \cr
+surface water for industrial uses  (sw_ind) \cr
 surface water withdrawals for potable use (sw_pot) \cr
 surface water withdrawals for nonpotable use (sw_npot) \cr
-groundwater withdrawls for thermoelectric power (gw_therm) \cr
+groundwater withdrawls for industrial uses (gw_ind) \cr
 groundwater withdrawals for potable use (gw_pot) \cr
 groundwater withdrawals for nonpotable use (gw_npot) \cr
 deep groundwater recharge (dgr) \cr
@@ -35,7 +35,7 @@ multiplier for runoff (run_mult) \cr
 fraction of runoff diverted to sewers (run_css) \cr
 multiplier for baseflow (bf_mult) \cr
 fraction of potable water supply lost to leaks (nonrev) \cr
-fraction of cooling water that evaporates (pow_evap) \cr
+fraction of industrial water that evaporates (ind_evap) \cr
 fraction of potable use that returns to sewers (wast_gen) \cr
 fraction of potable use that evaporates (pot_atm) \cr
 fraction of nonpotable use that infiltrates (npot_infilt) \cr
@@ -54,13 +54,13 @@ list of dataframes:
  \item{internal_balance}{internal water balance}
 }
 \description{
-This function tracks flows of water as they move through pathways and storages 
-within the urban system. Data can be in any self-consistent units.
+This function tracks flows of water as they move through pathways and 
+storages within the urban system. Data can be in any self-consistent units.
 }
 \examples{
 p <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, 
          "open_wat" = 0.02, "run_mult" = 3.378, "run_css" = 0.35, 
-         "bf_mult" = 1, "nonrev" = 0.08, "pow_evap" = 0.012,
+         "bf_mult" = 1, "nonrev" = 0.08, "ind_evap" = 0.012,
          "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5,
          "slud_evap" = 0, "leak_css" = 0.05,"dgw" = 0.5, "dgw_rep" = 0.5)
 m <- CityWaterBalance(cwb_data, p) 

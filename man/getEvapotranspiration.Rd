@@ -21,8 +21,8 @@ getEvapotranspiration(start, end, geometry, att, val = NA)
 monthly evapotranspiration, averaged spatially over geometry
 }
 \description{
-This function aggregates monthly SSEBop output for a given area using the 
-USGS Geo Data Portal (GDP)
+This function retrieves monthly actual evapotranspiration for a given area
+from SSEBop model output hosted by the USGS Geo Data Portal (GDP)
 }
 \examples{
 \dontrun{

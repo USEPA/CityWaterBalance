@@ -27,7 +27,8 @@ dependencies [geoknife](https://cran.r-project.org/package=geoknife) and
 Development version available on Github:
 
 ```{r eval=FALSE}
-devtools::install_github("USEPA/CityWaterBalance", build_vignettes = TRUE)
+devtools::install_github("USEPA/CityWaterBalance", 
+                         build_vignettes = TRUE)
 ```
 
 ```{r}
@@ -65,7 +66,7 @@ water in the Chicago metropolitan area.
 
 ```{r}
 # Specify parameters
-p <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, "open_wat" = 0.02, "run_mult" = 1, "run_css" = 0.35, "bf_mult" = 1, "nonrev" = 0.08,"pow_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0, "leak_css" = 0.05, "dgw" = 0.5,"dgw_rep" = 0.5)
+p <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, "open_wat" = 0.02, "run_mult" = 1, "run_css" = 0.35, "bf_mult" = 1, "nonrev" = 0.08,"ind_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0, "leak_css" = 0.05, "dgw" = 0.5,"dgw_rep" = 0.5)
 
 # Run model
 m <- CityWaterBalance(cwb_data,p, print=FALSE)
@@ -197,7 +198,7 @@ The boxplot call illustrates one way that results may be visualized.
 d <- cwb_data
 d$cso <- 0
 
-params <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, "open_wat" = 0.02, "run_mult" = 1, "run_css" = 0.35, "bf_mult" = 1, "nonrev" = 0.08,"pow_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0, "leak_css" = 0.05, "dgw" = 0.5,"dgw_rep" = 0.5)
+params <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, "open_wat" = 0.02, "run_mult" = 1, "run_css" = 0.35, "bf_mult" = 1, "nonrev" = 0.08,"ind_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0, "leak_css" = 0.05, "dgw" = 0.5,"dgw_rep" = 0.5)
 
 low <- median(cwb_data$cso,na.rm=TRUE)*nrow(cwb_data)
 high <- mean(cwb_data$cso,na.rm=TRUE)*nrow(cwb_data)

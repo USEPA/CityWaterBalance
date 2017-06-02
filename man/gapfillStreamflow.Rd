@@ -9,7 +9,7 @@ gapfillStreamflow(flowlist, paired_gages)
 \arguments{
 \item{flowlist}{list of gage data and information from getStreamflow}
 
-\item{paired_gages}{list of gage pairs';;, where pair < -c(gappy,master)}
+\item{paired_gages}{list of gage pairs where pair <- c(gappy,master)}
 }
 \value{
 list of: 

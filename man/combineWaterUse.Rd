@@ -15,10 +15,10 @@ combineWaterUse(start, end, wu)
 }
 \value{
 wu_flows list of xts objects aggregating water withdrawals (MGal) by:
- \item{sw_therm}{surface water for theromelectric power}
+ \item{sw_ind}{surface water for industrial use}
  \item{sw_pot}{surface water for potable use}
  \item{sw_npot}{surface water for nonpotable use}
- \item{gw_therm}{groundwater for theromelectric power}
+ \item{gw_ind}{groundwater for industrial use}
  \item{gw_pot}{groundwater for potable use}
  \item{gw_npot}{groundwater for nonpotable use}
 }

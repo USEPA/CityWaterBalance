@@ -10,10 +10,10 @@
 #'   \item{pet}{potential evapotranspiration}
 #'   \item{inflow}{streamflow in}
 #'   \item{outflow}{streamflow out}
-#'   \item{sw_therm}{surface water withdrawals for thermoelectric cooling}
+#'   \item{sw_ind}{surface water withdrawals for industrial use}
 #'   \item{sw_pot}{surface water withdrawals for potable use}
 #'   \item{sw_npot}{surface water withdrawals for nonpotable use}
-#'   \item{gw_therm}{groundwater withdrawals for thermoelectric cooling}
+#'   \item{gw_ind}{groundwater withdrawals for industrial use}
 #'   \item{gw_pot}{groundwater withdrawals for potable use}
 #'   \item{gw_npot}{groundwater withdrawals for nonpotable use}
 #'   \item{ws_imports}{water supply imports}

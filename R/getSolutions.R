@@ -27,7 +27,7 @@
 #' @param bf_mult vector of min and max multiplier for baseflow       
 #' @param nonrev vector of min and max fraction of potable water supply lost to 
 #'        leaks      
-#' @param pow_evap vector of min and max fraction of cooling water that 
+#' @param ind_evap vector of min and max fraction of industrial use that 
 #'        evaporates
 #' @param wast_gen vector of min and max fraction of potable use that returns to 
 #'        sewers
@@ -60,7 +60,7 @@
 #' data$cso <- 0
 #' p <- list("interc" = 0,"et_mult" = 1,"flow_mult" = 1, "open_wat" = 0.02, 
 #'           "run_mult" = 3.378, "run_css" = 0.35, "bf_mult" = 1, 
-#'           "nonrev" = 0.08, "pow_evap" = 0.012, "wast_gen" = 0.85, 
+#'           "nonrev" = 0.08, "ind_evap" = 0.012, "wast_gen" = 0.85, 
 #'           "pot_atm" = 0.13, "npot_infilt" = 0.5, "slud_evap" = 0,
 #'           "leak_css" = 0.05, "dgw" = 0.5, "dgw_rep" = 0.5)
 #' out <- getSolutions(data, p, 10, 0.1)
@@ -71,7 +71,7 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
                         et_mult = c(1,1.1), flow_mult = c(1,1.1), 
                         open_wat = c(0.01,0.1), run_mult = c(1,5), 
                         run_css = c(0.1,1), bf_mult = c(0.5,1.5), 
-                        nonrev = c(0.05,0.2), pow_evap = c(0.01,0.02),
+                        nonrev = c(0.05,0.2), ind_evap = c(0.01,0.02),
                         wast_gen = c(0.75,0.9), pot_atm = c(0.10,0.15),
                         npot_infilt = c(0.25,0.75), slud_evap = c(0,0), 
                         leak_css = c(0.05,0.25), dgw = c(0.5,0.5), 
@@ -97,7 +97,7 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
     
     # create Latin hypercube for sampling parameter values
     params <- lhs(n, rbind(interc,et_mult,flow_mult,open_wat,run_mult,run_css,
-                           bf_mult,nonrev,pow_evap,wast_gen,pot_atm,npot_infilt,
+                           bf_mult,nonrev,ind_evap,wast_gen,pot_atm,npot_infilt,
                            slud_evap,leak_css,dgw,dgw_rep)) 
     
     # run each parameter set through CityWaterBalance model
@@ -111,7 +111,7 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
       p$run_css <- params[i,6]
       p$bf_mult <- params[i,7]
       p$nonrev <- params[i,8]
-      p$pow_evap <- params[i,9]
+      p$ind_evap <- params[i,9]
       p$wast_gen <- params[i,10]
       p$pot_atm <- params[i,11]
       p$npot_infilt <- params[i,12]
@@ -164,17 +164,17 @@ getSolutions <- function(data, p, n, tol = 0.01, interc = c(0,0.05),
                        "Infiltration","River inflow",
                        "Imports to surface waters","Imports for potable use",
                        "Surface water evaporation",
-                       "Thermoelectric cooling (SW)","Potable withdrawals (SW)",
+                       "Industrial use (SW)","Potable withdrawals (SW)",
                        "Non-potable withdrawals (SW)","Sewer infiltration", 
-                       "Baseflow","Thermoelectric cooling (SGW)",
+                       "Baseflow","Industrial use (SGW)",
                        "Potable withdrawals (SGW)","Evapotranspiration",
                        "Non-potable withdrawals (SGW)", 
                        "Recharge of deep groundwater",
-                       "Thermoelectric cooling (DGW)",
+                       "Industrial use (DGW)",
                        "Potable withdrawals (DGW)", 
                        "Non-potable withdrawals (DGW)",
-                       "Evaporation of cooling water",
-                       "Discharge of cooling water", 
+                       "Evaporation of industrial water",
+                       "Discharge of industrial water", 
                        "Conveyance of potable water","Leakage of potable water",
                        "Evaporation of potable water","Wastewater generation",
                        "Infiltration of potable water",
