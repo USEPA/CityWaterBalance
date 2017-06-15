@@ -13,7 +13,7 @@
 #'        surface water for industrial uses  (sw_ind) \cr
 #'        surface water withdrawals for potable use (sw_pot) \cr
 #'        surface water withdrawals for nonpotable use (sw_npot) \cr
-#'        groundwater withdrawls for industrial uses (gw_ind) \cr
+#'        groundwater withdrawals for industrial uses (gw_ind) \cr
 #'        groundwater withdrawals for potable use (gw_pot) \cr
 #'        groundwater withdrawals for nonpotable use (gw_npot) \cr
 #'        deep groundwater recharge (dgr) \cr

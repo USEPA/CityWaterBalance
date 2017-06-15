@@ -6,7 +6,7 @@
 #' 
 #' @param area numeric study area (sq km)
 #' @param atm xts of atmospheric data, from getAtmoFlows (mm/month)
-#' @param inflow xts  of daily steamflow into area (cfs)
+#' @param inflow xts  of daily streamflow into area (cfs)
 #' @param outflow xts of daily streamflow out of area (cfs)
 #' @param wweff xts of wastewater effluent (MGD)
 #' @param wu xts of water use, from combineWaterUse (MGal/month)

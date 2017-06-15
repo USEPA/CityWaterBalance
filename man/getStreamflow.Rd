@@ -20,7 +20,7 @@ list of:
  \item{flows}{xts of daily average discharge (cfs)}
 }
 \description{
-This function gathers daily average streamgage data for a group of gauges
+This function gathers daily average streamgauge data for a group of gauges
 from USGS NWIS
 }
 \examples{

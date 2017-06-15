@@ -3,7 +3,7 @@
 #' This function searches for acceptable model solutions within the uncertainty 
 #' parameters and long-term storage balances using Latin hypercubes.
 #' 
-#' The function creates n parameter sets using a Latin hupercube.  It runs
+#' The function creates n parameter sets using a Latin hypercube.  It runs
 #' `CityWaterBalance()` with each set, accepting solutions that meet 
 #' user-defined criteria for storage balances.  It then computes the mean of 
 #' flow solutions, and doubles n until the difference between the means of old 
@@ -17,7 +17,7 @@
 #' @param p list of initial parameter values. See CityWaterBalance function or
 #'        the inputs below for descriptions.
 #' @param n integer number of initial parameter sets to search
-#' @param tol tolerance acceptible difference mean flow solutions
+#' @param tol tolerance acceptable difference mean flow solutions
 #' @param interc vector of min and max fraction of pet lost to interception 
 #' @param et_mult vector of min and max multiplier for et
 #' @param flow_mult vector of min and max multiplier for outflow

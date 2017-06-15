@@ -21,7 +21,7 @@ the inputs below for descriptions.}
 
 \item{n}{integer number of initial parameter sets to search}
 
-\item{tol}{tolerance acceptible difference mean flow solutions}
+\item{tol}{tolerance acceptable difference mean flow solutions}
 
 \item{interc}{vector of min and max fraction of pet lost to interception}
 
@@ -86,7 +86,7 @@ This function searches for acceptable model solutions within the uncertainty
 parameters and long-term storage balances using Latin hypercubes.
 }
 \details{
-The function creates n parameter sets using a Latin hupercube.  It runs
+The function creates n parameter sets using a Latin hypercube.  It runs
 `CityWaterBalance()` with each set, accepting solutions that meet 
 user-defined criteria for storage balances.  It then computes the mean of 
 flow solutions, and doubles n until the difference between the means of old 

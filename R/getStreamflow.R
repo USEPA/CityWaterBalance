@@ -1,6 +1,6 @@
 #' Gather time series of streamflow data
 #' 
-#' This function gathers daily average streamgage data for a group of gauges
+#' This function gathers daily average streamgauge data for a group of gauges
 #' from USGS NWIS 
 #'
 #' @param start start date in format 'YYYY-MM-DD'

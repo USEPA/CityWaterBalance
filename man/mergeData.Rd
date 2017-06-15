@@ -13,7 +13,7 @@ mergeData(area, atm, inflow, outflow, wu, ws_imports = NULL,
 
 \item{atm}{xts of atmospheric data, from getAtmoFlows (mm/month)}
 
-\item{inflow}{xts  of daily steamflow into area (cfs)}
+\item{inflow}{xts  of daily streamflow into area (cfs)}
 
 \item{outflow}{xts of daily streamflow out of area (cfs)}
 
