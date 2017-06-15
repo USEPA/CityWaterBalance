@@ -3,10 +3,10 @@ Title: Track Flows of Water Through an Urban System
 Version: 0.1.0
 Authors@R: person("Laura", "Erban", email = "erban.laura@epa.gov", 
   role = c("aut", "cre"))
-Description: `CityWaterBalance` tracks water through the urban network of flows
-  and storages. Any city may be modeled with preassembled data, 
-  but data for US cities can be gathered via web services using this package 
-  and dependencies `geoknife` and `dataRetrieval`. 
+Description: Retrieves data and estimates unmeasured flows of water through the 
+  urban network. Any city may be modeled with preassembled data, but data for 
+  US cities can be gathered via web services using this package and dependencies 
+  `geoknife` and `dataRetrieval`. 
 Depends:
     R (>= 3.0.0)
 Imports:
