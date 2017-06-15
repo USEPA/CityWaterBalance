@@ -24,6 +24,12 @@ dependencies [geoknife](https://cran.r-project.org/package=geoknife) and
 
 ## Install
 
+The latest release of `CityWaterBalance` is available from CRAN.  To install:
+
+```{r eval=FALSE}
+install.packages("CityWaterBalance")
+```
+
 Development version available on Github:
 
 ```{r eval=FALSE}
