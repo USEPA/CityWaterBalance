@@ -28,6 +28,8 @@ and aggregates them for whole urban system according to flows in
 CityWaterBalance
 }
 \examples{
+\dontrun{
 wu <- getWaterUse(c('IL'), c('Cook', 'Lake'))
 wu_flows <- combineWaterUse('2000-01-01', '2015-01-01', wu)
+}
 }

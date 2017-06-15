@@ -1,5 +1,5 @@
 Package: CityWaterBalance
-Title: Track flows of water through an urban system
+Title: Track Flows of Water Through an Urban System
 Version: 0.1.0
 Authors@R: person("Laura", "Erban", email = "erban.laura@epa.gov", 
   role = c("aut", "cre"))

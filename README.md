@@ -8,11 +8,18 @@ cities can be gathered via web services using this package and dependencies, [ge
 [dataRetrieval](https://cran.r-project.org/package=dataRetrieval).
 
 # To install
-Install the development version of CityWaterBalance from GitHub:
+
+The latest release of `CityWaterBalance` is available from CRAN.  To install:
+
+```{r eval=FALSE}
+install.packages("CityWaterBalance")
 ```
+
+To install the development version from GitHub:
+
+```{r eval=FALSE}
 install.packages("devtools")
-library(devtools)
-install_github("USEPA/CityWaterBalance", build_vignettes=TRUE)
+devtools::install_github("USEPA/CityWaterBalance", build_vignettes=TRUE)
 library(CityWaterBalance)
 ```
 # EPA Disclaimer
