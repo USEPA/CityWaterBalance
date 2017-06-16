@@ -6,7 +6,7 @@ Authors@R: person("Laura", "Erban", email = "erban.laura@epa.gov",
 Description: Retrieves data and estimates unmeasured flows of water through the 
   urban network. Any city may be modeled with preassembled data, but data for 
   US cities can be gathered via web services using this package and dependencies 
-  `geoknife` and `dataRetrieval`. 
+  'geoknife' and 'dataRetrieval'. 
 Depends:
     R (>= 3.0.0)
 Imports:
