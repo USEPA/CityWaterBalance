@@ -14,7 +14,7 @@
 #'  \item{sws}{surface water, saline}
 #'  \item{gws}{groundwater, saline}  
 #' @examples
-#' wu <- getWaterUse(c('IL'), c('Cook', 'DeKalb'))
+#' wu <- getWaterUse(c('IL'), list(c('Cook', 'DeKalb')))
 #' @export 
 
 getWaterUse <- function(states, counties, years = "ALL") {

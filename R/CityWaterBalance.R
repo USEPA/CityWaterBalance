@@ -28,7 +28,8 @@
 #'        fraction of study area that is impervious (imperv) \cr
 #'        fraction of pet lost to interception (interc) \cr
 #'        fraction of area that is open water (open_wat) \cr
-#'        fraction of runoff diverted to sewers (run_css) \cr
+#'        fraction of runoff diverted to combined sewer system (run_css) \cr
+#'        fraction of runoff diverted to separated sewer system (run_sss) \cr
 #'        fraction of potable water supply lost to leaks (nonrev) \cr
 #'        fraction of industrial water that evaporates (ind_evap) \cr
 #'        fraction of potable use that returns to sewers (wast_gen) \cr
@@ -36,6 +37,7 @@
 #'        fraction of nonpotable use that infiltrates (npot_infilt) \cr
 #'        fraction of wastewater that evaporates from sludge (slud_evap) \cr
 #'        fraction of wastewater effluent from gw infiltration (leak_css) \cr
+#'        fraction of separated sewer effluent from gw infiltration (leak_sss) \cr
 #'        fraction of groundwater from deep, confined aquifers (dgw) \cr
 #' @param print option to print messages
 #' @return list of dataframes:
@@ -47,10 +49,10 @@
 #' @import zoo
 #' @importFrom utils flush.console
 #' @examples
-#' p <- list("prcp_mult" = 1, et_mult" = 1, "flow_mult" = 1, "bf_mult" = 1, "dgw_rep" = 0.5,
-#'          "imperv" = 0.2, "interc" = 0, "open_wat" = 0.02, "run_css" = 0.35,  "nonrev" = 0.08, 
-#'          "ind_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5, 
-#'          "slud_evap" = 0, "leak_css" = 0.05,"dgw" = 0.5)
+#' p <- list("prcp_mult" = 1, "et_mult" = 1, "flow_mult" = 1, "bf_mult" = 1, "dgw_rep" = 0.5,
+#'          "imperv" = 0.2, "interc" = 0, "open_wat" = 0.02, "run_css" = 0.3, "run_sss" = 0.05,
+#'           "nonrev" = 0.08, "ind_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5, 
+#'          "slud_evap" = 0, "leak_css" = 0.05, "leak_sss" = 0.05, "dgw" = 0.5)
 #' m <- CityWaterBalance(cwb_data, p) 
 #' @export
 
@@ -70,11 +72,13 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     #  1. Interception  
     k1 <- data$pet * p$interc                                                    
     #  2. Runoff  
-    k2 <- data$prcp * p$imperv * (1 - p$run_css)
-    #  3. Runoff to sewers  
-    k3 <- data$prcp * p$imperv * (p$run_css)                                                
+    k2 <- data$prcp * p$imperv * (1 - p$run_css - p$run_sss)
+    #  3. Runoff to combined sewer system  
+    k3 <- data$prcp * p$imperv * (p$run_css)
+    # 36. Runoff to separate sewer system
+    k36 <- data$prcp * p$imperv * (p$run_sss)
     #  4. Infiltration 
-    k4 <- data$prcp - k1 - k2 - k3                                               
+    k4 <- data$prcp - k1 - k2 - k3 - k36                                               
     if (min(k4, na.rm = TRUE) < 0) {
         print("WARNING: negative infiltration")
         flush.console()
@@ -143,17 +147,22 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     k12 <- p$leak_css * k30                                                      
     # 34. Combined sewer overflows
     k34 <- k3 + k12 + k27 - k30                                                              
-    # River outflow
-    k35 <- data$outflow                                                          
+    # 35. River outflow
+    k35 <- data$outflow
+    # 38. Separated sewer effluent
+    k38 <- k36/(1 - p$leak_sss)
+    # 37. Separated sewer infiltration
+    k37 <- k38 - k36
+    
     et_tot <- k1 + k8 + k16 + k22 + k26 + k29 + k31
     dgw_in <- (k19+k20+k21) * p$dgw_rep
     
     # ------------ Calculate state variable balances -------------------------
     
     # 1) surface water (sw)
-    sw <- k2 + k5 + k6 + k13 + k23 + k32 + k34 - k8 - k9 - k10 - k11 - k35
+    sw <- k2 + k5 + k6 + k13 + k23 + k32 + k34 + k38 - k8 - k9 - k10 - k11 - k35
     # 2) shallow groundwater (sgw)
-    sgw <- k4 + k25 + k28 + k33 - k12 - k13 - k14 - k15 - k16 - k17 - k18
+    sgw <- k4 + k25 + k28 + k33 - k12 - k13 - k14 - k15 - k16 - k17 - k18 - k37
     # 3) deep groundwater (dgw)
     dgw <- k18 + dgw_in - k19 - k20 - k21
     # 4) potable use (pot)
@@ -168,6 +177,8 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     ind <- ind_use - k22 - k23
     # 9) wastewater treatment plant (wtp)
     wtp <- k30 - k31 - k32
+    # 10) separated sewer system
+    sss <- k36 + k37 - k38
     
     # ------------- Define outputs -------------------------------------------- 
     
@@ -177,19 +188,19 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     names(GB) <- c("Global balance")
     
     # Internal balance
-    IB <- zoo((sw + sgw + css + dgw + pot + npot + ind + pur + wtp), 
+    IB <- zoo((sw + sgw + css + sss + dgw + pot + npot + ind + pur + wtp), 
               order.by = index(data))
     names(IB) <- c("Internal balance")
     
     # All flows
     all_flows <- zoo(cbind(k1,k2,k3,k4,k5,k6,k7,k8,k9,k10,k11,k12,k13,k14,k15,
                            k16,k17,k18,k19,k20,k21,k22,k23,k24,k25,k26,k27,k28,
-                           k29,k30,k31,k32,k33,k34,k35), 
+                           k29,k30,k31,k32,k33,k34,k35,k36,k37,k38), 
                            order.by = index(data))
     names(all_flows) <- c("1","2","3","4","5","6","7","8","9","10", "11","12",
                           "13","14","15", "16","17","18","19","20","21","22",
                           "23","24","25","26","27","28","29","30","31","32",
-                          "33","34","35")
+                          "33","34","35","36","37","38")
     
     global_flows <- zoo(cbind(data$prcp,et_tot,data$inflow,data$outflow,
                               data$ws_imports+data$etc_imports), 
@@ -198,22 +209,18 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     names(global_flows) <- c("prcp","et","inflow","outflow","imports")
     
     # State variables
-    state_vars <- zoo(cbind(sw, css, sgw, dgw, pot, npot, pur, ind, wtp), 
+    state_vars <- zoo(cbind(sw, css, sss, sgw, dgw, pot, npot, pur, ind, wtp), 
                       order.by = index(data))
-    names(state_vars) <- c("sw","css", "sgw", "dgw", "pot", "npot", "pur", 
+    names(state_vars) <- c("sw","css", "sss", "sgw", "dgw", "pot", "npot", "pur", 
                            "ind", "wtp")
     
     
     # ------------- Print messages --------------------------------------------
     if (print == TRUE) {
-      if (min((k3 + k27 - k34), na.rm = TRUE) < 0) {
-        print("WARNING:  CSO volumes greater than runoff + sewage")}
-      
       print(paste("Internal balance: ",round(sum(IB, na.rm = TRUE), 2)))
       print(paste("Global balance: ",round(sum(GB, na.rm = TRUE), 2)))
       print("State variable balances:")
       print(round(colSums(state_vars, na.rm = TRUE), 2))
-        
     }
     
     return(list(all_flows = all_flows, global_flows = global_flows,
