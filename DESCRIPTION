@@ -1,6 +1,6 @@
 Package: CityWaterBalance
 Title: Track Flows of Water Through an Urban System
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: person("Laura", "Erban", email = "erban.laura@epa.gov", 
   role = c("aut", "cre"))
 Description: Retrieves data and estimates unmeasured flows of water through the 

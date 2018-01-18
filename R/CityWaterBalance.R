@@ -17,18 +17,18 @@
 #'        groundwater withdrawals for potable use (gw_pot) \cr
 #'        groundwater withdrawals for nonpotable use (gw_npot) \cr
 #'        deep groundwater recharge (dgr) \cr
-#'        combined sewer overflow events (cso) \cr
 #'        wastewater treatment plant effluent (wtpe) \cr
-#'        runoff estimate (runoff) \cr
 #'        baseflow estimate (baseflow) \cr
 #' @param p list of fixed parameter values for: \cr
-#'        fraction of pet lost to interception (interc) \cr
+#'        multiplier for prcp (prcp_mult) \cr
 #'        multiplier for et (et_mult) \cr
 #'        multiplier for outflow (flow_mult) \cr
-#'        fraction of area that is open water (open_wat) \cr
-#'        multiplier for runoff (run_mult) \cr
-#'        fraction of runoff diverted to sewers (run_css) \cr
 #'        multiplier for baseflow (bf_mult) \cr
+#'        multiplier for deep pumping replaced by lateral flow (dgw_rep) \cr
+#'        fraction of study area that is impervious (imperv) \cr
+#'        fraction of pet lost to interception (interc) \cr
+#'        fraction of area that is open water (open_wat) \cr
+#'        fraction of runoff diverted to sewers (run_css) \cr
 #'        fraction of potable water supply lost to leaks (nonrev) \cr
 #'        fraction of industrial water that evaporates (ind_evap) \cr
 #'        fraction of potable use that returns to sewers (wast_gen) \cr
@@ -37,7 +37,6 @@
 #'        fraction of wastewater that evaporates from sludge (slud_evap) \cr
 #'        fraction of wastewater effluent from gw infiltration (leak_css) \cr
 #'        fraction of groundwater from deep, confined aquifers (dgw) \cr
-#'        multiplier for deep pumping replaced by lateral flow (dgw_rep) \cr
 #' @param print option to print messages
 #' @return list of dataframes:
 #'  \item{all_flows}{all flows} 
@@ -48,11 +47,10 @@
 #' @import zoo
 #' @importFrom utils flush.console
 #' @examples
-#' p <- list("interc" = 0, "et_mult" = 1, "flow_mult" = 1, 
-#'          "open_wat" = 0.02, "run_mult" = 3.378, "run_css" = 0.35, 
-#'          "bf_mult" = 1, "nonrev" = 0.08, "ind_evap" = 0.012,
-#'          "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5,
-#'          "slud_evap" = 0, "leak_css" = 0.05,"dgw" = 0.5, "dgw_rep" = 0.5)
+#' p <- list("prcp_mult" = 1, et_mult" = 1, "flow_mult" = 1, "bf_mult" = 1, "dgw_rep" = 0.5,
+#'          "imperv" = 0.2, "interc" = 0, "open_wat" = 0.02, "run_css" = 0.35,  "nonrev" = 0.08, 
+#'          "ind_evap" = 0.012, "wast_gen" = 0.85, "pot_atm" = 0.13, "npot_infilt" = 0.5, 
+#'          "slud_evap" = 0, "leak_css" = 0.05,"dgw" = 0.5)
 #' m <- CityWaterBalance(cwb_data, p) 
 #' @export
 
@@ -60,10 +58,11 @@
 
 CityWaterBalance <- function(data, p, print = TRUE) {
   
-    # ----------- Adjust data within undertainty ------------------------------
+    # ----------- Adjust data within uncertainty ------------------------------
+    
+    data$prcp <- data$prcp * p$prcp_mult
     data$et <- data$et * p$et_mult
     data$outflow <- data$outflow * p$flow_mult
-    data$runoff <- data$runoff * p$run_mult
     data$baseflow <- data$baseflow * p$bf_mult
   
     # ----------- Define flow terms -------------------------------------------
@@ -71,9 +70,9 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     #  1. Interception  
     k1 <- data$pet * p$interc                                                    
     #  2. Runoff  
-    k2 <- data$runoff * (1 - p$run_css)
+    k2 <- data$prcp * p$imperv * (1 - p$run_css)
     #  3. Runoff to sewers  
-    k3 <- data$runoff * p$run_css                                                
+    k3 <- data$prcp * p$imperv * (p$run_css)                                                
     #  4. Infiltration 
     k4 <- data$prcp - k1 - k2 - k3                                               
     if (min(k4, na.rm = TRUE) < 0) {
@@ -143,7 +142,7 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     # 12. Sewer infiltration
     k12 <- p$leak_css * k30                                                      
     # 34. Combined sewer overflows
-    k34 <- data$cso                                                              
+    k34 <- k3 + k12 + k27 - k30                                                              
     # River outflow
     k35 <- data$outflow                                                          
     et_tot <- k1 + k8 + k16 + k22 + k26 + k29 + k31
@@ -195,6 +194,7 @@ CityWaterBalance <- function(data, p, print = TRUE) {
     global_flows <- zoo(cbind(data$prcp,et_tot,data$inflow,data$outflow,
                               data$ws_imports+data$etc_imports), 
                               order.by = index(data))
+    
     names(global_flows) <- c("prcp","et","inflow","outflow","imports")
     
     # State variables
